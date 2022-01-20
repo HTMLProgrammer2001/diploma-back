@@ -1,0 +1,30 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type CommissionListResponse {
+  page: Int!
+  responseList: [CommissionResponse!]!
+  size: Int!
+  skip: Int!
+  totalElements: Int!
+  totalPages: Int!
+}
+
+type CommissionResponse {
+  guid: String!
+  id: Int!
+  isDeleted: Boolean!
+  name: String!
+}
+
+type Mutation {
+  createCommission(name: String!): CommissionResponse!
+  deleteCommission(id: Int!): Int!
+  updateCommission(guid: String!, id: Float!, name: String): CommissionResponse!
+}
+
+type Query {
+  getCommissionById(id: Float!, showDeleted: Boolean): CommissionResponse!
+  getCommissionsList(isDesc: Boolean, name: String, orderField: String = "id", page: Float = 1, showDeleted: Boolean, size: Float = 5): CommissionListResponse!
+}
