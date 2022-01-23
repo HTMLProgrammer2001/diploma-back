@@ -37,10 +37,13 @@ type DepartmentResponse {
 type Mutation {
   createCommission(name: String): CommissionResponse!
   createDepartment(name: String!): DepartmentResponse!
+  createTeachingRank(name: String!): TeachingRankResponse!
   deleteCommission(guid: String!, id: Int!): Int!
   deleteDepartment(guid: String!, id: Int!): Int!
+  deleteTeachingRank(guid: String!, id: Int!): Int!
   updateCommission(guid: String!, id: Int!, name: String): CommissionResponse!
   updateDepartment(guid: String!, id: Float!, name: String): DepartmentResponse!
+  updateTeachingRank(guid: String!, id: Float!, name: String): TeachingRankResponse!
 }
 
 interface PaginatedData {
@@ -56,4 +59,38 @@ type Query {
   getCommissionsList(isDesc: Boolean, name: String, orderField: String = "id", page: Int = 1, showDeleted: Boolean, size: Int = 5): CommissionListResponse!
   getDepartmentById(id: Float!, showDeleted: Boolean): DepartmentResponse!
   getDepartmentsList(isDesc: Boolean, name: String, orderField: String = "id", page: Int = 1, showDeleted: Boolean, size: Int = 5): DepartmentListResponse!
+  getRoleById(id: Float!): RoleResponse!
+  getRoleList(isDesc: Boolean, name: String, orderField: String = "id", page: Int = 1, size: Int = 5): RoleListResponse!
+  getTeachingRankById(id: Float!, showDeleted: Boolean): TeachingRankResponse!
+  getTeachingRankList(isDesc: Boolean, name: String, orderField: String = "id", page: Int = 1, showDeleted: Boolean, size: Int = 5): TeachingRankListResponse!
+}
+
+type RoleListResponse implements PaginatedData {
+  page: Int!
+  responseList: [RoleResponse!]!
+  size: Int!
+  skip: Int!
+  totalElements: Int!
+  totalPages: Int!
+}
+
+type RoleResponse {
+  id: Int!
+  name: String!
+}
+
+type TeachingRankListResponse implements PaginatedData {
+  page: Int!
+  responseList: [TeachingRankResponse!]!
+  size: Int!
+  skip: Int!
+  totalElements: Int!
+  totalPages: Int!
+}
+
+type TeachingRankResponse {
+  guid: String!
+  id: Int!
+  isDeleted: Boolean!
+  name: String!
 }

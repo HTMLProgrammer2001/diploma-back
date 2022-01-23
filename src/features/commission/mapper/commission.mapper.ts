@@ -1,15 +1,15 @@
 import {Injectable} from '@nestjs/common';
 import {CommissionGetListRequest} from '../types/request/commission-get-list.request';
-import {CommissionGetRepoRequest} from '../../../data/repositories/commission/repo-request/commission-get.repo-request';
 import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
-import {CommissionDbModel} from '../../../data/db-models/commission.db-model';
 import {CommissionResponse} from '../types/response/commission.response';
 import {CommissionGetByIdRequest} from '../types/request/commission-get-by-id.request';
 import {CommissionCreateRequest} from '../types/request/commission-create.request';
-import {CommissionCreateRepoRequest} from '../../../data/repositories/commission/repo-request/commission-create.repo-request';
-import {CommissionDeleteRepoRequest} from '../../../data/repositories/commission/repo-request/commission-delete.repo-request';
 import {CommissionUpdateRequest} from '../types/request/commission-update.request';
-import {CommissionUpdateRepoRequest} from '../../../data/repositories/commission/repo-request/commission-update.repo-request';
+import {CommissionGetRepoRequest} from '../../../data-layer/repositories/commission/repo-request/commission-get.repo-request';
+import {CommissionDbModel} from '../../../data-layer/db-models/commission.db-model';
+import {CommissionCreateRepoRequest} from '../../../data-layer/repositories/commission/repo-request/commission-create.repo-request';
+import {CommissionDeleteRepoRequest} from '../../../data-layer/repositories/commission/repo-request/commission-delete.repo-request';
+import {CommissionUpdateRepoRequest} from '../../../data-layer/repositories/commission/repo-request/commission-update.repo-request';
 
 @Injectable()
 export class CommissionMapper {

@@ -6,11 +6,10 @@ import {DepartmentResponse} from '../types/response/department.response';
 import {DepartmentGetByIdRequest} from '../types/request/department-get-by-id.request';
 import {DepartmentCreateRequest} from '../types/request/department-create.request';
 import {DepartmentUpdateRequest} from '../types/request/department-update.request';
-import {CommissionSelectFieldsEnum} from '../../../data/repositories/commission/enums/commission-select-fields.enum';
-import {BaseError} from '../../../common/class/base-error';
+import {CustomError} from '../../../common/class/custom-error';
 import {ErrorCodesEnum} from '../../../common/constants/error-codes.enum';
-import {DepartmentRepository} from '../../../data/repositories/department/department.repository';
-import {DepartmentSelectFieldsEnum} from '../../../data/repositories/department/enums/department-select-fields.enum';
+import {DepartmentSelectFieldsEnum} from '../../../data-layer/repositories/department/enums/department-select-fields.enum';
+import {DepartmentRepository} from '../../../data-layer/repositories/department/department.repository';
 
 @Injectable()
 export class DepartmentService {
@@ -32,7 +31,7 @@ export class DepartmentService {
     if (data.responseList?.length) {
       return this.departmentMapper.departmentDbModelToResponse(data.responseList[0]);
     } else {
-      throw new BaseError({code: ErrorCodesEnum.NOT_FOUND, message: `Department with id ${request.id} not exist`});
+      throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Department with id ${request.id} not exist`});
     }
   }
 
@@ -58,11 +57,11 @@ export class DepartmentService {
     const currentDepartment = await this.departmentRepository.getDepartments(getCurrentDepartmentRepoRequest);
 
     if (!currentDepartment.data.responseList?.length) {
-      throw new BaseError({code: ErrorCodesEnum.NOT_FOUND, message: `Department with id ${request.id} not exist`});
+      throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Department with id ${request.id} not exist`});
     } else if (currentDepartment.data.responseList[0].isDeleted) {
-      throw new BaseError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Department with id ${request.id} is deleted`});
+      throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Department with id ${request.id} is deleted`});
     } else if (currentDepartment.data.responseList[0].guid !== request.guid) {
-      throw new BaseError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Department guid was changed'});
+      throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Department guid was changed'});
     }
 
     const updateRepoRequest = this.departmentMapper.updateDepartmentRequestToRepoRequest(request);
@@ -79,17 +78,17 @@ export class DepartmentService {
   async deleteDepartment(id: number, guid: string): Promise<number> {
     const getCurrentDepartmentRepoRequest = this.departmentMapper.getDepartmentByIdRequestToRepoRequest({
       id: id,
-      select: [CommissionSelectFieldsEnum.GUID, CommissionSelectFieldsEnum.IS_DELETED],
+      select: [DepartmentSelectFieldsEnum.GUID, DepartmentSelectFieldsEnum.IS_DELETED],
       showDeleted: true
     });
     const currentDepartment = await this.departmentRepository.getDepartments(getCurrentDepartmentRepoRequest);
 
     if (!currentDepartment.data.responseList?.length) {
-      throw new BaseError({code: ErrorCodesEnum.NOT_FOUND, message: `Department with id ${id} not exist`});
+      throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Department with id ${id} not exist`});
     } else if (currentDepartment.data.responseList[0].isDeleted) {
-      throw new BaseError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Department with id ${id} already deleted`});
+      throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Department with id ${id} already deleted`});
     } else if (currentDepartment.data.responseList[0].guid !== guid) {
-      throw new BaseError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Department guid was changed`});
+      throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Department guid was changed`});
     }
 
     const deleteRepoRequest = this.departmentMapper.deleteDepartmentRequestToRepoRequest(id);

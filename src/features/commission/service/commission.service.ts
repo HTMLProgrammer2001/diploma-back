@@ -1,15 +1,15 @@
 import {Injectable} from '@nestjs/common';
 import {CommissionMapper} from '../mapper/commission.mapper';
 import {CommissionGetListRequest} from '../types/request/commission-get-list.request';
-import {CommissionRepository} from '../../../data/repositories/commission/commission.repository';
 import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
 import {CommissionResponse} from '../types/response/commission.response';
 import {CommissionGetByIdRequest} from '../types/request/commission-get-by-id.request';
 import {CommissionCreateRequest} from '../types/request/commission-create.request';
 import {CommissionUpdateRequest} from '../types/request/commission-update.request';
-import {CommissionSelectFieldsEnum} from '../../../data/repositories/commission/enums/commission-select-fields.enum';
-import {BaseError} from '../../../common/class/base-error';
+import {CustomError} from '../../../common/class/custom-error';
 import {ErrorCodesEnum} from '../../../common/constants/error-codes.enum';
+import {CommissionRepository} from '../../../data-layer/repositories/commission/commission.repository';
+import {CommissionSelectFieldsEnum} from '../../../data-layer/repositories/commission/enums/commission-select-fields.enum';
 
 @Injectable()
 export class CommissionService {
@@ -31,7 +31,7 @@ export class CommissionService {
     if (data.responseList?.length) {
       return this.commissionMapper.commissionDbModelToResponse(data.responseList[0]);
     } else {
-      throw new BaseError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${request.id} not exist`});
+      throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${request.id} not exist`});
     }
   }
 
@@ -56,11 +56,11 @@ export class CommissionService {
     const currentCommission = await this.commissionRepository.getCommissions(getCurrentCommissionRepoRequest);
 
     if (!currentCommission.data.responseList?.length) {
-      throw new BaseError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${request.id} not exist`});
+      throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${request.id} not exist`});
     } else if (currentCommission.data.responseList[0].isDeleted) {
-      throw new BaseError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Commission with id ${request.id} is deleted`});
+      throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Commission with id ${request.id} is deleted`});
     } else if (currentCommission.data.responseList[0].guid !== request.guid) {
-      throw new BaseError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Commission guid was changed'});
+      throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Commission guid was changed'});
     }
 
     const updateRepoRequest = this.commissionMapper.updateCommissionRequestToRepoRequest(request);
@@ -83,11 +83,11 @@ export class CommissionService {
     const currentCommission = await this.commissionRepository.getCommissions(getCurrentCommissionRepoRequest);
 
     if (!currentCommission.data.responseList?.length) {
-      throw new BaseError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${id} not exist`});
+      throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${id} not exist`});
     } else if (currentCommission.data.responseList[0].isDeleted) {
-      throw new BaseError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Commission with id ${id} already deleted`});
+      throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Commission with id ${id} already deleted`});
     } else if (currentCommission.data.responseList[0].guid !== guid) {
-      throw new BaseError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Commission guid was changed`});
+      throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Commission guid was changed`});
     }
 
     const deleteRepoRequest = this.commissionMapper.deleteCommissionRequestToRepoRequest(id);

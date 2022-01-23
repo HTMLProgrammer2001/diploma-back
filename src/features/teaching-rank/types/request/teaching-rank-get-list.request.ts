@@ -1,10 +1,10 @@
 import {ArgsType, Field} from '@nestjs/graphql';
 import {BasePaginatorRequest} from '../../../../common/types/request/base-paginator.request';
 import {IsBoolean, IsEnum, IsOptional, IsString} from 'class-validator';
-import {DepartmentOrderFieldsEnum} from '../../../../data-layer/repositories/department/enums/department-order-fields.enum';
+import {TeachingRankOrderFieldsEnum} from '../../../../data-layer/repositories/teaching-rank/enums/teaching-rank-order-fields.enum';
 
 @ArgsType()
-export class DepartmentGetListRequest extends BasePaginatorRequest {
+export class TeachingRankGetListRequest extends BasePaginatorRequest {
   select: Array<string>;
 
   @Field({nullable: true})
@@ -17,9 +17,9 @@ export class DepartmentGetListRequest extends BasePaginatorRequest {
   @IsBoolean()
   showDeleted: boolean;
 
-  @Field({nullable: true, defaultValue: DepartmentOrderFieldsEnum.ID})
+  @Field({nullable: true, defaultValue: TeachingRankOrderFieldsEnum.ID})
   @IsOptional()
-  @IsEnum(DepartmentOrderFieldsEnum)
+  @IsEnum(TeachingRankOrderFieldsEnum)
   orderField: string;
 
   @Field({nullable: true})

@@ -1,7 +1,7 @@
 import {ArgsType, Field} from '@nestjs/graphql';
 import {BasePaginatorRequest} from '../../../../common/types/request/base-paginator.request';
-import {CommissionOrderFieldsEnum} from '../../../../data/repositories/commission/enums/commission-order-fields.enum';
 import {IsBoolean, IsEnum, IsOptional, IsString} from 'class-validator';
+import {CommissionOrderFieldsEnum} from '../../../../data-layer/repositories/commission/enums/commission-order-fields.enum';
 
 @ArgsType()
 export class CommissionGetListRequest extends BasePaginatorRequest {

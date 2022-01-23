@@ -2,16 +2,19 @@ import {Module} from '@nestjs/common';
 import {join} from 'path';
 import {SequelizeModule} from '@nestjs/sequelize';
 import {AppController} from './app.controller';
-import {DataModule} from './data/data.module';
 import {GraphQLModule} from '@nestjs/graphql';
 import {GraphQLError} from 'graphql';
 import {CommissionModule} from './features/commission/commission.module';
 import {APP_FILTER} from '@nestjs/core';
 import {ValidationErrorFilter} from './common/filters/validation-error.filter';
-import {BaseError} from './common/class/base-error';
+import {CustomError} from './common/class/custom-error';
 import {AllErrorFilter} from './common/filters/all-error.filter';
 import {ErrorCodesEnum} from './common/constants/error-codes.enum';
 import {DepartmentModule} from './features/department/department.module';
+import {CustomArrayError} from './common/class/custom-array-error';
+import {RoleModule} from './features/role/role.module';
+import {TeachingRankModule} from './features/teaching-rank/teaching-rank.module';
+import {DataLayerModule} from './data-layer/data-layer.module';
 
 @Module({
   imports: [
@@ -28,26 +31,35 @@ import {DepartmentModule} from './features/department/department.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       formatError: (error: GraphQLError) => {
-        const customError = error.originalError;
+        const originalError = error.originalError;
 
-        if(customError instanceof BaseError) {
+        if(originalError instanceof CustomArrayError){
           return {
-            message: customError.error.message,
-            code: customError.error.code,
-          }
+            message: originalError.message,
+            code: originalError.code,
+            errors: originalError.errors
+          };
+        }
+        else if(originalError instanceof CustomError) {
+          return {
+            message: originalError.message,
+            code: originalError.code,
+          };
         }
         else {
           return {
             message: error.message,
-            code: ErrorCodesEnum.GENERAL
+            code: ErrorCodesEnum.GENERAL,
           }
         }
       }
     }),
 
-    DataModule,
+    DataLayerModule,
     CommissionModule,
     DepartmentModule,
+    RoleModule,
+    TeachingRankModule,
   ],
   controllers: [AppController],
   providers: [

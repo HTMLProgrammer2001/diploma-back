@@ -1,27 +1,26 @@
 import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/sequelize';
-import {CommissionDbModel} from '../../db-models/commission.db-model';
 import {isEmpty, isNil, isUndefined} from 'lodash';
-import {DepartmentGetRepoRequest} from './repo-request/department-get.repo-request';
+import {TeachingRankGetRepoRequest} from './repo-request/teaching-rank-get.repo-request';
 import sequelize, {Op} from 'sequelize';
 import {FindAttributeOptions, WhereOptions} from 'sequelize/dist/lib/model';
-import {DepartmentSelectFieldsEnum} from './enums/department-select-fields.enum';
-import {DepartmentGetRepoResponse} from './repo-response/department-get.repo-response';
+import {TeachingRankSelectFieldsEnum} from './enums/teaching-rank-select-fields.enum';
+import {TeachingRankGetRepoResponse} from './repo-response/teaching-rank-get.repo-response';
 import {convertFindAndCountToPaginator} from '../../../common/utils/functions';
-import {DepartmentCreateRepoRequest} from './repo-request/department-create.repo-request';
+import {TeachingRankCreateRepoRequest} from './repo-request/teaching-rank-create.repo-request';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
-import {DepartmentDeleteRepoRequest} from './repo-request/department-delete.repo-request';
+import {TeachingRankDeleteRepoRequest} from './repo-request/teaching-rank-delete.repo-request';
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
-import {DepartmentUpdateRepoRequest} from './repo-request/department-update.repo-request';
+import {TeachingRankUpdateRepoRequest} from './repo-request/teaching-rank-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {Model} from 'sequelize-typescript';
-import {DepartmentDbModel} from '../../db-models/department.db-model';
+import {TeachingRankDbModel} from '../../db-models/teaching-rank.db-model';
 
 @Injectable()
-export class DepartmentRepository {
-  constructor(@InjectModel(DepartmentDbModel) private departmentDbModel: typeof DepartmentDbModel) {}
+export class TeachingRankRepository {
+  constructor(@InjectModel(TeachingRankDbModel) private teachingRankDbModel: typeof TeachingRankDbModel) {}
 
-  async getDepartments(repoRequest: DepartmentGetRepoRequest): Promise<DepartmentGetRepoResponse> {
+  async getTeachingRanks(repoRequest: TeachingRankGetRepoRequest): Promise<TeachingRankGetRepoResponse> {
     repoRequest.page = repoRequest.page ?? 1;
     repoRequest.size = repoRequest.size ?? 5;
 
@@ -30,24 +29,24 @@ export class DepartmentRepository {
     const attributes: FindAttributeOptions = [];
 
     if(!repoRequest) {
-      repoRequest.select = [DepartmentSelectFieldsEnum.ID, DepartmentSelectFieldsEnum.NAME];
+      repoRequest.select = [TeachingRankSelectFieldsEnum.ID, TeachingRankSelectFieldsEnum.NAME];
     }
 
     repoRequest.select.forEach(field => {
       switch (field) {
-        case DepartmentSelectFieldsEnum.ID:
+        case TeachingRankSelectFieldsEnum.ID:
           attributes.push('id');
           break;
 
-        case DepartmentSelectFieldsEnum.NAME:
+        case TeachingRankSelectFieldsEnum.NAME:
           attributes.push('name');
           break;
 
-        case DepartmentSelectFieldsEnum.IS_DELETED:
+        case TeachingRankSelectFieldsEnum.IS_DELETED:
           attributes.push('isDeleted');
           break;
 
-        case DepartmentSelectFieldsEnum.GUID:
+        case TeachingRankSelectFieldsEnum.GUID:
           attributes.push('guid');
           break;
       }
@@ -87,7 +86,7 @@ export class DepartmentRepository {
 
     //endregion
 
-    const data = await this.departmentDbModel.findAndCountAll({
+    const data = await this.teachingRankDbModel.findAndCountAll({
       where: filters,
       order,
       attributes,
@@ -98,13 +97,13 @@ export class DepartmentRepository {
     return {data: convertFindAndCountToPaginator(data, repoRequest.page, repoRequest.size)};
   }
 
-  async createDepartment(repoRequest: DepartmentCreateRepoRequest): Promise<CommonCreateRepoResponse> {
-    const {id} = await this.departmentDbModel.create({name: repoRequest.name});
+  async createTeachingRank(repoRequest: TeachingRankCreateRepoRequest): Promise<CommonCreateRepoResponse> {
+    const {id} = await this.teachingRankDbModel.create({name: repoRequest.name});
     return {createdID: id};
   }
 
-  async updateDepartment(repoRequest: DepartmentUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
-    const updateData = {} as Omit<CommissionDbModel, keyof Model>;
+  async updateTeachingRank(repoRequest: TeachingRankUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
+    const updateData = {} as Omit<TeachingRankDbModel, keyof Model>;
 
     if(!isUndefined(repoRequest.name)) {
       updateData.name = repoRequest.name;
@@ -112,14 +111,14 @@ export class DepartmentRepository {
 
     if(!isEmpty(updateData)) {
       updateData.guid = sequelize.literal('UUID()') as any;
-      await this.departmentDbModel.update(updateData, {where: {id: repoRequest.id}});
+      await this.teachingRankDbModel.update(updateData, {where: {id: repoRequest.id}});
     }
 
     return {updatedID: repoRequest.id};
   }
 
-  async deleteDepartment(repoRequest: DepartmentDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
-    await this.departmentDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
+  async deleteTeachingRank(repoRequest: TeachingRankDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
+    await this.teachingRankDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
     return {deletedID: repoRequest.id};
   }
 }

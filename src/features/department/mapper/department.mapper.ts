@@ -1,19 +1,15 @@
 import {Injectable} from '@nestjs/common';
 import {DepartmentGetListRequest} from '../types/request/department-get-list.request';
-import {CommissionGetRepoRequest} from '../../../data/repositories/commission/repo-request/commission-get.repo-request';
 import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
 import {DepartmentResponse} from '../types/response/department.response';
 import {DepartmentGetByIdRequest} from '../types/request/department-get-by-id.request';
 import {DepartmentCreateRequest} from '../types/request/department-create.request';
-import {CommissionCreateRepoRequest} from '../../../data/repositories/commission/repo-request/commission-create.repo-request';
-import {CommissionDeleteRepoRequest} from '../../../data/repositories/commission/repo-request/commission-delete.repo-request';
 import {DepartmentUpdateRequest} from '../types/request/department-update.request';
-import {CommissionUpdateRepoRequest} from '../../../data/repositories/commission/repo-request/commission-update.repo-request';
-import {DepartmentGetRepoRequest} from '../../../data/repositories/department/repo-request/department-get.repo-request';
-import {DepartmentDbModel} from '../../../data/db-models/department.db-model';
-import {DepartmentCreateRepoRequest} from '../../../data/repositories/department/repo-request/department-create.repo-request';
-import {DepartmentDeleteRepoRequest} from '../../../data/repositories/department/repo-request/department-delete.repo-request';
-import {DepartmentUpdateRepoRequest} from '../../../data/repositories/department/repo-request/department-update.repo-request';
+import {DepartmentGetRepoRequest} from '../../../data-layer/repositories/department/repo-request/department-get.repo-request';
+import {DepartmentDbModel} from '../../../data-layer/db-models/department.db-model';
+import {DepartmentCreateRepoRequest} from '../../../data-layer/repositories/department/repo-request/department-create.repo-request';
+import {DepartmentDeleteRepoRequest} from '../../../data-layer/repositories/department/repo-request/department-delete.repo-request';
+import {DepartmentUpdateRepoRequest} from '../../../data-layer/repositories/department/repo-request/department-update.repo-request';
 
 @Injectable()
 export class DepartmentMapper {
