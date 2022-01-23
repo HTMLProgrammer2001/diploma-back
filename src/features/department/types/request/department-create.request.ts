@@ -1,11 +1,11 @@
 import {ArgsType, Field} from '@nestjs/graphql';
-import {IsNotEmpty, IsString} from 'class-validator';
+import {IsNotEmpty, IsString, MinLength} from 'class-validator';
 
 @ArgsType()
-export class CommissionCreateRequest {
+export class DepartmentCreateRequest {
   select: Array<string>;
 
-  @Field({nullable: true})
+  @Field({nullable: false})
   @IsNotEmpty()
   @IsString()
   name: string;

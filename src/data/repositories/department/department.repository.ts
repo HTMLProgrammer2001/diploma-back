@@ -2,25 +2,26 @@ import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/sequelize';
 import {CommissionDbModel} from '../../db-models/commission.db-model';
 import {isEmpty, isNil, isUndefined} from 'lodash';
-import {CommissionGetRepoRequest} from './repo-request/commission-get.repo-request';
+import {DepartmentGetRepoRequest} from './repo-request/department-get.repo-request';
 import sequelize, {Op} from 'sequelize';
 import {FindAttributeOptions, WhereOptions} from 'sequelize/dist/lib/model';
-import {CommissionSelectFieldsEnum} from './enums/commission-select-fields.enum';
-import {CommissionGetRepoResponse} from './repo-response/commission-get.repo-response';
+import {DepartmentSelectFieldsEnum} from './enums/department-select-fields.enum';
+import {DepartmentGetRepoResponse} from './repo-response/department-get.repo-response';
 import {convertFindAndCountToPaginator} from '../../../common/utils/functions';
-import {CommissionCreateRepoRequest} from './repo-request/commission-create.repo-request';
+import {DepartmentCreateRepoRequest} from './repo-request/department-create.repo-request';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
-import {CommissionDeleteRepoRequest} from './repo-request/commission-delete.repo-request';
+import {DepartmentDeleteRepoRequest} from './repo-request/department-delete.repo-request';
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
-import {CommissionUpdateRepoRequest} from './repo-request/commission-update.repo-request';
+import {DepartmentUpdateRepoRequest} from './repo-request/department-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {Model} from 'sequelize-typescript';
+import {DepartmentDbModel} from '../../db-models/department.db-model';
 
 @Injectable()
-export class CommissionRepository {
-  constructor(@InjectModel(CommissionDbModel) private commissionModel: typeof CommissionDbModel) {}
+export class DepartmentRepository {
+  constructor(@InjectModel(DepartmentDbModel) private departmentDbModel: typeof DepartmentDbModel) {}
 
-  async getCommissions(repoRequest: CommissionGetRepoRequest): Promise<CommissionGetRepoResponse> {
+  async getDepartments(repoRequest: DepartmentGetRepoRequest): Promise<DepartmentGetRepoResponse> {
     repoRequest.page = repoRequest.page ?? 1;
     repoRequest.size = repoRequest.size ?? 5;
 
@@ -29,24 +30,24 @@ export class CommissionRepository {
     const attributes: FindAttributeOptions = [];
 
     if(!repoRequest) {
-      repoRequest.select = [CommissionSelectFieldsEnum.ID, CommissionSelectFieldsEnum.NAME];
+      repoRequest.select = [DepartmentSelectFieldsEnum.ID, DepartmentSelectFieldsEnum.NAME];
     }
 
     repoRequest.select.forEach(field => {
       switch (field) {
-        case CommissionSelectFieldsEnum.ID:
+        case DepartmentSelectFieldsEnum.ID:
           attributes.push('id');
           break;
 
-        case CommissionSelectFieldsEnum.NAME:
+        case DepartmentSelectFieldsEnum.NAME:
           attributes.push('name');
           break;
 
-        case CommissionSelectFieldsEnum.IS_DELETED:
+        case DepartmentSelectFieldsEnum.IS_DELETED:
           attributes.push('isDeleted');
           break;
 
-        case CommissionSelectFieldsEnum.GUID:
+        case DepartmentSelectFieldsEnum.GUID:
           attributes.push('guid');
           break;
       }
@@ -86,7 +87,7 @@ export class CommissionRepository {
 
     //endregion
 
-    const data = await this.commissionModel.findAndCountAll({
+    const data = await this.departmentDbModel.findAndCountAll({
       where: filters,
       order,
       attributes,
@@ -97,12 +98,12 @@ export class CommissionRepository {
     return {data: convertFindAndCountToPaginator(data, repoRequest.page, repoRequest.size)};
   }
 
-  async createCommission(repoRequest: CommissionCreateRepoRequest): Promise<CommonCreateRepoResponse> {
-    const {id} = await this.commissionModel.create({name: repoRequest.name});
+  async createDepartment(repoRequest: DepartmentCreateRepoRequest): Promise<CommonCreateRepoResponse> {
+    const {id} = await this.departmentDbModel.create({name: repoRequest.name});
     return {createdID: id};
   }
 
-  async updateCommission(repoRequest: CommissionUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
+  async updateDepartment(repoRequest: DepartmentUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
     const updateData = {} as Omit<CommissionDbModel, keyof Model>;
 
     if(!isUndefined(repoRequest.name)) {
@@ -111,14 +112,14 @@ export class CommissionRepository {
 
     if(!isEmpty(updateData)) {
       updateData.guid = sequelize.literal('UUID()') as any;
-      await this.commissionModel.update(updateData, {where: {id: repoRequest.id}});
+      await this.departmentDbModel.update(updateData, {where: {id: repoRequest.id}});
     }
 
     return {updatedID: repoRequest.id};
   }
 
-  async deleteCommission(repoRequest: CommissionDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
-    await this.commissionModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
+  async deleteDepartment(repoRequest: DepartmentDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
+    await this.departmentDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
     return {deletedID: repoRequest.id};
   }
 }

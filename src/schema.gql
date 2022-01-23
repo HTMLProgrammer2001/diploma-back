@@ -2,7 +2,7 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type CommissionListResponse {
+type CommissionListResponse implements PaginatedData {
   page: Int!
   responseList: [CommissionResponse!]!
   size: Int!
@@ -18,13 +18,42 @@ type CommissionResponse {
   name: String!
 }
 
+type DepartmentListResponse implements PaginatedData {
+  page: Int!
+  responseList: [DepartmentResponse!]!
+  size: Int!
+  skip: Int!
+  totalElements: Int!
+  totalPages: Int!
+}
+
+type DepartmentResponse {
+  guid: String!
+  id: Int!
+  isDeleted: Boolean!
+  name: String!
+}
+
 type Mutation {
-  createCommission(name: String!): CommissionResponse!
-  deleteCommission(id: Int!): Int!
-  updateCommission(guid: String!, id: Float!, name: String): CommissionResponse!
+  createCommission(name: String): CommissionResponse!
+  createDepartment(name: String!): DepartmentResponse!
+  deleteCommission(guid: String!, id: Int!): Int!
+  deleteDepartment(guid: String!, id: Int!): Int!
+  updateCommission(guid: String!, id: Int!, name: String): CommissionResponse!
+  updateDepartment(guid: String!, id: Float!, name: String): DepartmentResponse!
+}
+
+interface PaginatedData {
+  page: Int!
+  size: Int!
+  skip: Int!
+  totalElements: Int!
+  totalPages: Int!
 }
 
 type Query {
-  getCommissionById(id: Float!, showDeleted: Boolean): CommissionResponse!
-  getCommissionsList(isDesc: Boolean, name: String, orderField: String = "id", page: Float = 1, showDeleted: Boolean, size: Float = 5): CommissionListResponse!
+  getCommissionById(id: Int!, showDeleted: Boolean): CommissionResponse!
+  getCommissionsList(isDesc: Boolean, name: String, orderField: String = "id", page: Int = 1, showDeleted: Boolean, size: Int = 5): CommissionListResponse!
+  getDepartmentById(id: Float!, showDeleted: Boolean): DepartmentResponse!
+  getDepartmentsList(isDesc: Boolean, name: String, orderField: String = "id", page: Int = 1, showDeleted: Boolean, size: Int = 5): DepartmentListResponse!
 }

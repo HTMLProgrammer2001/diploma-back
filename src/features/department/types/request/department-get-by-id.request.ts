@@ -1,11 +1,11 @@
-import {ArgsType, Field, Int} from '@nestjs/graphql';
+import {ArgsType, Field} from '@nestjs/graphql';
 import {IsBoolean, IsNumber, IsOptional} from 'class-validator';
 
 @ArgsType()
-export class CommissionGetByIdRequest {
+export class DepartmentGetByIdRequest {
   select: Array<string>;
 
-  @Field(type => Int, {nullable: false})
+  @Field({nullable: false})
   @IsNumber()
   id: number;
 

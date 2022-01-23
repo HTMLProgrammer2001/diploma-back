@@ -1,6 +1,6 @@
 import {BaseRepoRequest} from '../../common/base-repo-request';
 
-export class GetCommissionListRepoRequest extends BaseRepoRequest {
+export class CommissionGetRepoRequest extends BaseRepoRequest {
   page: number;
   size: number;
   id: number;

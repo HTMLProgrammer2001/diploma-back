@@ -1,20 +1,20 @@
 import {Injectable} from '@nestjs/common';
 import {CommissionGetListRequest} from '../types/request/commission-get-list.request';
-import {GetCommissionListRepoRequest} from '../../../data/repositories/commission/repo-request/get-commission-list.repo-request';
+import {CommissionGetRepoRequest} from '../../../data/repositories/commission/repo-request/commission-get.repo-request';
 import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
 import {CommissionDbModel} from '../../../data/db-models/commission.db-model';
 import {CommissionResponse} from '../types/response/commission.response';
 import {CommissionGetByIdRequest} from '../types/request/commission-get-by-id.request';
 import {CommissionCreateRequest} from '../types/request/commission-create.request';
-import {CreateCommissionRepoRequest} from '../../../data/repositories/commission/repo-request/create-commission.repo-request';
-import {DeleteCommissionRepoRequest} from '../../../data/repositories/commission/repo-request/delete-commission.repo-request';
+import {CommissionCreateRepoRequest} from '../../../data/repositories/commission/repo-request/commission-create.repo-request';
+import {CommissionDeleteRepoRequest} from '../../../data/repositories/commission/repo-request/commission-delete.repo-request';
 import {CommissionUpdateRequest} from '../types/request/commission-update.request';
-import {UpdateCommissionRepoRequest} from '../../../data/repositories/commission/repo-request/update-commission.repo-request';
+import {CommissionUpdateRepoRequest} from '../../../data/repositories/commission/repo-request/commission-update.repo-request';
 
 @Injectable()
 export class CommissionMapper {
-  getCommissionListRequestToRepoRequest(source: CommissionGetListRequest): GetCommissionListRepoRequest {
-    const destination = new GetCommissionListRepoRequest();
+  getCommissionListRequestToRepoRequest(source: CommissionGetListRequest): CommissionGetRepoRequest {
+    const destination = new CommissionGetRepoRequest();
 
     destination.name = source.name;
     destination.showDeleted = source.showDeleted;
@@ -45,8 +45,8 @@ export class CommissionMapper {
     return destination;
   }
 
-  getCommissionByIdRequestToRepoRequest(source: CommissionGetByIdRequest): GetCommissionListRepoRequest {
-    const destination = new GetCommissionListRepoRequest();
+  getCommissionByIdRequestToRepoRequest(source: CommissionGetByIdRequest): CommissionGetRepoRequest {
+    const destination = new CommissionGetRepoRequest();
 
     destination.id = source.id;
     destination.select = source.select;
@@ -57,24 +57,24 @@ export class CommissionMapper {
     return destination;
   }
 
-  createCommissionRequestToRepoRequest(source: CommissionCreateRequest): CreateCommissionRepoRequest {
-    const destination = new CreateCommissionRepoRequest();
+  createCommissionRequestToRepoRequest(source: CommissionCreateRequest): CommissionCreateRepoRequest {
+    const destination = new CommissionCreateRepoRequest();
 
     destination.name = source.name;
 
     return destination;
   }
 
-  deleteCommissionRequestToRepoRequest(id: number): DeleteCommissionRepoRequest {
-    const destination = new DeleteCommissionRepoRequest();
+  deleteCommissionRequestToRepoRequest(id: number): CommissionDeleteRepoRequest {
+    const destination = new CommissionDeleteRepoRequest();
 
     destination.id = id;
 
     return destination;
   }
 
-  updateCommissionRequestToRepoRequest(request: CommissionUpdateRequest): UpdateCommissionRepoRequest {
-    const destination = new UpdateCommissionRepoRequest();
+  updateCommissionRequestToRepoRequest(request: CommissionUpdateRequest): CommissionUpdateRepoRequest {
+    const destination = new CommissionUpdateRepoRequest();
 
     destination.id = request.id;
     destination.name = request.name;
