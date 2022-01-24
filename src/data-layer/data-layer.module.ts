@@ -8,12 +8,21 @@ import {RoleDbModel} from './db-models/role.db-model';
 import {RoleRepository} from './repositories/role/role.repository';
 import {TeachingRankDbModel} from './db-models/teaching-rank.db-model';
 import {TeachingRankRepository} from './repositories/teaching-rank/teaching-rank.repository';
+import {TeacherDbModel} from './db-models/teacher.db-model';
+import {TeacherRepository} from './repositories/teacher/teacher.repository';
+import {AcademicDegreeDbModel} from './db-models/academic-degree.db-model';
+import {AcademicDegreeRepository} from './repositories/academic-degree/academic-degree.repository';
+import {AcademicTitleDbModel} from './db-models/academic-title.db-model';
+import {AcademicTitleRepository} from './repositories/academic-title/academic-title.repository';
 
 const getAppModels = () => SequelizeModule.forFeature([
   CommissionDbModel,
   DepartmentDbModel,
   RoleDbModel,
   TeachingRankDbModel,
+  AcademicDegreeDbModel,
+  AcademicTitleDbModel,
+  TeacherDbModel,
 ]);
 
 const getAppRepositories = () => [
@@ -21,6 +30,9 @@ const getAppRepositories = () => [
   DepartmentRepository,
   RoleRepository,
   TeachingRankRepository,
+  AcademicDegreeRepository,
+  AcademicTitleRepository,
+  TeacherRepository,
 ]
 
 @Global()

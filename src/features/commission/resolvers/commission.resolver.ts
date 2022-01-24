@@ -1,6 +1,6 @@
 import {Args, Info, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {GraphQLResolveInfo} from 'graphql';
-import {fieldsList} from 'graphql-fields-list';
+import {fieldsList, fieldsProjection} from 'graphql-fields-list';
 import {CommissionService} from '../service/commission.service';
 import {CommissionGetListRequest} from '../types/request/commission-get-list.request';
 import {CommissionResponse} from '../types/response/commission.response';
@@ -17,14 +17,14 @@ export class CommissionResolver {
   @Query(returns => CommissionListResponse)
   async getCommissionsList(@Args() request: CommissionGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<CommissionResponse>> {
-    request.select = fieldsList(info, {path: 'responseList'});
+    request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
     return this.commissionService.getCommissionList(request);
   }
 
   @Query(returns => CommissionResponse)
   async getCommissionById(@Args() request: CommissionGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<CommissionResponse> {
-    request.select = fieldsList(info);
+    request.select = Object.keys(fieldsProjection(info));
     return this.commissionService.getCommissionById(request);
   }
 

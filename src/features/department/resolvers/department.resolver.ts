@@ -5,7 +5,7 @@ import {DepartmentResponse} from '../types/response/department.response';
 import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
 import {DepartmentListResponse} from '../types/response/department-list.response';
 import {GraphQLResolveInfo} from 'graphql';
-import {fieldsList} from 'graphql-fields-list';
+import {fieldsList, fieldsProjection} from 'graphql-fields-list';
 import {DepartmentGetByIdRequest} from '../types/request/department-get-by-id.request';
 import {DepartmentCreateRequest} from '../types/request/department-create.request';
 import {DepartmentUpdateRequest} from '../types/request/department-update.request';
@@ -17,14 +17,14 @@ export class DepartmentResolver {
   @Query(returns => DepartmentListResponse)
   async getDepartmentsList(@Args() request: DepartmentGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<DepartmentResponse>> {
-    request.select = fieldsList(info, {path: 'responseList'});
+    request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
     return this.departmentService.getDepartmentList(request);
   }
 
   @Query(returns => DepartmentResponse)
   async getDepartmentById(@Args() request: DepartmentGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<DepartmentResponse> {
-    request.select = fieldsList(info);
+    request.select = Object.keys(fieldsProjection(info));
     return this.departmentService.getDepartmentById(request);
   }
 

@@ -1,15 +1,16 @@
-import {ArgsType, Field} from '@nestjs/graphql';
-import {IsNotEmpty, IsNumber, IsOptional, IsString} from 'class-validator';
+import {ArgsType, Field, Int} from '@nestjs/graphql';
+import {IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength} from 'class-validator';
 
 @ArgsType()
 export class DepartmentUpdateRequest {
   select: Array<string>;
 
-  @Field({nullable: false})
+  @Field(type => Int, {nullable: false})
   @IsNumber()
   id: number;
 
   @Field({nullable: true})
+  @MaxLength(255)
   @IsOptional()
   @IsString()
   name: string;

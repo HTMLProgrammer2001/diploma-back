@@ -1,5 +1,5 @@
 import {ArgsType, Field, Int} from '@nestjs/graphql';
-import {IsNotEmpty, IsNumber, IsString} from 'class-validator';
+import {IsNotEmpty, IsNumber, IsString, MaxLength} from 'class-validator';
 
 @ArgsType()
 export class CommissionUpdateRequest {
@@ -10,6 +10,7 @@ export class CommissionUpdateRequest {
   id: number;
 
   @Field({nullable: true})
+  @MaxLength(255)
   @IsNotEmpty()
   @IsString()
   name: string;

@@ -1,0 +1,22 @@
+export class TeacherSelectFieldsEnum {
+  static ID = 'id';
+  static FULL_NAME = 'fullName';
+  static EMAIL = 'email';
+  static BIRTHDAY = 'birthday';
+  static PHONE = 'phone';
+  static ADDRESS = 'address';
+  static AVATAR_URL = 'avatarUrl';
+  static DEPARTMENT_ID = 'department.id';
+  static DEPARTMENT_NAME = 'department.name';
+  static COMMISSION_ID = 'commission.id';
+  static COMMISSION_NAME = 'commission.name';
+  static TEACHER_RANK_ID = 'teacherRank.id';
+  static TEACHER_RANK_NAME = 'teacherRank.name';
+  static ACADEMIC_DEGREE_ID = 'academicDegree.id';
+  static ACADEMIC_DEGREE_NAME = 'academicDegree.name';
+  static ACADEMIC_TITLE_ID = 'academicTitle.id';
+  static ACADEMIC_TITLE_NAME = 'academicTitle.name';
+  static WORK_START_DATE = 'workStartDate';
+  static IS_DELETED = 'isDeleted';
+  static GUID = 'guid';
+}

@@ -7,10 +7,4 @@ export class TeachingRankResponse {
 
   @Field({nullable: false})
   name: string;
-
-  @Field({nullable: false})
-  guid: string;
-
-  @Field({nullable: false})
-  isDeleted: boolean;
 }

@@ -15,6 +15,9 @@ import {CustomArrayError} from './common/class/custom-array-error';
 import {RoleModule} from './features/role/role.module';
 import {TeachingRankModule} from './features/teaching-rank/teaching-rank.module';
 import {DataLayerModule} from './data-layer/data-layer.module';
+import {AcademicDegreeModule} from './features/academic-degree/academic-degree.module';
+import {AcademicTitleModule} from './features/academic-title/academic-title.module';
+import {TeacherModule} from './features/teacher/teacher.module';
 
 @Module({
   imports: [
@@ -60,6 +63,9 @@ import {DataLayerModule} from './data-layer/data-layer.module';
     DepartmentModule,
     RoleModule,
     TeachingRankModule,
+    AcademicDegreeModule,
+    AcademicTitleModule,
+    TeacherModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,19 +1,12 @@
 import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/sequelize';
-import {isEmpty, isNil, isUndefined} from 'lodash';
+import {isNil} from 'lodash';
 import {TeachingRankGetRepoRequest} from './repo-request/teaching-rank-get.repo-request';
-import sequelize, {Op} from 'sequelize';
+import {Op} from 'sequelize';
 import {FindAttributeOptions, WhereOptions} from 'sequelize/dist/lib/model';
 import {TeachingRankSelectFieldsEnum} from './enums/teaching-rank-select-fields.enum';
 import {TeachingRankGetRepoResponse} from './repo-response/teaching-rank-get.repo-response';
 import {convertFindAndCountToPaginator} from '../../../common/utils/functions';
-import {TeachingRankCreateRepoRequest} from './repo-request/teaching-rank-create.repo-request';
-import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
-import {TeachingRankDeleteRepoRequest} from './repo-request/teaching-rank-delete.repo-request';
-import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
-import {TeachingRankUpdateRepoRequest} from './repo-request/teaching-rank-update.repo-request';
-import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {Model} from 'sequelize-typescript';
 import {TeachingRankDbModel} from '../../db-models/teaching-rank.db-model';
 
 @Injectable()
@@ -41,14 +34,6 @@ export class TeachingRankRepository {
         case TeachingRankSelectFieldsEnum.NAME:
           attributes.push('name');
           break;
-
-        case TeachingRankSelectFieldsEnum.IS_DELETED:
-          attributes.push('isDeleted');
-          break;
-
-        case TeachingRankSelectFieldsEnum.GUID:
-          attributes.push('guid');
-          break;
       }
     });
 
@@ -60,10 +45,6 @@ export class TeachingRankRepository {
 
     if(!isNil(repoRequest.name)) {
       filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
-    }
-
-    if(!repoRequest.showDeleted) {
-      filters.isDeleted = false;
     }
 
     if(!isNil(repoRequest.id)) {
@@ -95,30 +76,5 @@ export class TeachingRankRepository {
     });
 
     return {data: convertFindAndCountToPaginator(data, repoRequest.page, repoRequest.size)};
-  }
-
-  async createTeachingRank(repoRequest: TeachingRankCreateRepoRequest): Promise<CommonCreateRepoResponse> {
-    const {id} = await this.teachingRankDbModel.create({name: repoRequest.name});
-    return {createdID: id};
-  }
-
-  async updateTeachingRank(repoRequest: TeachingRankUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
-    const updateData = {} as Omit<TeachingRankDbModel, keyof Model>;
-
-    if(!isUndefined(repoRequest.name)) {
-      updateData.name = repoRequest.name;
-    }
-
-    if(!isEmpty(updateData)) {
-      updateData.guid = sequelize.literal('UUID()') as any;
-      await this.teachingRankDbModel.update(updateData, {where: {id: repoRequest.id}});
-    }
-
-    return {updatedID: repoRequest.id};
-  }
-
-  async deleteTeachingRank(repoRequest: TeachingRankDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
-    await this.teachingRankDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
-    return {deletedID: repoRequest.id};
   }
 }

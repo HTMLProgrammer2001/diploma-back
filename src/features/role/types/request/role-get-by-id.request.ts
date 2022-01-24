@@ -1,11 +1,11 @@
-import {ArgsType, Field} from '@nestjs/graphql';
+import {ArgsType, Field, Int} from '@nestjs/graphql';
 import {IsNumber} from 'class-validator';
 
 @ArgsType()
 export class RoleGetByIdRequest {
   select: Array<string>;
 
-  @Field({nullable: false})
+  @Field(type => Int, {nullable: false})
   @IsNumber()
   id: number;
 }
