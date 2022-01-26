@@ -30,7 +30,7 @@ export class TeacherResolver {
   }
 
   @Mutation(returns => TeacherResponse)
-  async createCommission(@Args() request: TeacherCreateRequest, @Info() info: GraphQLResolveInfo):
+  async createTeacher(@Args() request: TeacherCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<TeacherResponse> {
     request.select = fieldsList(info);
     return this.teacherService.createTeacher(request);

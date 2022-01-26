@@ -18,9 +18,14 @@ import {DataLayerModule} from './data-layer/data-layer.module';
 import {AcademicDegreeModule} from './features/academic-degree/academic-degree.module';
 import {AcademicTitleModule} from './features/academic-title/academic-title.module';
 import {TeacherModule} from './features/teacher/teacher.module';
+import {ServeStaticModule} from '@nestjs/serve-static';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'static'),
+      serveRoot: '/static'
+    }),
     SequelizeModule.forRoot({
       dialect: 'mysql',
       host: 'localhost',
@@ -28,7 +33,8 @@ import {TeacherModule} from './features/teacher/teacher.module';
       username: 'root',
       password: 'root',
       database: 'app',
-      autoLoadModels: true
+      autoLoadModels: true,
+      synchronize: false
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -76,7 +82,7 @@ import {TeacherModule} from './features/teacher/teacher.module';
     {
       provide: APP_FILTER,
       useClass: ValidationErrorFilter
-    }
+    },
   ]
 })
 export class AppModule {

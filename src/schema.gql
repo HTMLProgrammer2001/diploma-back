@@ -68,8 +68,9 @@ type IdNameResponse {
 }
 
 type Mutation {
-  createCommission(academicDegreeId: Int!, academicTitleId: Int!, address: String, avatar: Upload, birthday: String, commissionId: Int!, departmentId: Int!, email: String!, fullName: String!, phone: String, teacherRankId: Int!, workStartDate: String!): TeacherResponse!
+  createCommission(name: String): CommissionResponse!
   createDepartment(name: String!): DepartmentResponse!
+  createTeacher(academicDegreeId: Int, academicTitleId: Int, address: String, avatar: Upload, birthday: String, commissionId: Int!, departmentId: Int!, email: String!, fullName: String!, phone: String, teacherRankId: Int, workStartDate: String): TeacherResponse!
   deleteCommission(guid: String!, id: Int!): Int!
   deleteDepartment(guid: String!, id: Int!): Int!
   updateCommission(guid: String!, id: Int!, name: String): CommissionResponse!

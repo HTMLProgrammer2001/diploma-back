@@ -1,5 +1,4 @@
-import {AutoIncrement, Column, DataType, HasMany, Model, Table} from 'sequelize-typescript';
-import sequelize from 'sequelize';
+import {AutoIncrement, Column, HasMany, Model, Table} from 'sequelize-typescript';
 import {TeacherDbModel} from './teacher.db-model';
 
 @Table({tableName: 'TeachingRank', timestamps: false})

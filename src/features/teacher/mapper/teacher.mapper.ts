@@ -7,6 +7,8 @@ import {TeachingRankGetRepoRequest} from '../../../data-layer/repositories/teach
 import {TeachingRankDbModel} from '../../../data-layer/db-models/teaching-rank.db-model';
 import {TeacherGetRepoRequest} from '../../../data-layer/repositories/teacher/repo-request/teacher-get.repo-request';
 import {TeacherDbModel} from '../../../data-layer/db-models/teacher.db-model';
+import {TeacherCreateRequest} from '../types/request/teacher-create.request';
+import {TeacherCreateRepoRequest} from '../../../data-layer/repositories/teacher/repo-request/teacher-create.repo-request';
 
 @Injectable()
 export class TeacherMapper {
@@ -84,6 +86,25 @@ export class TeacherMapper {
     destination.select = source.select;
     destination.page = 1;
     destination.size = 1;
+
+    return destination;
+  }
+
+  createTeacherRequestToRepoRequest(source: TeacherCreateRequest, avatarUrl: string): TeacherCreateRepoRequest {
+    const destination = new TeacherCreateRepoRequest();
+
+    destination.fullName = source.fullName;
+    destination.email = source.email;
+    destination.phone = source.phone;
+    destination.address = source.address;
+    destination.avatarUrl = avatarUrl;
+    destination.birthday = source.birthday;
+    destination.teacherRankId = source.teacherRankId;
+    destination.academicTitleId = source.academicTitleId;
+    destination.academicDegreeId = source.academicDegreeId;
+    destination.commissionId = source.commissionId;
+    destination.departmentId = source.departmentId;
+    destination.workStartDate = source.workStartDate;
 
     return destination;
   }

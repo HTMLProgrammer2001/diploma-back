@@ -10,8 +10,7 @@ import {
   MaxLength,
   MinDate
 } from 'class-validator';
-import {UploadedFile} from '@nestjs/common';
-import {GraphQLUpload} from 'graphql-upload';
+import {FileUpload, GraphQLUpload} from 'graphql-upload';
 
 @ArgsType()
 export class TeacherCreateRequest {
@@ -49,32 +48,32 @@ export class TeacherCreateRequest {
   address: string;
 
   @Field(type => GraphQLUpload, {nullable: true})
-  avatar: string;
+  avatar: Promise<FileUpload>;
 
   @Field(type => Int, {nullable: false})
   @IsNumber()
-  departmentId: string;
+  departmentId: number;
 
   @Field(type => Int, {nullable: false})
   @IsNumber()
-  commissionId: string;
+  commissionId: number;
 
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true})
   @IsOptional()
   @IsNumber()
-  teacherRankId: string;
+  teacherRankId: number;
 
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true})
   @IsOptional()
   @IsNumber()
-  academicDegreeId: string;
+  academicDegreeId: number;
 
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true})
   @IsOptional()
   @IsNumber()
-  academicTitleId: string;
+  academicTitleId: number;
 
-  @Field( {nullable: false})
+  @Field( {nullable: true})
   @IsOptional()
   @IsDate()
   @MaxDate(new Date())
