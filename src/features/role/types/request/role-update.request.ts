@@ -1,8 +1,8 @@
 import {ArgsType, Field, Int} from '@nestjs/graphql';
-import {IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength} from 'class-validator';
+import {IsNotEmpty, IsNumber, IsOptional, IsString} from 'class-validator';
 
 @ArgsType()
-export class CommissionUpdateRequest {
+export class RoleUpdateRequest {
   select: Array<string>;
 
   @Field(type => Int, {nullable: false})
@@ -11,7 +11,6 @@ export class CommissionUpdateRequest {
 
   @Field({nullable: true})
   @IsOptional()
-  @MaxLength(255)
   @IsNotEmpty()
   @IsString()
   name: string;

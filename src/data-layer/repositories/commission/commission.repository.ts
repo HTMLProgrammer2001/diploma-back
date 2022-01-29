@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {InjectModel} from '@nestjs/sequelize';
 import {CommissionDbModel} from '../../db-models/commission.db-model';
 import {isEmpty, isNil, isUndefined} from 'lodash';
@@ -15,110 +15,152 @@ import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {CommissionUpdateRepoRequest} from './repo-request/commission-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {Model} from 'sequelize-typescript';
+import {CustomError} from '../../../common/class/custom-error';
+import {ErrorCodesEnum} from '../../../common/constants/error-codes.enum';
 
 @Injectable()
 export class CommissionRepository {
-  constructor(@InjectModel(CommissionDbModel) private commissionModel: typeof CommissionDbModel) {}
+  private logger: Logger;
+
+  constructor(@InjectModel(CommissionDbModel) private commissionModel: typeof CommissionDbModel) {
+    this.logger = new Logger(CommissionRepository.name);
+  }
 
   async getCommissions(repoRequest: CommissionGetRepoRequest): Promise<CommissionGetRepoResponse> {
-    repoRequest.page = repoRequest.page ?? 1;
-    repoRequest.size = repoRequest.size ?? 5;
+    try {
+      repoRequest.page = repoRequest.page ?? 1;
+      repoRequest.size = repoRequest.size ?? 5;
 
-    //region Select
+      //region Select
 
-    const attributes: FindAttributeOptions = [];
+      const attributes: FindAttributeOptions = [];
 
-    if(!repoRequest) {
-      repoRequest.select = [CommissionSelectFieldsEnum.ID, CommissionSelectFieldsEnum.NAME];
-    }
-
-    repoRequest.select.forEach(field => {
-      switch (field) {
-        case CommissionSelectFieldsEnum.ID:
-          attributes.push('id');
-          break;
-
-        case CommissionSelectFieldsEnum.NAME:
-          attributes.push('name');
-          break;
-
-        case CommissionSelectFieldsEnum.IS_DELETED:
-          attributes.push('isDeleted');
-          break;
-
-        case CommissionSelectFieldsEnum.GUID:
-          attributes.push('guid');
-          break;
+      if (!repoRequest) {
+        repoRequest.select = [CommissionSelectFieldsEnum.ID, CommissionSelectFieldsEnum.NAME];
       }
-    });
 
-    //endregion
+      repoRequest.select.forEach(field => {
+        switch (field) {
+          case CommissionSelectFieldsEnum.ID:
+            attributes.push('id');
+            break;
 
-    //region Filters
+          case CommissionSelectFieldsEnum.NAME:
+            attributes.push('name');
+            break;
 
-    const filters: WhereOptions = {};
+          case CommissionSelectFieldsEnum.IS_DELETED:
+            attributes.push('isDeleted');
+            break;
 
-    if(!isNil(repoRequest.name)) {
-      filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
+          case CommissionSelectFieldsEnum.GUID:
+            attributes.push('guid');
+            break;
+        }
+      });
+
+      //endregion
+
+      //region Filters
+
+      const filters: WhereOptions = {};
+
+      if (!isNil(repoRequest.name)) {
+        filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
+      }
+
+      if (!repoRequest.showDeleted) {
+        filters.isDeleted = false;
+      }
+
+      if (!isNil(repoRequest.id)) {
+        filters.id = repoRequest.id;
+      }
+
+      if (!isNil(repoRequest.ids)) {
+        filters.id = {[Op.in]: repoRequest.ids};
+      }
+
+      //endregion
+
+      //region Sorting
+
+      const order = [];
+
+      if (repoRequest.orderField) {
+        order.push([repoRequest.orderField, repoRequest.isDesc ? 'DESC' : 'ASC']);
+      }
+
+      //endregion
+
+      const data = await this.commissionModel.findAndCountAll({
+        where: filters,
+        order,
+        attributes,
+        offset: (repoRequest.page - 1) * repoRequest.size,
+        limit: repoRequest.size
+      });
+
+      return {data: convertFindAndCountToPaginator(data, repoRequest.page, repoRequest.size)};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
+      }
+
+      throw e;
     }
-
-    if(!repoRequest.showDeleted) {
-      filters.isDeleted = false;
-    }
-
-    if(!isNil(repoRequest.id)) {
-      filters.id = repoRequest.id;
-    }
-
-    if(!isNil(repoRequest.ids)) {
-      filters.id = {[Op.in]: repoRequest.ids};
-    }
-
-    //endregion
-
-    //region Sorting
-
-    const order = [];
-
-    if(repoRequest.orderField) {
-      order.push([repoRequest.orderField, repoRequest.isDesc ? 'DESC' : 'ASC']);
-    }
-
-    //endregion
-
-    const data = await this.commissionModel.findAndCountAll({
-      where: filters,
-      order,
-      attributes,
-      offset: (repoRequest.page - 1) * repoRequest.size,
-      limit: repoRequest.size
-    });
-
-    return {data: convertFindAndCountToPaginator(data, repoRequest.page, repoRequest.size)};
   }
 
   async createCommission(repoRequest: CommissionCreateRepoRequest): Promise<CommonCreateRepoResponse> {
-    const {id} = await this.commissionModel.create({name: repoRequest.name});
-    return {createdID: id};
+    try {
+      const {id} = await this.commissionModel.create({name: repoRequest.name});
+      return {createdID: id};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
+      }
+
+      throw e;
+    }
   }
 
   async updateCommission(repoRequest: CommissionUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
-    const updateData = {} as Omit<CommissionDbModel, keyof Model>;
+    try {
+      const updateData = {} as Omit<CommissionDbModel, keyof Model>;
 
-    if(!isUndefined(repoRequest.name)) {
-      updateData.name = repoRequest.name;
+      if (!isUndefined(repoRequest.name)) {
+        updateData.name = repoRequest.name;
+      }
+
+      if (!isEmpty(updateData)) {
+        updateData.guid = sequelize.literal('UUID()') as any;
+        await this.commissionModel.update(updateData, {where: {id: repoRequest.id}});
+      }
+
+      return {updatedID: repoRequest.id};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
+      }
+
+      throw e;
     }
-
-    if(!isEmpty(updateData)) {
-      updateData.guid = sequelize.literal('UUID()') as any;
-      await this.commissionModel.update(updateData, {where: {id: repoRequest.id}});
-    }
-
-    return {updatedID: repoRequest.id};
   }
 
   async deleteCommission(repoRequest: CommissionDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
-    await this.commissionModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
-    return {deletedID: repoRequest.id};
+    try {
+      await this.commissionModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
+      return {deletedID: repoRequest.id};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
+      }
+
+      throw e;
+    }
   }
 }

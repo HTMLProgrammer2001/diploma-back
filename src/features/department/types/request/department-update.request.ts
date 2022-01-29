@@ -10,8 +10,9 @@ export class DepartmentUpdateRequest {
   id: number;
 
   @Field({nullable: true})
-  @MaxLength(255)
   @IsOptional()
+  @MaxLength(255)
+  @IsNotEmpty()
   @IsString()
   name: string;
 

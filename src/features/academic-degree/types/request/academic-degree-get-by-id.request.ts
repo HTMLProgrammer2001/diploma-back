@@ -1,5 +1,5 @@
 import {ArgsType, Field, Int} from '@nestjs/graphql';
-import {IsNumber} from 'class-validator';
+import {IsBoolean, IsNumber} from 'class-validator';
 
 @ArgsType()
 export class AcademicDegreeGetByIdRequest {
@@ -8,4 +8,8 @@ export class AcademicDegreeGetByIdRequest {
   @Field(type => Int, {nullable: false})
   @IsNumber()
   id: number;
+
+  @Field(type => Boolean, {nullable: true})
+  @IsBoolean()
+  showDeleted = false;
 }

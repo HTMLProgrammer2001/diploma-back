@@ -9,4 +9,5 @@ export class AcademicDegreeGetRepoRequest extends BaseRepoRequest {
   select: Array<string>;
   orderField: string;
   isDesc: boolean;
+  showDeleted: boolean;
 }

@@ -7,4 +7,10 @@ export class AcademicDegreeResponse {
 
   @Field({nullable: false})
   name: string;
+
+  @Field({nullable: false})
+  isDeleted: boolean;
+
+  @Field({nullable: false})
+  guid: string;
 }

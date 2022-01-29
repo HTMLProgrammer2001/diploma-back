@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {CommissionMapper} from '../mapper/commission.mapper';
 import {CommissionGetListRequest} from '../types/request/commission-get-list.request';
 import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
@@ -13,85 +13,132 @@ import {CommissionSelectFieldsEnum} from '../../../data-layer/repositories/commi
 
 @Injectable()
 export class CommissionService {
+  private logger: Logger;
+
   constructor(
     private commissionRepository: CommissionRepository,
     private commissionMapper: CommissionMapper,
-  ) {}
+  ) {
+    this.logger = new Logger(CommissionService.name);
+  }
 
   async getCommissionList(request: CommissionGetListRequest): Promise<IPaginator<CommissionResponse>> {
-    const repoRequest = this.commissionMapper.getCommissionListRequestToRepoRequest(request);
-    const {data} = await this.commissionRepository.getCommissions(repoRequest);
-    return this.commissionMapper.commissionPaginatorDbModelToResponse(data);
+    try {
+      const repoRequest = this.commissionMapper.getCommissionListRequestToRepoRequest(request);
+      const {data} = await this.commissionRepository.getCommissions(repoRequest);
+      return this.commissionMapper.commissionPaginatorDbModelToResponse(data);
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
   }
 
   async getCommissionById(request: CommissionGetByIdRequest): Promise<CommissionResponse> {
-    const repoRequest = this.commissionMapper.getCommissionByIdRequestToRepoRequest(request);
-    const {data} = await this.commissionRepository.getCommissions(repoRequest);
+    try {
+      const repoRequest = this.commissionMapper.getCommissionByIdRequestToRepoRequest(request);
+      const {data} = await this.commissionRepository.getCommissions(repoRequest);
 
-    if (data.responseList?.length) {
-      return this.commissionMapper.commissionDbModelToResponse(data.responseList[0]);
-    } else {
-      throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${request.id} not exist`});
+      if (data.responseList?.length) {
+        return this.commissionMapper.commissionDbModelToResponse(data.responseList[0]);
+      } else {
+        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${request.id} not exist`});
+      }
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
     }
   }
 
   async createCommission(request: CommissionCreateRequest): Promise<CommissionResponse> {
-    const createRepoRequest = this.commissionMapper.createCommissionRequestToRepoRequest(request);
-    const {createdID} = await this.commissionRepository.createCommission(createRepoRequest);
+    try {
+      const createRepoRequest = this.commissionMapper.createCommissionRequestToRepoRequest(request);
+      const {createdID} = await this.commissionRepository.createCommission(createRepoRequest);
 
-    const repoRequest = this.commissionMapper.getCommissionByIdRequestToRepoRequest({
-      select: request.select,
-      id: createdID
-    });
-    const {data} = await this.commissionRepository.getCommissions(repoRequest);
-    return this.commissionMapper.commissionDbModelToResponse(data.responseList[0]);
+      const repoRequest = this.commissionMapper.initializeGetCommissionByIdRepoRequest(createdID, request.select);
+      const {data} = await this.commissionRepository.getCommissions(repoRequest);
+      return this.commissionMapper.commissionDbModelToResponse(data.responseList[0]);
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
   }
 
   async updateCommission(request: CommissionUpdateRequest): Promise<CommissionResponse> {
-    const getCurrentCommissionRepoRequest = this.commissionMapper.getCommissionByIdRequestToRepoRequest({
-      id: request.id,
-      select: [CommissionSelectFieldsEnum.GUID, CommissionSelectFieldsEnum.IS_DELETED],
-      showDeleted: true
-    });
-    const currentCommission = await this.commissionRepository.getCommissions(getCurrentCommissionRepoRequest);
+    try {
+      const getCurrentCommissionRepoRequest = this.commissionMapper.initializeGetCommissionByIdRepoRequest(
+        request.id,
+        [CommissionSelectFieldsEnum.GUID, CommissionSelectFieldsEnum.IS_DELETED],
+      );
+      const currentCommission = await this.commissionRepository.getCommissions(getCurrentCommissionRepoRequest);
 
-    if (!currentCommission.data.responseList?.length) {
-      throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${request.id} not exist`});
-    } else if (currentCommission.data.responseList[0].isDeleted) {
-      throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Commission with id ${request.id} is deleted`});
-    } else if (currentCommission.data.responseList[0].guid !== request.guid) {
-      throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Commission guid was changed'});
+      if (!currentCommission.data.responseList?.length) {
+        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${request.id} not exist`});
+      } else if (currentCommission.data.responseList[0].isDeleted) {
+        throw new CustomError({
+          code: ErrorCodesEnum.ALREADY_DELETED,
+          message: `Commission with id ${request.id} is deleted`
+        });
+      } else if (currentCommission.data.responseList[0].guid !== request.guid) {
+        throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Commission guid was changed'});
+      }
+
+      const updateRepoRequest = this.commissionMapper.updateCommissionRequestToRepoRequest(request);
+      const {updatedID} = await this.commissionRepository.updateCommission(updateRepoRequest);
+
+      const repoRequest = this.commissionMapper.initializeGetCommissionByIdRepoRequest(updatedID, request.select);
+      const {data} = await this.commissionRepository.getCommissions(repoRequest);
+      return this.commissionMapper.commissionDbModelToResponse(data.responseList[0]);
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
     }
-
-    const updateRepoRequest = this.commissionMapper.updateCommissionRequestToRepoRequest(request);
-    const {updatedID} = await this.commissionRepository.updateCommission(updateRepoRequest);
-
-    const repoRequest = this.commissionMapper.getCommissionByIdRequestToRepoRequest({
-      select: request.select,
-      id: updatedID
-    });
-    const {data} = await this.commissionRepository.getCommissions(repoRequest);
-    return this.commissionMapper.commissionDbModelToResponse(data.responseList[0]);
   }
 
   async deleteCommission(id: number, guid: string): Promise<number> {
-    const getCurrentCommissionRepoRequest = this.commissionMapper.getCommissionByIdRequestToRepoRequest({
-      id: id,
-      select: [CommissionSelectFieldsEnum.GUID, CommissionSelectFieldsEnum.IS_DELETED],
-      showDeleted: true
-    });
-    const currentCommission = await this.commissionRepository.getCommissions(getCurrentCommissionRepoRequest);
+    try {
+      const getCurrentCommissionRepoRequest = this.commissionMapper.initializeGetCommissionByIdRepoRequest(
+        id,
+        [CommissionSelectFieldsEnum.GUID, CommissionSelectFieldsEnum.IS_DELETED],
+      );
+      const currentCommission = await this.commissionRepository.getCommissions(getCurrentCommissionRepoRequest);
 
-    if (!currentCommission.data.responseList?.length) {
-      throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${id} not exist`});
-    } else if (currentCommission.data.responseList[0].isDeleted) {
-      throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Commission with id ${id} already deleted`});
-    } else if (currentCommission.data.responseList[0].guid !== guid) {
-      throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Commission guid was changed`});
+      if (!currentCommission.data.responseList?.length) {
+        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${id} not exist`});
+      } else if (currentCommission.data.responseList[0].isDeleted) {
+        throw new CustomError({
+          code: ErrorCodesEnum.ALREADY_DELETED,
+          message: `Commission with id ${id} already deleted`
+        });
+      } else if (currentCommission.data.responseList[0].guid !== guid) {
+        throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Commission guid was changed`});
+      }
+
+      const deleteRepoRequest = this.commissionMapper.deleteCommissionRequestToRepoRequest(id);
+      const {deletedID} = await this.commissionRepository.deleteCommission(deleteRepoRequest);
+      return deletedID;
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
     }
-
-    const deleteRepoRequest = this.commissionMapper.deleteCommissionRequestToRepoRequest(id);
-    const {deletedID} = await this.commissionRepository.deleteCommission(deleteRepoRequest);
-    return deletedID;
   }
 }

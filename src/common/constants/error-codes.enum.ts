@@ -1,8 +1,9 @@
 export enum ErrorCodesEnum {
   ARRAY_ERROR = 0,
   GENERAL = 1,
-  VALIDATION = 2,
-  NOT_FOUND = 3,
-  ALREADY_DELETED = 4,
+  DATABASE = 2,
+  VALIDATION = 3,
+  NOT_FOUND = 4,
+  ALREADY_DELETED = 5,
   GUID_CHANGED = 12
 }

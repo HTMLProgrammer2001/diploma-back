@@ -12,7 +12,9 @@ type AcademicDegreeListResponse implements PaginatedData {
 }
 
 type AcademicDegreeResponse {
+  guid: String!
   id: Int!
+  isDeleted: Boolean!
   name: String!
 }
 
@@ -26,7 +28,9 @@ type AcademicTitleListResponse implements PaginatedData {
 }
 
 type AcademicTitleResponse {
+  guid: String!
   id: Int!
+  isDeleted: Boolean!
   name: String!
 }
 
@@ -68,13 +72,23 @@ type IdNameResponse {
 }
 
 type Mutation {
+  createAcademicDegree(name: String): AcademicDegreeResponse!
+  createAcademicTitle(name: String): AcademicTitleResponse!
   createCommission(name: String): CommissionResponse!
   createDepartment(name: String!): DepartmentResponse!
   createTeacher(academicDegreeId: Int, academicTitleId: Int, address: String, avatar: Upload, birthday: String, commissionId: Int!, departmentId: Int!, email: String!, fullName: String!, phone: String, teacherRankId: Int, workStartDate: String): TeacherResponse!
+  createTeachingRank(name: String!): TeachingRankResponse!
+  deleteAcademicDegree(guid: String!, id: Int!): Int!
+  deleteAcademicTitle(guid: String!, id: Int!): Int!
   deleteCommission(guid: String!, id: Int!): Int!
   deleteDepartment(guid: String!, id: Int!): Int!
+  deleteTeachingRank(guid: String!, id: Int!): Int!
+  updateAcademicDegree(guid: String!, id: Int!, name: String): AcademicDegreeResponse!
+  updateAcademicTitle(guid: String!, id: Int!, name: String): AcademicTitleResponse!
   updateCommission(guid: String!, id: Int!, name: String): CommissionResponse!
   updateDepartment(guid: String!, id: Int!, name: String): DepartmentResponse!
+  updateRole(guid: String!, id: Int!, name: String): RoleResponse!
+  updateTeachingRank(guid: String!, id: Int!, name: String!): TeachingRankResponse!
 }
 
 interface PaginatedData {
@@ -86,9 +100,9 @@ interface PaginatedData {
 }
 
 type Query {
-  getAcademicDegreeById(id: Int!): AcademicDegreeResponse!
+  getAcademicDegreeById(id: Int!, showDeleted: Boolean = false): AcademicDegreeResponse!
   getAcademicDegreeList(isDesc: Boolean, name: String, orderField: String = "id", page: Int = 1, size: Int = 5): AcademicDegreeListResponse!
-  getAcademicTitleById(id: Int!): AcademicTitleResponse!
+  getAcademicTitleById(id: Int!, showDeleted: Boolean = false): AcademicTitleResponse!
   getAcademicTitleList(isDesc: Boolean, name: String, orderField: String = "id", page: Int = 1, size: Int = 5): AcademicTitleListResponse!
   getCommissionById(id: Int!, showDeleted: Boolean): CommissionResponse!
   getCommissionsList(isDesc: Boolean, name: String, orderField: String = "id", page: Int = 1, showDeleted: Boolean, size: Int = 5): CommissionListResponse!
@@ -98,7 +112,7 @@ type Query {
   getRoleList(isDesc: Boolean, name: String, orderField: String = "id", page: Int = 1, size: Int = 5): RoleListResponse!
   getTeacherById(id: Int!, showDeleted: Boolean): TeacherResponse!
   getTeacherList(academicDegreeId: Int, academicTitleId: Int, commissionId: Int, departmentId: Int, email: String, fullName: String, isDesc: Boolean, orderField: String = "id", page: Int = 1, size: Int = 5, teachingRankId: Int): TeacherListResponse!
-  getTeachingRankById(id: Int!): TeachingRankResponse!
+  getTeachingRankById(id: Int!, showDeleted: Boolean): TeachingRankResponse!
   getTeachingRankList(isDesc: Boolean, name: String, orderField: String = "id", page: Int = 1, size: Int = 5): TeachingRankListResponse!
 }
 
@@ -112,6 +126,7 @@ type RoleListResponse implements PaginatedData {
 }
 
 type RoleResponse {
+  guid: String!
   id: Int!
   name: String!
 }
@@ -153,7 +168,9 @@ type TeachingRankListResponse implements PaginatedData {
 }
 
 type TeachingRankResponse {
+  guid: String!
   id: Int!
+  isDeleted: Boolean!
   name: String!
 }
 

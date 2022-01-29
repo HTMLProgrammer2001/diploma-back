@@ -57,6 +57,18 @@ export class DepartmentMapper {
     return destination;
   }
 
+  initializeDepartmentByIdRepoRequest(id: number, select: Array<string>): DepartmentGetRepoRequest {
+    const destination = new DepartmentGetRepoRequest();
+
+    destination.id = id;
+    destination.select = select;
+    destination.showDeleted = true;
+    destination.page = 1;
+    destination.size = 1;
+
+    return destination;
+  }
+
   createDepartmentRequestToRepoRequest(source: DepartmentCreateRequest): DepartmentCreateRepoRequest {
     const destination = new DepartmentCreateRepoRequest();
 

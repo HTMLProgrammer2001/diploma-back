@@ -3,11 +3,13 @@ import {AcademicTitleGetListRequest} from '../types/request/academic-title-get-l
 import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
 import {AcademicTitleResponse} from '../types/response/academic-title.response';
 import {AcademicTitleGetByIdRequest} from '../types/request/academic-title-get-by-id.request';
-import {TeachingRankGetRepoRequest} from '../../../data-layer/repositories/teaching-rank/repo-request/teaching-rank-get.repo-request';
-import {AcademicDegreeGetRepoRequest} from '../../../data-layer/repositories/academic-degree/repo-request/academic-degree-get.repo-request';
-import {AcademicDegreeDbModel} from '../../../data-layer/db-models/academic-degree.db-model';
 import {AcademicTitleGetRepoRequest} from '../../../data-layer/repositories/academic-title/repo-request/academic-title-get.repo-request';
 import {AcademicTitleDbModel} from '../../../data-layer/db-models/academic-title.db-model';
+import {AcademicTitleCreateRequest} from '../types/request/academic-title-create.request';
+import {AcademicTitleCreateRepoRequest} from '../../../data-layer/repositories/academic-title/repo-request/academic-title-create.repo-request';
+import {AcademicTitleUpdateRequest} from '../types/request/academic-title-update.request';
+import {AcademicTitleUpdateRepoRequest} from '../../../data-layer/repositories/academic-title/repo-request/academic-title-update.repo-request';
+import {AcademicTitleDeleteRepoRequest} from '../../../data-layer/repositories/academic-title/repo-request/academic-title-delete.repo-request';
 
 @Injectable()
 export class AcademicTitleMapper {
@@ -36,6 +38,8 @@ export class AcademicTitleMapper {
 
     destination.id = source.id;
     destination.name = source.name;
+    destination.isDeleted = source.isDeleted;
+    destination.guid = source.guid;
 
     return destination;
   }
@@ -45,8 +49,46 @@ export class AcademicTitleMapper {
 
     destination.id = source.id;
     destination.select = source.select;
+    destination.showDeleted = source.showDeleted;
     destination.page = 1;
     destination.size = 1;
+
+    return destination;
+  }
+
+  initializeAcademicTitleGetByIdRepoRequest(id: number, select: Array<string>): AcademicTitleGetRepoRequest {
+    const destination = new AcademicTitleGetRepoRequest();
+
+    destination.id = id;
+    destination.select = select;
+    destination.showDeleted = false;
+    destination.page = 1;
+    destination.size = 1;
+
+    return destination;
+  }
+
+  createAcademicTitleRequestToRepoRequest(source: AcademicTitleCreateRequest): AcademicTitleCreateRepoRequest {
+    const destination = new AcademicTitleCreateRepoRequest();
+
+    destination.name = source.name;
+
+    return destination;
+  }
+
+  updateAcademicTitleRequestToRepoRequest(source: AcademicTitleUpdateRequest): AcademicTitleUpdateRepoRequest {
+    const destination = new AcademicTitleUpdateRepoRequest();
+
+    destination.name = source.name;
+    destination.id = source.id;
+
+    return destination;
+  }
+
+  deleteAcademicTitleRequestToRepoRequest(id: number): AcademicTitleDeleteRepoRequest {
+    const destination = new AcademicTitleDeleteRepoRequest();
+
+    destination.id = id;
 
     return destination;
   }

@@ -7,6 +7,7 @@ export class TeachingRankGetRepoRequest extends BaseRepoRequest {
   ids: Array<number>;
   name: string;
   select: Array<string>;
+  showDeleted: boolean;
   orderField: string;
   isDesc: boolean;
 }

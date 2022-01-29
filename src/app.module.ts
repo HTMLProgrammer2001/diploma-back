@@ -19,20 +19,24 @@ import {AcademicDegreeModule} from './features/academic-degree/academic-degree.m
 import {AcademicTitleModule} from './features/academic-title/academic-title.module';
 import {TeacherModule} from './features/teacher/teacher.module';
 import {ServeStaticModule} from '@nestjs/serve-static';
+import {ConfigModule} from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: process.env.NODE_ENV === 'development' ? '.env.development' : '.env.production'
+    }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'static'),
       serveRoot: '/static'
     }),
     SequelizeModule.forRoot({
       dialect: 'mysql',
-      host: 'localhost',
-      port: 31634,
-      username: 'root',
-      password: 'root',
-      database: 'app',
+      host: process.env.DATABASE_HOST,
+      port: Number(process.env.DATABASE_PORT),
+      username: process.env.DATABASE_USER,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
       autoLoadModels: true,
       synchronize: false
     }),

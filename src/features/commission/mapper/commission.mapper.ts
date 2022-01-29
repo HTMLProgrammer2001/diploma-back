@@ -57,6 +57,18 @@ export class CommissionMapper {
     return destination;
   }
 
+  initializeGetCommissionByIdRepoRequest(id: number, select: Array<string>): CommissionGetRepoRequest {
+    const destination = new CommissionGetRepoRequest();
+
+    destination.id = id;
+    destination.select = select;
+    destination.showDeleted = true;
+    destination.page = 1;
+    destination.size = 1;
+
+    return destination;
+  }
+
   createCommissionRequestToRepoRequest(source: CommissionCreateRequest): CommissionCreateRepoRequest {
     const destination = new CommissionCreateRepoRequest();
 

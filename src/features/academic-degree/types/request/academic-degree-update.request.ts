@@ -2,7 +2,7 @@ import {ArgsType, Field, Int} from '@nestjs/graphql';
 import {IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength} from 'class-validator';
 
 @ArgsType()
-export class CommissionUpdateRequest {
+export class AcademicDegreeUpdateRequest {
   select: Array<string>;
 
   @Field(type => Int, {nullable: false})

@@ -7,4 +7,7 @@ export class RoleResponse {
 
   @Field({nullable: false})
   name: string;
+
+  @Field({nullable: false})
+  guid: string;
 }
