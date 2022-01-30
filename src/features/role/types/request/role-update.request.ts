@@ -1,11 +1,13 @@
-import {ArgsType, Field, Int} from '@nestjs/graphql';
+import {Field, ID, InputType} from '@nestjs/graphql';
 import {IsNotEmpty, IsNumber, IsOptional, IsString} from 'class-validator';
+import {ParseNumber} from '../../../../global/validators/parse-number';
 
-@ArgsType()
+@InputType()
 export class RoleUpdateRequest {
   select: Array<string>;
 
-  @Field(type => Int, {nullable: false})
+  @Field(type => ID, {nullable: false})
+  @ParseNumber()
   @IsNumber()
   id: number;
 

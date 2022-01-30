@@ -21,6 +21,7 @@ import {CustomError} from './global/class/custom-error';
 import {ErrorCodesEnum} from './global/constants/error-codes.enum';
 import {AllErrorFilter} from './global/filters/all-error.filter';
 import {ValidationErrorFilter} from './global/filters/validation-error.filter';
+import {UserModule} from './features/user/user.module';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import {ValidationErrorFilter} from './global/filters/validation-error.filter';
     AcademicDegreeModule,
     AcademicTitleModule,
     TeacherModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [

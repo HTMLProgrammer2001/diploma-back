@@ -1,7 +1,7 @@
-import {ArgsType, Field} from '@nestjs/graphql';
+import {Field, InputType} from '@nestjs/graphql';
 import {IsNotEmpty, IsString, MaxLength} from 'class-validator';
 
-@ArgsType()
+@InputType()
 export class AcademicTitleCreateRequest {
   select: Array<string>;
 

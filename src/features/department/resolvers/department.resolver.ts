@@ -16,28 +16,28 @@ export class DepartmentResolver {
   constructor(private departmentService: DepartmentService) {}
 
   @Query(returns => DepartmentListResponse)
-  async getDepartmentsList(@Args() request: DepartmentGetListRequest, @Info() info: GraphQLResolveInfo):
+  async getDepartmentsList(@Args('query') request: DepartmentGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<DepartmentResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
     return this.departmentService.getDepartmentList(request);
   }
 
   @Query(returns => DepartmentResponse)
-  async getDepartmentById(@Args() request: DepartmentGetByIdRequest, @Info() info: GraphQLResolveInfo):
+  async getDepartmentById(@Args('query') request: DepartmentGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<DepartmentResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.departmentService.getDepartmentById(request);
   }
 
   @Mutation(returns => DepartmentResponse)
-  async createDepartment(@Args() request: DepartmentCreateRequest, @Info() info: GraphQLResolveInfo):
+  async createDepartment(@Args('body') request: DepartmentCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<DepartmentResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.departmentService.createDepartment(request);
   }
 
   @Mutation(returns => DepartmentResponse)
-  async updateDepartment(@Args() request: DepartmentUpdateRequest, @Info() info: GraphQLResolveInfo):
+  async updateDepartment(@Args('body') request: DepartmentUpdateRequest, @Info() info: GraphQLResolveInfo):
     Promise<DepartmentResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.departmentService.updateDepartment(request);

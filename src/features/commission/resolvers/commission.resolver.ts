@@ -16,28 +16,28 @@ export class CommissionResolver {
   constructor(private commissionService: CommissionService) {}
 
   @Query(returns => CommissionListResponse)
-  async getCommissionsList(@Args() request: CommissionGetListRequest, @Info() info: GraphQLResolveInfo):
+  async getCommissionsList(@Args('query') request: CommissionGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<CommissionResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
     return this.commissionService.getCommissionList(request);
   }
 
   @Query(returns => CommissionResponse)
-  async getCommissionById(@Args() request: CommissionGetByIdRequest, @Info() info: GraphQLResolveInfo):
+  async getCommissionById(@Args('query') request: CommissionGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<CommissionResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.commissionService.getCommissionById(request);
   }
 
   @Mutation(returns => CommissionResponse)
-  async createCommission(@Args() request: CommissionCreateRequest, @Info() info: GraphQLResolveInfo):
+  async createCommission(@Args('body') request: CommissionCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<CommissionResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.commissionService.createCommission(request);
   }
 
   @Mutation(returns => CommissionResponse)
-  async updateCommission(@Args() request: CommissionUpdateRequest, @Info() info: GraphQLResolveInfo):
+  async updateCommission(@Args('body') request: CommissionUpdateRequest, @Info() info: GraphQLResolveInfo):
     Promise<CommissionResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.commissionService.updateCommission(request);

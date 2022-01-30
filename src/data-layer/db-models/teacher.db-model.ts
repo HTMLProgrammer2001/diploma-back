@@ -9,7 +9,7 @@ import {AcademicTitleDbModel} from './academic-title.db-model';
 export interface TeacherInterface {
   id: number;
   fullName: string;
-  email: string;
+  email?: string;
   birthday?: string;
   phone?: string;
   address?: string;

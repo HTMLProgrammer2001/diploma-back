@@ -17,28 +17,28 @@ export class AcademicDegreeResolver {
   constructor(private academicDegreeService: AcademicDegreeService) {}
 
   @Query(returns => AcademicDegreeListResponse)
-  async getAcademicDegreeList(@Args() request: AcademicDegreeGetListRequest, @Info() info: GraphQLResolveInfo):
+  async getAcademicDegreeList(@Args('query') request: AcademicDegreeGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<AcademicDegreeResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
     return this.academicDegreeService.getAcademicDegreeList(request);
   }
 
   @Query(returns => AcademicDegreeResponse)
-  async getAcademicDegreeById(@Args() request: AcademicDegreeGetByIdRequest, @Info() info: GraphQLResolveInfo):
+  async getAcademicDegreeById(@Args('query') request: AcademicDegreeGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<AcademicDegreeResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.academicDegreeService.getAcademicDegreeById(request);
   }
 
   @Mutation(returns => AcademicDegreeResponse)
-  async createAcademicDegree(@Args() request: AcademicDegreeCreateRequest, @Info() info: GraphQLResolveInfo):
+  async createAcademicDegree(@Args('body') request: AcademicDegreeCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<CommissionResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.academicDegreeService.createAcademicDegree(request);
   }
 
   @Mutation(returns => AcademicDegreeResponse)
-  async updateAcademicDegree(@Args() request: AcademicDegreeUpdateRequest, @Info() info: GraphQLResolveInfo):
+  async updateAcademicDegree(@Args('body') request: AcademicDegreeUpdateRequest, @Info() info: GraphQLResolveInfo):
     Promise<AcademicDegreeResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.academicDegreeService.updateAcademicDegree(request);

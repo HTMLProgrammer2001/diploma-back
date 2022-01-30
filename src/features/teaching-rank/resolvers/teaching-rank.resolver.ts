@@ -16,28 +16,28 @@ export class TeachingRankResolver {
   constructor(private teachingRankService: TeachingRankService) {}
 
   @Query(returns => TeachingRankListResponse)
-  async getTeachingRankList(@Args() request: TeachingRankGetListRequest, @Info() info: GraphQLResolveInfo):
+  async getTeachingRankList(@Args('query') request: TeachingRankGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<TeachingRankResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
     return this.teachingRankService.getTeachingRankList(request);
   }
 
   @Query(returns => TeachingRankResponse)
-  async getTeachingRankById(@Args() request: TeachingRankGetByIdRequest, @Info() info: GraphQLResolveInfo):
+  async getTeachingRankById(@Args('query') request: TeachingRankGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<TeachingRankResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.teachingRankService.getTeachingRankById(request);
   }
 
   @Mutation(returns => TeachingRankResponse)
-  async createTeachingRank(@Args() request: TeachingRankCreateRequest, @Info() info: GraphQLResolveInfo):
+  async createTeachingRank(@Args('body') request: TeachingRankCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<TeachingRankResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.teachingRankService.createTeachingRank(request);
   }
 
   @Mutation(returns => TeachingRankResponse)
-  async updateTeachingRank(@Args() request: TeachingRankUpdateRequest, @Info() info: GraphQLResolveInfo):
+  async updateTeachingRank(@Args('body') request: TeachingRankUpdateRequest, @Info() info: GraphQLResolveInfo):
     Promise<TeachingRankResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.teachingRankService.updateTeachingRank(request);

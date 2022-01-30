@@ -1,9 +1,9 @@
-import {ArgsType, Field} from '@nestjs/graphql';
+import {Field, InputType} from '@nestjs/graphql';
 import {BasePaginatorRequest} from '../../../../global/types/request/base-paginator.request';
 import {IsBoolean, IsEnum, IsOptional, IsString} from 'class-validator';
 import {AcademicDegreeOrderFieldsEnum} from '../../../../data-layer/repositories/academic-degree/enums/academic-degree-order-fields.enum';
 
-@ArgsType()
+@InputType()
 export class AcademicTitleGetListRequest extends BasePaginatorRequest {
   select: Array<string>;
 

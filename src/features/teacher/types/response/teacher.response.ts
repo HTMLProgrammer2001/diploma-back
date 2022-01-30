@@ -1,9 +1,9 @@
-import {Field, Int, ObjectType} from '@nestjs/graphql';
+import {Field, ID, ObjectType} from '@nestjs/graphql';
 import {IdNameResponse} from '../../../../global/types/response/id-name.response';
 
 @ObjectType()
 export class TeacherResponse {
-  @Field(type => Int)
+  @Field(type => ID)
   id: number;
 
   @Field({nullable: false})

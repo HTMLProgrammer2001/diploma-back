@@ -14,21 +14,21 @@ export class RoleResolver {
   constructor(private roleService: RoleService) {}
 
   @Query(returns => RoleListResponse)
-  async getRoleList(@Args() request: RoleGetListRequest, @Info() info: GraphQLResolveInfo):
+  async getRoleList(@Args('query') request: RoleGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<RoleResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
     return this.roleService.getRoleList(request);
   }
 
   @Query(returns => RoleResponse)
-  async getRoleById(@Args() request: RoleGetByIdRequest, @Info() info: GraphQLResolveInfo):
+  async getRoleById(@Args('query') request: RoleGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<RoleResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.roleService.getRoleById(request);
   }
 
   @Mutation(returns => RoleResponse)
-  async updateRole(@Args() request: RoleUpdateRequest, @Info() info: GraphQLResolveInfo):
+  async updateRole(@Args('body') request: RoleUpdateRequest, @Info() info: GraphQLResolveInfo):
     Promise<RoleResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.roleService.updateRole(request);

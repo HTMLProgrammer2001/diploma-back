@@ -16,28 +16,28 @@ export class AcademicTitleResolver {
   constructor(private academicTitleService: AcademicTitleService) {}
 
   @Query(returns => AcademicTitleListResponse)
-  async getAcademicTitleList(@Args() request: AcademicTitleGetListRequest, @Info() info: GraphQLResolveInfo):
+  async getAcademicTitleList(@Args('query') request: AcademicTitleGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<AcademicTitleResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
     return this.academicTitleService.getAcademicTitleList(request);
   }
 
   @Query(returns => AcademicTitleResponse)
-  async getAcademicTitleById(@Args() request: AcademicTitleGetByIdRequest, @Info() info: GraphQLResolveInfo):
+  async getAcademicTitleById(@Args('query') request: AcademicTitleGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<AcademicTitleResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.academicTitleService.getAcademicTitleById(request);
   }
 
   @Mutation(returns => AcademicTitleResponse)
-  async createAcademicTitle(@Args() request: AcademicTitleCreateRequest, @Info() info: GraphQLResolveInfo):
+  async createAcademicTitle(@Args('body') request: AcademicTitleCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<AcademicTitleResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.academicTitleService.createAcademicTitle(request);
   }
 
   @Mutation(returns => AcademicTitleResponse)
-  async updateAcademicTitle(@Args() request: AcademicTitleUpdateRequest, @Info() info: GraphQLResolveInfo):
+  async updateAcademicTitle(@Args('body') request: AcademicTitleUpdateRequest, @Info() info: GraphQLResolveInfo):
     Promise<AcademicTitleResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.academicTitleService.updateAcademicTitle(request);

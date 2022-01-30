@@ -1,9 +1,9 @@
-import {ArgsType, Field} from '@nestjs/graphql';
+import {Field, InputType} from '@nestjs/graphql';
 import {BasePaginatorRequest} from '../../../../global/types/request/base-paginator.request';
 import {IsBoolean, IsEnum, IsOptional, IsString} from 'class-validator';
 import {RoleOrderFieldsEnum} from '../../../../data-layer/repositories/role/enums/role-order-fields.enum';
 
-@ArgsType()
+@InputType()
 export class RoleGetListRequest extends BasePaginatorRequest {
   select: Array<string>;
 

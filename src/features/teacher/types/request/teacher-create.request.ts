@@ -1,4 +1,4 @@
-import {ArgsType, Field, Int} from '@nestjs/graphql';
+import {Field, ID, InputType} from '@nestjs/graphql';
 import {
   IsDate,
   IsEmail,
@@ -13,8 +13,9 @@ import {
 } from 'class-validator';
 import {FileUpload, GraphQLUpload} from 'graphql-upload';
 import {Transform} from 'class-transformer';
+import {ParseNumber} from '../../../../global/validators/parse-number';
 
-@ArgsType()
+@InputType()
 export class TeacherCreateRequest {
   select: Array<string>;
 
@@ -24,8 +25,7 @@ export class TeacherCreateRequest {
   @IsString()
   fullName: string;
 
-  @Field({nullable: true})
-  @IsOptional()
+  @Field({nullable: false})
   @MaxLength(255)
   @IsNotEmpty()
   @IsString()
@@ -54,26 +54,31 @@ export class TeacherCreateRequest {
   @Field(type => GraphQLUpload, {nullable: true})
   avatar: Promise<FileUpload>;
 
-  @Field(type => Int, {nullable: false})
+  @Field(type => ID, {nullable: false})
+  @ParseNumber()
   @IsNumber()
   departmentId: number;
 
-  @Field(type => Int, {nullable: false})
+  @Field(type => ID, {nullable: false})
+  @ParseNumber()
   @IsNumber()
   commissionId: number;
 
-  @Field(type => Int, {nullable: true})
+  @Field(type => ID, {nullable: true})
   @IsOptional()
+  @ParseNumber()
   @IsNumber()
   teacherRankId: number;
 
-  @Field(type => Int, {nullable: true})
+  @Field(type => ID, {nullable: true})
   @IsOptional()
+  @ParseNumber()
   @IsNumber()
   academicDegreeId: number;
 
-  @Field(type => Int, {nullable: true})
+  @Field(type => ID, {nullable: true})
   @IsOptional()
+  @ParseNumber()
   @IsNumber()
   academicTitleId: number;
 

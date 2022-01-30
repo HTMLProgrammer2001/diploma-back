@@ -16,28 +16,28 @@ export class TeacherResolver {
   constructor(private teacherService: TeacherService) {}
 
   @Query(returns => TeacherListResponse)
-  async getTeacherList(@Args() request: TeacherGetListRequest, @Info() info: GraphQLResolveInfo):
+  async getTeacherList(@Args('query') request: TeacherGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<TeacherResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
     return this.teacherService.getTeacherList(request);
   }
 
   @Query(returns => TeacherResponse)
-  async getTeacherById(@Args() request: TeacherGetByIdRequest, @Info() info: GraphQLResolveInfo):
+  async getTeacherById(@Args('query') request: TeacherGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<TeacherResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.teacherService.getTeacherById(request);
   }
 
   @Mutation(returns => TeacherResponse)
-  async createTeacher(@Args() request: TeacherCreateRequest, @Info() info: GraphQLResolveInfo):
+  async createTeacher(@Args('body') request: TeacherCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<TeacherResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.teacherService.createTeacher(request);
   }
 
   @Mutation(returns => TeacherResponse)
-  async updateTeacher(@Args() request: TeacherUpdateRequest, @Info() info: GraphQLResolveInfo):
+  async updateTeacher(@Args('body') request: TeacherUpdateRequest, @Info() info: GraphQLResolveInfo):
     Promise<TeacherResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.teacherService.updateTeacher(request);

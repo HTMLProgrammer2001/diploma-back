@@ -1,7 +1,7 @@
 export class TeacherUpdateRepoRequest {
   id: number;
-  fullName: string;
-  email: string;
+  fullName?: string;
+  email?: string;
   birthday?: string;
   phone?: string;
   address?: string;
