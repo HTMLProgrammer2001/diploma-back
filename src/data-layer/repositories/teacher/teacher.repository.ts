@@ -5,9 +5,9 @@ import {TeacherGetRepoRequest} from './repo-request/teacher-get.repo-request';
 import {TeacherGetRepoResponse} from './repo-response/teacher-get.repo-response';
 import {FindAttributeOptions, IncludeOptions, ProjectionAlias} from 'sequelize/dist/lib/model';
 import {TeacherSelectFieldsEnum} from './enums/teacher-select-fields.enum';
-import {Op, WhereOptions} from 'sequelize';
-import {isNil} from 'lodash';
-import {convertFindAndCountToPaginator} from '../../../common/utils/functions';
+import sequelize, {Op, WhereOptions} from 'sequelize';
+import {isEmpty, isNil, isUndefined} from 'lodash';
+import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
 import {TeacherOrderFieldsEnum} from './enums/teacher-order-fields.enum';
 import {CommissionDbModel} from '../../db-models/commission.db-model';
 import {DepartmentDbModel} from '../../db-models/department.db-model';
@@ -18,8 +18,11 @@ import {TeacherCreateRepoRequest} from './repo-request/teacher-create.repo-reque
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
 import {TeacherDeleteRepoRequest} from './repo-request/teacher-delete.repo-request';
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
-import {CustomError} from '../../../common/class/custom-error';
-import {ErrorCodesEnum} from '../../../common/constants/error-codes.enum';
+import {CustomError} from '../../../global/class/custom-error';
+import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
+import {TeacherUpdateRepoRequest} from './repo-request/teacher-update.repo-request';
+import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
+import {Model} from 'sequelize-typescript';
 
 @Injectable()
 export class TeacherRepository {
@@ -204,6 +207,14 @@ export class TeacherRepository {
         filters.id = {[Op.in]: repoRequest.ids};
       }
 
+      if(!isNil(repoRequest.emailEqual)) {
+        filters.email = repoRequest.emailEqual;
+      }
+
+      if(!isNil(repoRequest.phoneEqual)) {
+        filters.phone = repoRequest.phoneEqual;
+      }
+
       //endregion
 
       //region Sorting
@@ -283,21 +294,65 @@ export class TeacherRepository {
     }
   }
 
-  //
-  // async updateTeachingRank(repoRequest: TeacherUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
-  //   const updateData = {} as Omit<TeachingRankDbModel, keyof Model>;
-  //
-  //   if(!isUndefined(repoRequest.name)) {
-  //     updateData.name = repoRequest.name;
-  //   }
-  //
-  //   if(!isEmpty(updateData)) {
-  //     updateData.guid = sequelize.literal('UUID()') as any;
-  //     await this.teachingRankDbModel.update(updateData, {where: {id: repoRequest.id}});
-  //   }
-  //
-  //   return {updatedID: repoRequest.id};
-  // }
+
+  async updateTeacher(repoRequest: TeacherUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
+    const updateData = {} as Omit<TeacherDbModel, keyof Model>;
+
+    if(!isUndefined(repoRequest.email)) {
+      updateData.email = repoRequest.email;
+    }
+
+    if(!isUndefined(repoRequest.address)) {
+      updateData.address = repoRequest.address;
+    }
+
+    if(!isUndefined(repoRequest.fullName)) {
+      updateData.fullName = repoRequest.fullName;
+    }
+
+    if(!isUndefined(repoRequest.avatarUrl)) {
+      updateData.avatarUrl = repoRequest.avatarUrl;
+    }
+
+    if(!isUndefined(repoRequest.birthday)) {
+      updateData.birthday = repoRequest.birthday;
+    }
+
+    if(!isUndefined(repoRequest.phone)) {
+      updateData.phone = repoRequest.phone;
+    }
+
+    if(!isUndefined(repoRequest.workStartDate)) {
+      updateData.workStartDate = repoRequest.workStartDate;
+    }
+
+    if(!isUndefined(repoRequest.academicDegreeId)) {
+      updateData.academicDegreeId = repoRequest.academicDegreeId;
+    }
+
+    if(!isUndefined(repoRequest.academicTitleId)) {
+      updateData.academicTitleId = repoRequest.academicTitleId;
+    }
+
+    if(!isUndefined(repoRequest.teacherRankId)) {
+      updateData.teacherRankId = repoRequest.teacherRankId;
+    }
+
+    if(!isUndefined(repoRequest.commissionId)) {
+      updateData.commissionId = repoRequest.commissionId;
+    }
+
+    if(!isUndefined(repoRequest.departmentId)) {
+      updateData.departmentId = repoRequest.departmentId;
+    }
+
+    if(!isEmpty(updateData)) {
+      updateData.guid = sequelize.literal('UUID()') as any;
+      await this.teacherDbModel.update(updateData, {where: {id: repoRequest.id}});
+    }
+
+    return {updatedID: repoRequest.id};
+  }
 
   async deleteTeacher(repoRequest: TeacherDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
     try {

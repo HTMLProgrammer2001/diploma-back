@@ -7,7 +7,7 @@ import sequelize, {Op} from 'sequelize';
 import {FindAttributeOptions, WhereOptions} from 'sequelize/dist/lib/model';
 import {CommissionSelectFieldsEnum} from './enums/commission-select-fields.enum';
 import {CommissionGetRepoResponse} from './repo-response/commission-get.repo-response';
-import {convertFindAndCountToPaginator} from '../../../common/utils/functions';
+import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
 import {CommissionCreateRepoRequest} from './repo-request/commission-create.repo-request';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
 import {CommissionDeleteRepoRequest} from './repo-request/commission-delete.repo-request';
@@ -15,8 +15,8 @@ import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {CommissionUpdateRepoRequest} from './repo-request/commission-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {Model} from 'sequelize-typescript';
-import {CustomError} from '../../../common/class/custom-error';
-import {ErrorCodesEnum} from '../../../common/constants/error-codes.enum';
+import {CustomError} from '../../../global/class/custom-error';
+import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 
 @Injectable()
 export class CommissionRepository {

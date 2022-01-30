@@ -1,4 +1,4 @@
-import {IPaginator} from '../../../../common/types/interface/IPaginator.interface';
+import {IPaginator} from '../../../../global/types/interface/IPaginator.interface';
 import {TeacherDbModel} from '../../../db-models/teacher.db-model';
 
 export class TeacherGetRepoResponse {

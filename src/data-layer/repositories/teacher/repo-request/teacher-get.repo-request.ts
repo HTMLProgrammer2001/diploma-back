@@ -7,6 +7,8 @@ export class TeacherGetRepoRequest extends BaseRepoRequest {
   ids: Array<number>;
   fullName: string;
   email: string;
+  emailEqual: string;
+  phoneEqual: string;
   departmentId: number;
   commissionId: number;
   teacherRankId: number;

@@ -6,13 +6,13 @@ import sequelize, {Op} from 'sequelize';
 import {FindAttributeOptions, WhereOptions} from 'sequelize/dist/lib/model';
 import {RoleSelectFieldsEnum} from './enums/role-select-fields.enum';
 import {RoleGetRepoResponse} from './repo-response/role-get.repo-response';
-import {convertFindAndCountToPaginator} from '../../../common/utils/functions';
+import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
 import {RoleDbModel} from '../../db-models/role.db-model';
 import {RoleUpdateRepoRequest} from './repo-request/role-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {Model} from 'sequelize-typescript';
-import {CustomError} from '../../../common/class/custom-error';
-import {ErrorCodesEnum} from '../../../common/constants/error-codes.enum';
+import {CustomError} from '../../../global/class/custom-error';
+import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 
 @Injectable()
 export class RoleRepository {

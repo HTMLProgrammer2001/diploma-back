@@ -1,5 +1,5 @@
 import {ArgsType, Field} from '@nestjs/graphql';
-import {BasePaginatorRequest} from '../../../../common/types/request/base-paginator.request';
+import {BasePaginatorRequest} from '../../../../global/types/request/base-paginator.request';
 import {IsBoolean, IsEnum, IsOptional, IsString} from 'class-validator';
 import {DepartmentOrderFieldsEnum} from '../../../../data-layer/repositories/department/enums/department-order-fields.enum';
 

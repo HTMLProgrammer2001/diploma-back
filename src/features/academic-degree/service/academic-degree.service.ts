@@ -1,16 +1,16 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {AcademicDegreeMapper} from '../mapper/academic-degree.mapper';
 import {AcademicDegreeGetListRequest} from '../types/request/academic-degree-get-list.request';
-import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
+import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {AcademicDegreeResponse} from '../types/response/academic-degree.response';
 import {AcademicDegreeGetByIdRequest} from '../types/request/academic-degree-get-by-id.request';
-import {CustomError} from '../../../common/class/custom-error';
-import {ErrorCodesEnum} from '../../../common/constants/error-codes.enum';
+import {CustomError} from '../../../global/class/custom-error';
+import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {AcademicDegreeRepository} from '../../../data-layer/repositories/academic-degree/academic-degree.repository';
-import {CommissionSelectFieldsEnum} from '../../../data-layer/repositories/commission/enums/commission-select-fields.enum';
 import {AcademicDegreeCreateRequest} from '../types/request/academic-degree-create.request';
 import {AcademicDegreeUpdateRequest} from '../types/request/academic-degree-update.request';
 import {AcademicDegreeSelectFieldsEnum} from '../../../data-layer/repositories/academic-degree/enums/academic-degree-select-fields.enum';
+import {IdResponse} from '../../../global/types/response/id.response';
 
 @Injectable()
 export class AcademicDegreeService {
@@ -118,7 +118,7 @@ export class AcademicDegreeService {
     }
   }
 
-  async deleteAcademicDegree(id: number, guid: string): Promise<number> {
+  async deleteAcademicDegree(id: number, guid: string): Promise<IdResponse> {
     try {
       const getCurrentAcademicDegreeRepoRequest = this.academicDegreeMapper.initializeAcademicDegreeGetByIdRepoRequest(
         id,
@@ -140,7 +140,7 @@ export class AcademicDegreeService {
 
       const deleteRepoRequest = this.academicDegreeMapper.deleteAcademicDegreeRequestToRepoRequest(id);
       const {deletedID} = await this.academicDegreeRepository.deleteAcademicDegree(deleteRepoRequest);
-      return deletedID;
+      return {id: deletedID};
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

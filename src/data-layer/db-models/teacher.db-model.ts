@@ -36,7 +36,11 @@ export class TeacherDbModel extends Model<TeacherInterface, Omit<TeacherInterfac
   @Column({allowNull: false})
   email: string;
 
-  @Column({allowNull: true, type: DataType.DATE})
+  @Column({
+    allowNull: true,
+    type: DataType.DATE,
+    get() {return this.getDataValue('birthday')?.toISOString().split('T')[0]}
+  })
   birthday?: string;
 
   @Column({allowNull: true})

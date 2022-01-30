@@ -1,5 +1,5 @@
 import {Field, Int, ObjectType} from '@nestjs/graphql';
-import {IdNameResponse} from '../../../../common/types/response/id-name.response';
+import {IdNameResponse} from '../../../../global/types/response/id-name.response';
 
 @ObjectType()
 export class TeacherResponse {

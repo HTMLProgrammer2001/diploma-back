@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {CommissionGetListRequest} from '../types/request/commission-get-list.request';
-import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
+import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {CommissionResponse} from '../types/response/commission.response';
 import {CommissionGetByIdRequest} from '../types/request/commission-get-by-id.request';
 import {CommissionCreateRequest} from '../types/request/commission-create.request';

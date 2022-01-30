@@ -1,15 +1,16 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {TeachingRankMapper} from '../mapper/teaching-rank.mapper';
 import {TeachingRankGetListRequest} from '../types/request/teaching-rank-get-list.request';
-import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
+import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {TeachingRankResponse} from '../types/response/teaching-rank.response';
 import {TeachingRankGetByIdRequest} from '../types/request/teaching-rank-get-by-id.request';
-import {CustomError} from '../../../common/class/custom-error';
-import {ErrorCodesEnum} from '../../../common/constants/error-codes.enum';
+import {CustomError} from '../../../global/class/custom-error';
+import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {TeachingRankRepository} from '../../../data-layer/repositories/teaching-rank/teaching-rank.repository';
 import {TeachingRankCreateRequest} from '../types/request/teaching-rank-create.request';
 import {TeachingRankUpdateRequest} from '../types/request/teaching-rank-update.request';
 import {TeachingRankSelectFieldsEnum} from '../../../data-layer/repositories/teaching-rank/enums/teaching-rank-select-fields.enum';
+import {IdResponse} from '../../../global/types/response/id.response';
 
 @Injectable()
 export class TeachingRankService {
@@ -123,7 +124,7 @@ export class TeachingRankService {
     }
   }
 
-  async deleteTeachingRank(id: number, guid: string): Promise<number> {
+  async deleteTeachingRank(id: number, guid: string): Promise<IdResponse> {
     try {
       const getCurrentTeachingRankRepoRequest = this.teachingRankMapper.initializeTeachingRankByIdRepoRequest(
         id,
@@ -150,7 +151,7 @@ export class TeachingRankService {
 
       const deleteRepoRequest = this.teachingRankMapper.deleteTeachingRankRequestToRepoRequest(id);
       const {deletedID} = await this.teachingRankRepository.deleteTeachingRank(deleteRepoRequest);
-      return deletedID;
+      return {id: deletedID};
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

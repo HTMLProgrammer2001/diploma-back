@@ -1,15 +1,16 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {CommissionMapper} from '../mapper/commission.mapper';
 import {CommissionGetListRequest} from '../types/request/commission-get-list.request';
-import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
+import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {CommissionResponse} from '../types/response/commission.response';
 import {CommissionGetByIdRequest} from '../types/request/commission-get-by-id.request';
 import {CommissionCreateRequest} from '../types/request/commission-create.request';
 import {CommissionUpdateRequest} from '../types/request/commission-update.request';
-import {CustomError} from '../../../common/class/custom-error';
-import {ErrorCodesEnum} from '../../../common/constants/error-codes.enum';
+import {CustomError} from '../../../global/class/custom-error';
+import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommissionRepository} from '../../../data-layer/repositories/commission/commission.repository';
 import {CommissionSelectFieldsEnum} from '../../../data-layer/repositories/commission/enums/commission-select-fields.enum';
+import {IdResponse} from '../../../global/types/response/id.response';
 
 @Injectable()
 export class CommissionService {
@@ -110,7 +111,7 @@ export class CommissionService {
     }
   }
 
-  async deleteCommission(id: number, guid: string): Promise<number> {
+  async deleteCommission(id: number, guid: string): Promise<IdResponse> {
     try {
       const getCurrentCommissionRepoRequest = this.commissionMapper.initializeGetCommissionByIdRepoRequest(
         id,
@@ -131,7 +132,7 @@ export class CommissionService {
 
       const deleteRepoRequest = this.commissionMapper.deleteCommissionRequestToRepoRequest(id);
       const {deletedID} = await this.commissionRepository.deleteCommission(deleteRepoRequest);
-      return deletedID;
+      return {id: deletedID};
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

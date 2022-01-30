@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {RoleGetListRequest} from '../types/request/role-get-list.request';
-import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
+import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {RoleResponse} from '../types/response/role.response';
 import {RoleGetByIdRequest} from '../types/request/role-get-by-id.request';
 import {RoleGetRepoRequest} from '../../../data-layer/repositories/role/repo-request/role-get.repo-request';

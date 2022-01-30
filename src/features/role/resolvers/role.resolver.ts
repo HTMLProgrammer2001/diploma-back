@@ -2,7 +2,7 @@ import {Args, Info, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {RoleService} from '../service/role.service';
 import {RoleGetListRequest} from '../types/request/role-get-list.request';
 import {RoleResponse} from '../types/response/role.response';
-import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
+import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {RoleListResponse} from '../types/response/role-list.response';
 import {GraphQLResolveInfo} from 'graphql';
 import {fieldsProjection} from 'graphql-fields-list';

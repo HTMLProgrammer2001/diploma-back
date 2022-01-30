@@ -1,15 +1,15 @@
-import {Args, Info, Mutation, Query, Resolver} from '@nestjs/graphql';
+import {Args, Info, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {TeacherService} from '../service/teacher.service';
 import {TeacherGetListRequest} from '../types/request/teacher-get-list.request';
 import {TeacherResponse} from '../types/response/teacher.response';
-import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
+import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {TeacherListResponse} from '../types/response/teacher-list.response';
 import {GraphQLResolveInfo} from 'graphql';
-import {fieldsList, fieldsProjection} from 'graphql-fields-list';
+import {fieldsProjection} from 'graphql-fields-list';
 import {TeacherGetByIdRequest} from '../types/request/teacher-get-by-id.request';
-import {CommissionResponse} from '../../commission/types/response/commission.response';
-import {CommissionCreateRequest} from '../../commission/types/request/commission-create.request';
 import {TeacherCreateRequest} from '../types/request/teacher-create.request';
+import {IdResponse} from '../../../global/types/response/id.response';
+import {TeacherUpdateRequest} from '../types/request/teacher-update.request';
 
 @Resolver(of => TeacherResponse)
 export class TeacherResolver {
@@ -32,7 +32,22 @@ export class TeacherResolver {
   @Mutation(returns => TeacherResponse)
   async createTeacher(@Args() request: TeacherCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<TeacherResponse> {
-    request.select = fieldsList(info);
+    request.select = Object.keys(fieldsProjection(info));
     return this.teacherService.createTeacher(request);
+  }
+
+  @Mutation(returns => TeacherResponse)
+  async updateTeacher(@Args() request: TeacherUpdateRequest, @Info() info: GraphQLResolveInfo):
+    Promise<TeacherResponse> {
+    request.select = Object.keys(fieldsProjection(info));
+    return this.teacherService.updateTeacher(request);
+  }
+
+  @Mutation(returns => IdResponse)
+  async deleteTeacher(
+    @Args('id', {type: () => Int}) id: number,
+    @Args('guid', {type: () => String}) guid: string,
+  ): Promise<IdResponse> {
+    return this.teacherService.deleteTeacher(id, guid);
   }
 }

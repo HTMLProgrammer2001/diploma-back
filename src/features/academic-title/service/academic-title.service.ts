@@ -1,15 +1,16 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {AcademicTitleMapper} from '../mapper/academic-title.mapper';
 import {AcademicTitleGetListRequest} from '../types/request/academic-title-get-list.request';
-import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
+import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {AcademicTitleResponse} from '../types/response/academic-title.response';
 import {AcademicTitleGetByIdRequest} from '../types/request/academic-title-get-by-id.request';
-import {CustomError} from '../../../common/class/custom-error';
-import {ErrorCodesEnum} from '../../../common/constants/error-codes.enum';
+import {CustomError} from '../../../global/class/custom-error';
+import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {AcademicTitleRepository} from '../../../data-layer/repositories/academic-title/academic-title.repository';
 import {AcademicTitleCreateRequest} from '../types/request/academic-title-create.request';
 import {AcademicTitleUpdateRequest} from '../types/request/academic-title-update.request';
 import {AcademicTitleSelectFieldsEnum} from '../../../data-layer/repositories/academic-title/enums/academic-title-select-fields.enum';
+import {IdResponse} from '../../../global/types/response/id.response';
 
 @Injectable()
 export class AcademicTitleService {
@@ -108,7 +109,7 @@ export class AcademicTitleService {
     }
   }
 
-  async deleteAcademicTitle(id: number, guid: string): Promise<number> {
+  async deleteAcademicTitle(id: number, guid: string): Promise<IdResponse> {
     try {
       const getCurrentAcademicTitleRepoRequest = this.academicTitleMapper.initializeAcademicTitleGetByIdRepoRequest(
         id,
@@ -130,7 +131,7 @@ export class AcademicTitleService {
 
       const deleteRepoRequest = this.academicTitleMapper.deleteAcademicTitleRequestToRepoRequest(id);
       const {deletedID} = await this.academicTitleRepository.deleteAcademicTitle(deleteRepoRequest);
-      return deletedID;
+      return {id: deletedID};
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

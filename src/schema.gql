@@ -50,6 +50,11 @@ type CommissionResponse {
   name: String!
 }
 
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type DepartmentListResponse implements PaginatedData {
   page: Int!
   responseList: [DepartmentResponse!]!
@@ -71,23 +76,29 @@ type IdNameResponse {
   name: String!
 }
 
+type IdResponse {
+  id: Int!
+}
+
 type Mutation {
   createAcademicDegree(name: String): AcademicDegreeResponse!
   createAcademicTitle(name: String): AcademicTitleResponse!
   createCommission(name: String): CommissionResponse!
   createDepartment(name: String!): DepartmentResponse!
-  createTeacher(academicDegreeId: Int, academicTitleId: Int, address: String, avatar: Upload, birthday: String, commissionId: Int!, departmentId: Int!, email: String!, fullName: String!, phone: String, teacherRankId: Int, workStartDate: String): TeacherResponse!
+  createTeacher(academicDegreeId: Int, academicTitleId: Int, address: String, avatar: Upload, birthday: DateTime, commissionId: Int!, departmentId: Int!, email: String, fullName: String!, phone: String, teacherRankId: Int, workStartDate: String): TeacherResponse!
   createTeachingRank(name: String!): TeachingRankResponse!
-  deleteAcademicDegree(guid: String!, id: Int!): Int!
-  deleteAcademicTitle(guid: String!, id: Int!): Int!
-  deleteCommission(guid: String!, id: Int!): Int!
-  deleteDepartment(guid: String!, id: Int!): Int!
-  deleteTeachingRank(guid: String!, id: Int!): Int!
+  deleteAcademicDegree(guid: String!, id: Int!): IdResponse!
+  deleteAcademicTitle(guid: String!, id: Int!): IdResponse!
+  deleteCommission(guid: String!, id: Int!): IdResponse!
+  deleteDepartment(guid: String!, id: Int!): IdResponse!
+  deleteTeacher(guid: String!, id: Int!): IdResponse!
+  deleteTeachingRank(guid: String!, id: Int!): IdResponse!
   updateAcademicDegree(guid: String!, id: Int!, name: String): AcademicDegreeResponse!
   updateAcademicTitle(guid: String!, id: Int!, name: String): AcademicTitleResponse!
   updateCommission(guid: String!, id: Int!, name: String): CommissionResponse!
   updateDepartment(guid: String!, id: Int!, name: String): DepartmentResponse!
   updateRole(guid: String!, id: Int!, name: String): RoleResponse!
+  updateTeacher(academicDegreeId: Int, academicTitleId: Int, address: String, avatar: Upload, birthday: DateTime, commissionId: Int, departmentId: Int, email: String, fullName: String, guid: String!, id: Int!, phone: String, teacherRankId: Int, workStartDate: String): TeacherResponse!
   updateTeachingRank(guid: String!, id: Int!, name: String!): TeachingRankResponse!
 }
 

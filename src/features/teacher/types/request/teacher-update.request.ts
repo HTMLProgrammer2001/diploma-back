@@ -15,10 +15,20 @@ import {FileUpload, GraphQLUpload} from 'graphql-upload';
 import {Transform} from 'class-transformer';
 
 @ArgsType()
-export class TeacherCreateRequest {
+export class TeacherUpdateRequest {
   select: Array<string>;
 
+  @Field(type => Int, {nullable: false})
+  @IsNumber()
+  id: number;
+
   @Field({nullable: false})
+  @IsNotEmpty()
+  @IsString()
+  guid: string;
+
+  @Field({nullable: true})
+  @IsOptional()
   @MaxLength(255)
   @IsNotEmpty()
   @IsString()
@@ -34,7 +44,7 @@ export class TeacherCreateRequest {
 
   @Field({nullable: true})
   @IsOptional()
-  @Transform(({value}) => value ? Date.parse(value) : value)
+  @Transform(({value}) => value ? new Date(Date.parse(value)) : value)
   @IsDate()
   @MaxDate(new Date())
   @MinDate(new Date(Date.now() - 100 * 365 * 24 * 60 * 60 * 1000))
@@ -54,11 +64,13 @@ export class TeacherCreateRequest {
   @Field(type => GraphQLUpload, {nullable: true})
   avatar: Promise<FileUpload>;
 
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true})
+  @IsOptional()
   @IsNumber()
   departmentId: number;
 
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true})
+  @IsOptional()
   @IsNumber()
   commissionId: number;
 

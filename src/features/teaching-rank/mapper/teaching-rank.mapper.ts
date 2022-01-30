@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {TeachingRankGetListRequest} from '../types/request/teaching-rank-get-list.request';
-import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
+import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {TeachingRankResponse} from '../types/response/teaching-rank.response';
 import {TeachingRankGetByIdRequest} from '../types/request/teaching-rank-get-by-id.request';
 import {TeachingRankGetRepoRequest} from '../../../data-layer/repositories/teaching-rank/repo-request/teaching-rank-get.repo-request';

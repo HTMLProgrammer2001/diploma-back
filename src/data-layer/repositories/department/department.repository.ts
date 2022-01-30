@@ -6,7 +6,7 @@ import sequelize, {Op} from 'sequelize';
 import {FindAttributeOptions, WhereOptions} from 'sequelize/dist/lib/model';
 import {DepartmentSelectFieldsEnum} from './enums/department-select-fields.enum';
 import {DepartmentGetRepoResponse} from './repo-response/department-get.repo-response';
-import {convertFindAndCountToPaginator} from '../../../common/utils/functions';
+import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
 import {DepartmentCreateRepoRequest} from './repo-request/department-create.repo-request';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
 import {DepartmentDeleteRepoRequest} from './repo-request/department-delete.repo-request';
@@ -15,8 +15,8 @@ import {DepartmentUpdateRepoRequest} from './repo-request/department-update.repo
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {Model} from 'sequelize-typescript';
 import {DepartmentDbModel} from '../../db-models/department.db-model';
-import {CustomError} from '../../../common/class/custom-error';
-import {ErrorCodesEnum} from '../../../common/constants/error-codes.enum';
+import {CustomError} from '../../../global/class/custom-error';
+import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 
 @Injectable()
 export class DepartmentRepository {

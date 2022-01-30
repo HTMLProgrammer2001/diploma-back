@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {AcademicTitleGetListRequest} from '../types/request/academic-title-get-list.request';
-import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
+import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {AcademicTitleResponse} from '../types/response/academic-title.response';
 import {AcademicTitleGetByIdRequest} from '../types/request/academic-title-get-by-id.request';
 import {AcademicTitleGetRepoRequest} from '../../../data-layer/repositories/academic-title/repo-request/academic-title-get.repo-request';

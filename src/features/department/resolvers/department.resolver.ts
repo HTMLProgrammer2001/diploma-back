@@ -2,13 +2,14 @@ import {Args, Info, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {DepartmentService} from '../service/department.service';
 import {DepartmentGetListRequest} from '../types/request/department-get-list.request';
 import {DepartmentResponse} from '../types/response/department.response';
-import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
+import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {DepartmentListResponse} from '../types/response/department-list.response';
 import {GraphQLResolveInfo} from 'graphql';
-import {fieldsList, fieldsProjection} from 'graphql-fields-list';
+import {fieldsProjection} from 'graphql-fields-list';
 import {DepartmentGetByIdRequest} from '../types/request/department-get-by-id.request';
 import {DepartmentCreateRequest} from '../types/request/department-create.request';
 import {DepartmentUpdateRequest} from '../types/request/department-update.request';
+import {IdResponse} from '../../../global/types/response/id.response';
 
 @Resolver(of => DepartmentResponse)
 export class DepartmentResolver {
@@ -31,22 +32,22 @@ export class DepartmentResolver {
   @Mutation(returns => DepartmentResponse)
   async createDepartment(@Args() request: DepartmentCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<DepartmentResponse> {
-    request.select = fieldsList(info);
+    request.select = Object.keys(fieldsProjection(info));
     return this.departmentService.createDepartment(request);
   }
 
   @Mutation(returns => DepartmentResponse)
   async updateDepartment(@Args() request: DepartmentUpdateRequest, @Info() info: GraphQLResolveInfo):
     Promise<DepartmentResponse> {
-    request.select = fieldsList(info);
+    request.select = Object.keys(fieldsProjection(info));
     return this.departmentService.updateDepartment(request);
   }
 
-  @Mutation(returns => Int)
+  @Mutation(returns => IdResponse)
   async deleteDepartment(
     @Args('id', {type: () => Int}) id: number,
     @Args('guid', {type: () => String}) guid: string,
-  ): Promise<number> {
+  ): Promise<IdResponse> {
     return this.departmentService.deleteDepartment(id, guid);
   }
 }

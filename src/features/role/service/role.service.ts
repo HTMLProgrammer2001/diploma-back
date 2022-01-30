@@ -1,11 +1,11 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {RoleMapper} from '../mapper/role.mapper';
 import {RoleGetListRequest} from '../types/request/role-get-list.request';
-import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
+import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {RoleResponse} from '../types/response/role.response';
 import {RoleGetByIdRequest} from '../types/request/role-get-by-id.request';
-import {CustomError} from '../../../common/class/custom-error';
-import {ErrorCodesEnum} from '../../../common/constants/error-codes.enum';
+import {CustomError} from '../../../global/class/custom-error';
+import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {RoleRepository} from '../../../data-layer/repositories/role/role.repository';
 import {RoleUpdateRequest} from '../types/request/role-update.request';
 import {RoleSelectFieldsEnum} from '../../../data-layer/repositories/role/enums/role-select-fields.enum';

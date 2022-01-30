@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {DepartmentGetListRequest} from '../types/request/department-get-list.request';
-import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
+import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {DepartmentResponse} from '../types/response/department.response';
 import {DepartmentGetByIdRequest} from '../types/request/department-get-by-id.request';
 import {DepartmentCreateRequest} from '../types/request/department-create.request';

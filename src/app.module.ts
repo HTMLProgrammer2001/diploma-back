@@ -6,12 +6,7 @@ import {GraphQLModule} from '@nestjs/graphql';
 import {GraphQLError} from 'graphql';
 import {CommissionModule} from './features/commission/commission.module';
 import {APP_FILTER} from '@nestjs/core';
-import {ValidationErrorFilter} from './common/filters/validation-error.filter';
-import {CustomError} from './common/class/custom-error';
-import {AllErrorFilter} from './common/filters/all-error.filter';
-import {ErrorCodesEnum} from './common/constants/error-codes.enum';
 import {DepartmentModule} from './features/department/department.module';
-import {CustomArrayError} from './common/class/custom-array-error';
 import {RoleModule} from './features/role/role.module';
 import {TeachingRankModule} from './features/teaching-rank/teaching-rank.module';
 import {DataLayerModule} from './data-layer/data-layer.module';
@@ -20,6 +15,12 @@ import {AcademicTitleModule} from './features/academic-title/academic-title.modu
 import {TeacherModule} from './features/teacher/teacher.module';
 import {ServeStaticModule} from '@nestjs/serve-static';
 import {ConfigModule} from '@nestjs/config';
+import {GlobalModule} from './global/global.module';
+import {CustomArrayError} from './global/class/custom-array-error';
+import {CustomError} from './global/class/custom-error';
+import {ErrorCodesEnum} from './global/constants/error-codes.enum';
+import {AllErrorFilter} from './global/filters/all-error.filter';
+import {ValidationErrorFilter} from './global/filters/validation-error.filter';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import {ConfigModule} from '@nestjs/config';
     }),
 
     DataLayerModule,
+    GlobalModule,
     CommissionModule,
     DepartmentModule,
     RoleModule,

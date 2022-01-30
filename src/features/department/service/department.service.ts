@@ -1,15 +1,16 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {DepartmentMapper} from '../mapper/department.mapper';
 import {DepartmentGetListRequest} from '../types/request/department-get-list.request';
-import {IPaginator} from '../../../common/types/interface/IPaginator.interface';
+import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {DepartmentResponse} from '../types/response/department.response';
 import {DepartmentGetByIdRequest} from '../types/request/department-get-by-id.request';
 import {DepartmentCreateRequest} from '../types/request/department-create.request';
 import {DepartmentUpdateRequest} from '../types/request/department-update.request';
-import {CustomError} from '../../../common/class/custom-error';
-import {ErrorCodesEnum} from '../../../common/constants/error-codes.enum';
+import {CustomError} from '../../../global/class/custom-error';
+import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {DepartmentSelectFieldsEnum} from '../../../data-layer/repositories/department/enums/department-select-fields.enum';
 import {DepartmentRepository} from '../../../data-layer/repositories/department/department.repository';
+import {IdResponse} from '../../../global/types/response/id.response';
 
 @Injectable()
 export class DepartmentService {
@@ -114,7 +115,7 @@ export class DepartmentService {
     }
   }
 
-  async deleteDepartment(id: number, guid: string): Promise<number> {
+  async deleteDepartment(id: number, guid: string): Promise<IdResponse> {
     try {
       const getCurrentDepartmentRepoRequest = this.departmentMapper.initializeDepartmentByIdRepoRequest(
         id,
@@ -135,7 +136,7 @@ export class DepartmentService {
 
       const deleteRepoRequest = this.departmentMapper.deleteDepartmentRequestToRepoRequest(id);
       const {deletedID} = await this.departmentRepository.deleteDepartment(deleteRepoRequest);
-      return deletedID;
+      return {id: deletedID};
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);
