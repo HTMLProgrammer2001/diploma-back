@@ -1,4 +1,4 @@
-import {Module} from '@nestjs/common';
+import {MiddlewareConsumer, Module} from '@nestjs/common';
 import {join} from 'path';
 import {SequelizeModule} from '@nestjs/sequelize';
 import {AppController} from './app.controller';
@@ -22,6 +22,8 @@ import {ErrorCodesEnum} from './global/constants/error-codes.enum';
 import {AllErrorFilter} from './global/filters/all-error.filter';
 import {ValidationErrorFilter} from './global/filters/validation-error.filter';
 import {UserModule} from './features/user/user.module';
+import {RequestContextMiddleware} from './global/middlewares/request-context.middleware';
+import {AuthModule} from './features/auth/auth.module';
 
 @Module({
   imports: [
@@ -80,6 +82,7 @@ import {UserModule} from './features/user/user.module';
     AcademicTitleModule,
     TeacherModule,
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
@@ -94,4 +97,7 @@ import {UserModule} from './features/user/user.module';
   ]
 })
 export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestContextMiddleware).forRoutes('');
+  }
 }

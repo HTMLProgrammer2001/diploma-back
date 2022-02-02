@@ -16,6 +16,8 @@ import {AcademicTitleDbModel} from './db-models/academic-title.db-model';
 import {AcademicTitleRepository} from './repositories/academic-title/academic-title.repository';
 import {UserDbModel} from './db-models/user.db-model';
 import {UserRepository} from './repositories/user/user.repository';
+import {TokenDbModel} from './db-models/token.db-model';
+import {TokenRepository} from './repositories/token/token.repository';
 
 const getAppModels = () => SequelizeModule.forFeature([
   CommissionDbModel,
@@ -26,6 +28,7 @@ const getAppModels = () => SequelizeModule.forFeature([
   AcademicTitleDbModel,
   TeacherDbModel,
   UserDbModel,
+  TokenDbModel
 ]);
 
 const getAppRepositories = () => [
@@ -37,6 +40,7 @@ const getAppRepositories = () => [
   AcademicTitleRepository,
   TeacherRepository,
   UserRepository,
+  TokenRepository,
 ]
 
 @Global()

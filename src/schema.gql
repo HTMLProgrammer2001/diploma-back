@@ -166,6 +166,15 @@ type IdResponse {
   id: ID!
 }
 
+input LoginRequest {
+  email: String!
+  password: String!
+}
+
+type LoginResponse {
+  token: String!
+}
+
 type Mutation {
   createAcademicDegree(body: AcademicDegreeCreateRequest!): AcademicDegreeResponse!
   createAcademicTitle(body: AcademicTitleCreateRequest!): AcademicTitleResponse!
@@ -181,6 +190,9 @@ type Mutation {
   deleteTeacher(guid: String!, id: Int!): IdResponse!
   deleteTeachingRank(guid: String!, id: Int!): IdResponse!
   deleteUser(guid: String!, id: Int!): IdResponse!
+  login(body: LoginRequest!): LoginResponse!
+  logout: ResultResponse!
+  refreshToken: RefreshTokenResponse!
   updateAcademicDegree(body: AcademicDegreeUpdateRequest!): AcademicDegreeResponse!
   updateAcademicTitle(body: AcademicTitleUpdateRequest!): AcademicTitleResponse!
   updateCommission(body: CommissionUpdateRequest!): CommissionResponse!
@@ -216,6 +228,14 @@ type Query {
   getTeachingRankList(query: TeachingRankGetListRequest!): TeachingRankListResponse!
   getUserById(query: UserGetByIdRequest!): UserResponse!
   getUserList(query: UserGetListRequest!): UserListResponse!
+}
+
+type RefreshTokenResponse {
+  token: String!
+}
+
+type ResultResponse {
+  result: Boolean!
 }
 
 input RoleGetByIdRequest {
