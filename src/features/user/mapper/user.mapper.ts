@@ -50,7 +50,7 @@ export class UserMapper {
     destination.isDeleted = source.isDeleted;
     destination.guid = source.guid;
 
-    if(source.role) {
+    if (source.role) {
       destination.role = {
         id: source.role.id,
         name: source.role.name
@@ -135,7 +135,7 @@ export class UserMapper {
     destination.avatarUrl = avatarUrl;
     destination.roleId = source.roleId;
 
-    if(source.password) {
+    if (source.password) {
       destination.passwordHash = bcrypt.hashSync(source.password, Number(process.env.SALT));
     }
 

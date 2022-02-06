@@ -1,6 +1,6 @@
 import {Field, ID, InputType} from '@nestjs/graphql';
 import {IsBoolean, IsNumber, IsOptional} from 'class-validator';
-import {ParseNumber} from '../../../../global/validators/parse-number';
+import {ParseNumber} from '../../../../global/pipes/parse-number';
 
 @InputType()
 export class DepartmentGetByIdRequest {

@@ -2,7 +2,7 @@ import {Field, ID, InputType} from '@nestjs/graphql';
 import {BasePaginatorRequest} from '../../../../global/types/request/base-paginator.request';
 import {IsBoolean, IsEnum, IsNumber, IsOptional, IsString} from 'class-validator';
 import {UserOrderFieldsEnum} from '../../../../data-layer/repositories/user/enums/user-order-fields.enum';
-import {ParseNumber} from '../../../../global/validators/parse-number';
+import {ParseNumber} from '../../../../global/pipes/parse-number';
 
 @InputType()
 export class UserGetListRequest extends BasePaginatorRequest {

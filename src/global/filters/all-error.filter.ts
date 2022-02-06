@@ -6,10 +6,9 @@ import {ErrorCodesEnum} from '../constants/error-codes.enum';
 @Catch(Error)
 export class AllErrorFilter implements GqlExceptionFilter {
   async catch(exception: Error, host: ArgumentsHost) {
-    if(exception instanceof CustomError) {
+    if (exception instanceof CustomError) {
       return exception;
-    }
-    else {
+    } else {
       return new CustomError({code: ErrorCodesEnum.GENERAL, message: exception.message});
     }
   }

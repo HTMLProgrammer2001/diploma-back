@@ -5,5 +5,7 @@ export enum ErrorCodesEnum {
   VALIDATION = 3,
   NOT_FOUND = 4,
   ALREADY_DELETED = 5,
-  GUID_CHANGED = 12
+  GUID_CHANGED = 12,
+  UNAUTHORIZED = 101,
+  FORBID = 102
 }

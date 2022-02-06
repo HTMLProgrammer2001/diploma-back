@@ -10,7 +10,7 @@ export interface TeacherInterface {
   id: number;
   fullName: string;
   email?: string;
-  birthday?: string;
+  birthday?: Date;
   phone?: string;
   address?: string;
   avatarUrl?: string;
@@ -19,7 +19,7 @@ export interface TeacherInterface {
   teacherRankId?: number;
   academicDegreeId?: number;
   academicTitleId?: number;
-  workStartDate?: string;
+  workStartDate?: Date;
   isDeleted: boolean;
   guid: string;
 }
@@ -38,10 +38,9 @@ export class TeacherDbModel extends Model<TeacherInterface, Omit<TeacherInterfac
 
   @Column({
     allowNull: true,
-    type: DataType.DATE,
-    get() {return this.getDataValue('birthday')?.toISOString().split('T')[0]}
+    type: DataType.DATEONLY
   })
-  birthday?: string;
+  birthday?: Date;
 
   @Column({allowNull: true})
   phone?: string;
@@ -87,8 +86,8 @@ export class TeacherDbModel extends Model<TeacherInterface, Omit<TeacherInterfac
   @BelongsTo(() => AcademicTitleDbModel)
   academicTitle?: AcademicTitleDbModel;
 
-  @Column({allowNull: true, type: DataType.DATE})
-  workStartDate?: string;
+  @Column({allowNull: true, type: DataType.DATEONLY})
+  workStartDate?: Date;
 
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isDeleted?: boolean;

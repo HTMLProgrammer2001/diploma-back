@@ -11,12 +11,17 @@ import {CommissionResponse} from '../../commission/types/response/commission.res
 import {AcademicDegreeCreateRequest} from '../types/request/academic-degree-create.request';
 import {AcademicDegreeUpdateRequest} from '../types/request/academic-degree-update.request';
 import {IdResponse} from '../../../global/types/response/id.response';
+import {SetMetadata} from '@nestjs/common';
+import {MetaDataFieldEnum} from '../../../global/constants/meta-data-fields.enum';
+import {readRoles, writeRoles} from '../../../global/utils/roles';
 
 @Resolver(of => AcademicDegreeResponse)
 export class AcademicDegreeResolver {
-  constructor(private academicDegreeService: AcademicDegreeService) {}
+  constructor(private academicDegreeService: AcademicDegreeService) {
+  }
 
   @Query(returns => AcademicDegreeListResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
   async getAcademicDegreeList(@Args('query') request: AcademicDegreeGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<AcademicDegreeResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
@@ -24,6 +29,7 @@ export class AcademicDegreeResolver {
   }
 
   @Query(returns => AcademicDegreeResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
   async getAcademicDegreeById(@Args('query') request: AcademicDegreeGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<AcademicDegreeResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -31,6 +37,7 @@ export class AcademicDegreeResolver {
   }
 
   @Mutation(returns => AcademicDegreeResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async createAcademicDegree(@Args('body') request: AcademicDegreeCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<CommissionResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -38,6 +45,7 @@ export class AcademicDegreeResolver {
   }
 
   @Mutation(returns => AcademicDegreeResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async updateAcademicDegree(@Args('body') request: AcademicDegreeUpdateRequest, @Info() info: GraphQLResolveInfo):
     Promise<AcademicDegreeResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -45,6 +53,7 @@ export class AcademicDegreeResolver {
   }
 
   @Mutation(returns => IdResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async deleteAcademicDegree(
     @Args('id', {type: () => Int}) id: number,
     @Args('guid', {type: () => String}) guid: string,

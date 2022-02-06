@@ -16,8 +16,8 @@ import {AcademicTitleDbModel} from './db-models/academic-title.db-model';
 import {AcademicTitleRepository} from './repositories/academic-title/academic-title.repository';
 import {UserDbModel} from './db-models/user.db-model';
 import {UserRepository} from './repositories/user/user.repository';
-import {TokenDbModel} from './db-models/token.db-model';
-import {TokenRepository} from './repositories/token/token.repository';
+import {RefreshTokenDbModel} from './db-models/refresh-token-db.model';
+import {RefreshTokenRepository} from './repositories/refresh-token/refresh-token.repository';
 
 const getAppModels = () => SequelizeModule.forFeature([
   CommissionDbModel,
@@ -28,7 +28,7 @@ const getAppModels = () => SequelizeModule.forFeature([
   AcademicTitleDbModel,
   TeacherDbModel,
   UserDbModel,
-  TokenDbModel
+  RefreshTokenDbModel
 ]);
 
 const getAppRepositories = () => [
@@ -40,7 +40,7 @@ const getAppRepositories = () => [
   AcademicTitleRepository,
   TeacherRepository,
   UserRepository,
-  TokenRepository,
+  RefreshTokenRepository,
 ]
 
 @Global()
@@ -49,4 +49,5 @@ const getAppRepositories = () => [
   providers: [...getAppRepositories()],
   exports: [getAppModels(), ...getAppRepositories()]
 })
-export class DataLayerModule {}
+export class DataLayerModule {
+}

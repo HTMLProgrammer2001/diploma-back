@@ -11,7 +11,7 @@ import {
   MinLength
 } from 'class-validator';
 import {FileUpload, GraphQLUpload} from 'graphql-upload';
-import {ParseNumber} from '../../../../global/validators/parse-number';
+import {ParseNumber} from '../../../../global/pipes/parse-number';
 
 @InputType()
 export class UserUpdateRequest {

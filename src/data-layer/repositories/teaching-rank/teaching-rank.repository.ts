@@ -77,7 +77,7 @@ export class TeachingRankRepository {
         filters.id = {[Op.in]: repoRequest.ids};
       }
 
-      if(!repoRequest.showDeleted) {
+      if (!repoRequest.showDeleted) {
         filters.isDeleted = false;
       }
 

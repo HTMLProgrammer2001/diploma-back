@@ -1,7 +1,7 @@
 export class TeacherCreateRepoRequest {
   fullName: string;
   email: string;
-  birthday?: string;
+  birthday?: Date;
   phone?: string;
   address?: string;
   avatarUrl?: string;
@@ -10,5 +10,5 @@ export class TeacherCreateRepoRequest {
   teacherRankId?: number;
   academicDegreeId?: number;
   academicTitleId?: number;
-  workStartDate?: string;
+  workStartDate?: Date;
 }

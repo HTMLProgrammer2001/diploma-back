@@ -10,12 +10,17 @@ import {TeachingRankGetByIdRequest} from '../types/request/teaching-rank-get-by-
 import {TeachingRankCreateRequest} from '../types/request/teaching-rank-create.request';
 import {TeachingRankUpdateRequest} from '../types/request/teaching-rank-update.request';
 import {IdResponse} from '../../../global/types/response/id.response';
+import {SetMetadata} from '@nestjs/common';
+import {MetaDataFieldEnum} from '../../../global/constants/meta-data-fields.enum';
+import {readRoles, writeRoles} from '../../../global/utils/roles';
 
 @Resolver(of => TeachingRankResponse)
 export class TeachingRankResolver {
-  constructor(private teachingRankService: TeachingRankService) {}
+  constructor(private teachingRankService: TeachingRankService) {
+  }
 
   @Query(returns => TeachingRankListResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
   async getTeachingRankList(@Args('query') request: TeachingRankGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<TeachingRankResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
@@ -23,6 +28,7 @@ export class TeachingRankResolver {
   }
 
   @Query(returns => TeachingRankResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
   async getTeachingRankById(@Args('query') request: TeachingRankGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<TeachingRankResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -30,6 +36,7 @@ export class TeachingRankResolver {
   }
 
   @Mutation(returns => TeachingRankResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async createTeachingRank(@Args('body') request: TeachingRankCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<TeachingRankResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -37,6 +44,7 @@ export class TeachingRankResolver {
   }
 
   @Mutation(returns => TeachingRankResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async updateTeachingRank(@Args('body') request: TeachingRankUpdateRequest, @Info() info: GraphQLResolveInfo):
     Promise<TeachingRankResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -44,6 +52,7 @@ export class TeachingRankResolver {
   }
 
   @Mutation(returns => IdResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async deleteTeachingRank(
     @Args('id', {type: () => Int}) id: number,
     @Args('guid', {type: () => String}) guid: string,

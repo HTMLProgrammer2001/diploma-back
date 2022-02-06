@@ -10,12 +10,17 @@ import {DepartmentGetByIdRequest} from '../types/request/department-get-by-id.re
 import {DepartmentCreateRequest} from '../types/request/department-create.request';
 import {DepartmentUpdateRequest} from '../types/request/department-update.request';
 import {IdResponse} from '../../../global/types/response/id.response';
+import {SetMetadata} from '@nestjs/common';
+import {MetaDataFieldEnum} from '../../../global/constants/meta-data-fields.enum';
+import {readRoles, writeRoles} from '../../../global/utils/roles';
 
 @Resolver(of => DepartmentResponse)
 export class DepartmentResolver {
-  constructor(private departmentService: DepartmentService) {}
+  constructor(private departmentService: DepartmentService) {
+  }
 
   @Query(returns => DepartmentListResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
   async getDepartmentsList(@Args('query') request: DepartmentGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<DepartmentResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
@@ -23,6 +28,7 @@ export class DepartmentResolver {
   }
 
   @Query(returns => DepartmentResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
   async getDepartmentById(@Args('query') request: DepartmentGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<DepartmentResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -30,6 +36,7 @@ export class DepartmentResolver {
   }
 
   @Mutation(returns => DepartmentResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async createDepartment(@Args('body') request: DepartmentCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<DepartmentResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -37,6 +44,7 @@ export class DepartmentResolver {
   }
 
   @Mutation(returns => DepartmentResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async updateDepartment(@Args('body') request: DepartmentUpdateRequest, @Info() info: GraphQLResolveInfo):
     Promise<DepartmentResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -44,6 +52,7 @@ export class DepartmentResolver {
   }
 
   @Mutation(returns => IdResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async deleteDepartment(
     @Args('id', {type: () => Int}) id: number,
     @Args('guid', {type: () => String}) guid: string,

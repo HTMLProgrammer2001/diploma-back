@@ -1,6 +1,5 @@
 import {Field, ID, InputType} from '@nestjs/graphql';
 import {
-  IsDate,
   IsEmail,
   IsNotEmpty,
   IsNumber,
@@ -12,8 +11,8 @@ import {
   MinDate
 } from 'class-validator';
 import {FileUpload, GraphQLUpload} from 'graphql-upload';
-import {Transform} from 'class-transformer';
-import {ParseNumber} from '../../../../global/validators/parse-number';
+import {ParseNumber} from '../../../../global/pipes/parse-number';
+import {ValidateDate} from '../../../../global/pipes/validate-date';
 
 @InputType()
 export class TeacherUpdateRequest {
@@ -46,10 +45,9 @@ export class TeacherUpdateRequest {
 
   @Field({nullable: true})
   @IsOptional()
-  @Transform(({value}) => value ? new Date(Date.parse(value)) : value)
-  @IsDate()
   @MaxDate(new Date())
   @MinDate(new Date(Date.now() - 100 * 365 * 24 * 60 * 60 * 1000))
+  @ValidateDate()
   birthday: Date;
 
   @Field({nullable: true})
@@ -96,10 +94,10 @@ export class TeacherUpdateRequest {
   @IsNumber()
   academicTitleId: number;
 
-  @Field( {nullable: true})
+  @Field({nullable: true})
   @IsOptional()
-  @IsDate()
   @MaxDate(new Date())
   @MinDate(new Date(Date.now() - 100 * 365 * 24 * 60 * 60 * 1000))
-  workStartDate: string;
+  @ValidateDate()
+  workStartDate: Date;
 }

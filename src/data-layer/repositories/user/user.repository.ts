@@ -58,7 +58,7 @@ export class UserRepository {
             break;
 
           case UserSelectFieldsEnum.PASSWORD_HASH:
-            attributes.push('password');
+            attributes.push('passwordHash');
             break;
 
           case UserSelectFieldsEnum.PHONE:
@@ -100,11 +100,11 @@ export class UserRepository {
       const filters: WhereOptions = {};
 
       if (!isNil(repoRequest.fullName)) {
-        filters.name = {[Op.like]: `%${repoRequest.fullName || ''}%`};
+        filters.fullName = {[Op.like]: `%${repoRequest.fullName || ''}%`};
       }
 
       if (!isNil(repoRequest.email)) {
-        filters.name = {[Op.like]: `%${repoRequest.email || ''}%`};
+        filters.email = {[Op.like]: `%${repoRequest.email || ''}%`};
       }
 
       if (!isNil(repoRequest.roleId)) {
@@ -123,11 +123,11 @@ export class UserRepository {
         filters.id = {[Op.in]: repoRequest.ids};
       }
 
-      if(!isNil(repoRequest.emailEqual)) {
+      if (!isNil(repoRequest.emailEqual)) {
         filters.email = repoRequest.emailEqual;
       }
 
-      if(!isNil(repoRequest.phoneEqual)) {
+      if (!isNil(repoRequest.phoneEqual)) {
         filters.phone = repoRequest.phoneEqual;
       }
 
@@ -189,7 +189,7 @@ export class UserRepository {
         passwordHash: repoRequest.passwordHash
       });
       return {createdID: id};
-    }  catch (e) {
+    } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);
         throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
@@ -202,31 +202,31 @@ export class UserRepository {
   async updateUser(repoRequest: UserUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
     const updateData = {} as Omit<UserDbModel, keyof Model>;
 
-    if(!isUndefined(repoRequest.email)) {
+    if (!isUndefined(repoRequest.email)) {
       updateData.email = repoRequest.email;
     }
 
-    if(!isUndefined(repoRequest.fullName)) {
+    if (!isUndefined(repoRequest.fullName)) {
       updateData.fullName = repoRequest.fullName;
     }
 
-    if(!isUndefined(repoRequest.avatarUrl)) {
+    if (!isUndefined(repoRequest.avatarUrl)) {
       updateData.avatarUrl = repoRequest.avatarUrl;
     }
 
-    if(!isUndefined(repoRequest.phone)) {
+    if (!isUndefined(repoRequest.phone)) {
       updateData.phone = repoRequest.phone;
     }
 
-    if(!isUndefined(repoRequest.passwordHash)) {
+    if (!isUndefined(repoRequest.passwordHash)) {
       updateData.passwordHash = repoRequest.passwordHash;
     }
 
-    if(!isUndefined(repoRequest.roleId)) {
+    if (!isUndefined(repoRequest.roleId)) {
       updateData.roleId = repoRequest.roleId;
     }
 
-    if(!isEmpty(updateData)) {
+    if (!isEmpty(updateData)) {
       updateData.guid = sequelize.literal('UUID()') as any;
       await this.userDbModel.update(updateData, {where: {id: repoRequest.id}});
     }

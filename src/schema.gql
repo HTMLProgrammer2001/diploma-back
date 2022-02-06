@@ -172,7 +172,8 @@ input LoginRequest {
 }
 
 type LoginResponse {
-  token: String!
+  accessToken: String!
+  refreshToken: String!
 }
 
 type Mutation {
@@ -191,8 +192,8 @@ type Mutation {
   deleteTeachingRank(guid: String!, id: Int!): IdResponse!
   deleteUser(guid: String!, id: Int!): IdResponse!
   login(body: LoginRequest!): LoginResponse!
-  logout: ResultResponse!
-  refreshToken: RefreshTokenResponse!
+  logout(refreshToken: String!): ResultResponse!
+  refreshToken(refreshToken: String!): RefreshTokenResponse!
   updateAcademicDegree(body: AcademicDegreeUpdateRequest!): AcademicDegreeResponse!
   updateAcademicTitle(body: AcademicTitleUpdateRequest!): AcademicTitleResponse!
   updateCommission(body: CommissionUpdateRequest!): CommissionResponse!
@@ -231,7 +232,8 @@ type Query {
 }
 
 type RefreshTokenResponse {
-  token: String!
+  accessToken: String!
+  refreshToken: String!
 }
 
 type ResultResponse {
@@ -274,14 +276,14 @@ input TeacherCreateRequest {
   academicTitleId: ID
   address: String
   avatar: Upload
-  birthday: DateTime
+  birthday: String
   commissionId: ID!
   departmentId: ID!
   email: String!
   fullName: String!
   phone: String
   teacherRankId: ID
-  workStartDate: String
+  workStartDate: DateTime
 }
 
 input TeacherGetByIdRequest {
@@ -342,7 +344,7 @@ input TeacherUpdateRequest {
   id: ID!
   phone: String
   teacherRankId: ID
-  workStartDate: String
+  workStartDate: DateTime
 }
 
 input TeachingRankCreateRequest {

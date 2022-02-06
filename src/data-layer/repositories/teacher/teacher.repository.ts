@@ -207,11 +207,11 @@ export class TeacherRepository {
         filters.id = {[Op.in]: repoRequest.ids};
       }
 
-      if(!isNil(repoRequest.emailEqual)) {
+      if (!isNil(repoRequest.emailEqual)) {
         filters.email = repoRequest.emailEqual;
       }
 
-      if(!isNil(repoRequest.phoneEqual)) {
+      if (!isNil(repoRequest.phoneEqual)) {
         filters.phone = repoRequest.phoneEqual;
       }
 
@@ -284,7 +284,7 @@ export class TeacherRepository {
         academicTitleId: repoRequest.academicTitleId,
       });
       return {createdID: id};
-    }  catch (e) {
+    } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);
         throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
@@ -298,55 +298,55 @@ export class TeacherRepository {
   async updateTeacher(repoRequest: TeacherUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
     const updateData = {} as Omit<TeacherDbModel, keyof Model>;
 
-    if(!isUndefined(repoRequest.email)) {
+    if (!isUndefined(repoRequest.email)) {
       updateData.email = repoRequest.email;
     }
 
-    if(!isUndefined(repoRequest.address)) {
+    if (!isUndefined(repoRequest.address)) {
       updateData.address = repoRequest.address;
     }
 
-    if(!isUndefined(repoRequest.fullName)) {
+    if (!isUndefined(repoRequest.fullName)) {
       updateData.fullName = repoRequest.fullName;
     }
 
-    if(!isUndefined(repoRequest.avatarUrl)) {
+    if (!isUndefined(repoRequest.avatarUrl)) {
       updateData.avatarUrl = repoRequest.avatarUrl;
     }
 
-    if(!isUndefined(repoRequest.birthday)) {
+    if (!isUndefined(repoRequest.birthday)) {
       updateData.birthday = repoRequest.birthday;
     }
 
-    if(!isUndefined(repoRequest.phone)) {
+    if (!isUndefined(repoRequest.phone)) {
       updateData.phone = repoRequest.phone;
     }
 
-    if(!isUndefined(repoRequest.workStartDate)) {
+    if (!isUndefined(repoRequest.workStartDate)) {
       updateData.workStartDate = repoRequest.workStartDate;
     }
 
-    if(!isUndefined(repoRequest.academicDegreeId)) {
+    if (!isUndefined(repoRequest.academicDegreeId)) {
       updateData.academicDegreeId = repoRequest.academicDegreeId;
     }
 
-    if(!isUndefined(repoRequest.academicTitleId)) {
+    if (!isUndefined(repoRequest.academicTitleId)) {
       updateData.academicTitleId = repoRequest.academicTitleId;
     }
 
-    if(!isUndefined(repoRequest.teacherRankId)) {
+    if (!isUndefined(repoRequest.teacherRankId)) {
       updateData.teacherRankId = repoRequest.teacherRankId;
     }
 
-    if(!isUndefined(repoRequest.commissionId)) {
+    if (!isUndefined(repoRequest.commissionId)) {
       updateData.commissionId = repoRequest.commissionId;
     }
 
-    if(!isUndefined(repoRequest.departmentId)) {
+    if (!isUndefined(repoRequest.departmentId)) {
       updateData.departmentId = repoRequest.departmentId;
     }
 
-    if(!isEmpty(updateData)) {
+    if (!isEmpty(updateData)) {
       updateData.guid = sequelize.literal('UUID()') as any;
       await this.teacherDbModel.update(updateData, {where: {id: repoRequest.id}});
     }

@@ -1,7 +1,7 @@
 import {AutoIncrement, BelongsTo, Column, DataType, ForeignKey, HasOne, Model, Table} from 'sequelize-typescript';
 import sequelize from 'sequelize';
 import {RoleDbModel} from './role.db-model';
-import {TokenDbModel} from './token.db-model';
+import {RefreshTokenDbModel} from './refresh-token-db.model';
 
 export interface UserInterface {
   id: number;
@@ -43,8 +43,8 @@ export class UserDbModel extends Model<UserInterface, Omit<UserInterface, 'guid'
   @BelongsTo(() => RoleDbModel)
   role: RoleDbModel;
 
-  @HasOne(() => TokenDbModel)
-  token: TokenDbModel;
+  @HasOne(() => RefreshTokenDbModel)
+  token: RefreshTokenDbModel;
 
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isDeleted?: boolean;

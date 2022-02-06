@@ -56,43 +56,43 @@ export class TeacherMapper {
     destination.id = source.id;
     destination.fullName = source.fullName;
     destination.email = source.email;
-    destination.birthday = source.birthday;
+    destination.birthday = source.birthday?.toISOString().split('T')[0];
     destination.phone = source.phone;
     destination.address = source.address;
     destination.avatarUrl = source.avatarUrl;
-    destination.workStartDate = source.workStartDate;
+    destination.workStartDate = source.workStartDate?.toISOString().split('T')[0];
     destination.isDeleted = source.isDeleted;
     destination.guid = source.guid;
 
-    if(source.commission) {
+    if (source.commission) {
       destination.commission = {
         id: source.commission.id,
         name: source.commission.name
       };
     }
 
-    if(source.department) {
+    if (source.department) {
       destination.department = {
         id: source.department.id,
         name: source.department.name
       };
     }
 
-    if(source.teacherRank) {
+    if (source.teacherRank) {
       destination.teacherRank = {
         id: source.teacherRank.id,
         name: source.teacherRank.name
       };
     }
 
-    if(source.academicDegree) {
+    if (source.academicDegree) {
       destination.academicDegree = {
         id: source.academicDegree.id,
         name: source.academicDegree.name
       };
     }
 
-    if(source.academicTitle) {
+    if (source.academicTitle) {
       destination.academicTitle = {
         id: source.academicTitle.id,
         name: source.academicTitle.name
@@ -132,7 +132,7 @@ export class TeacherMapper {
     destination.phone = source.phone;
     destination.address = source.address;
     destination.avatarUrl = avatarUrl;
-    destination.birthday = source.birthday ? source.birthday.toISOString().split('T')[0] : null;
+    destination.birthday = source.birthday;
     destination.teacherRankId = source.teacherRankId;
     destination.academicTitleId = source.academicTitleId;
     destination.academicDegreeId = source.academicDegreeId;
@@ -222,7 +222,7 @@ export class TeacherMapper {
     destination.phone = source.phone;
     destination.address = source.address;
     destination.avatarUrl = avatarUrl;
-    destination.birthday = source.birthday?.toISOString().split('T')[0];
+    destination.birthday = source.birthday;
     destination.teacherRankId = source.teacherRankId;
     destination.academicTitleId = source.academicTitleId;
     destination.academicDegreeId = source.academicDegreeId;

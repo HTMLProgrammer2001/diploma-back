@@ -10,12 +10,17 @@ import {TeacherGetByIdRequest} from '../types/request/teacher-get-by-id.request'
 import {TeacherCreateRequest} from '../types/request/teacher-create.request';
 import {IdResponse} from '../../../global/types/response/id.response';
 import {TeacherUpdateRequest} from '../types/request/teacher-update.request';
+import {SetMetadata} from '@nestjs/common';
+import {MetaDataFieldEnum} from '../../../global/constants/meta-data-fields.enum';
+import {readRoles, writeRoles} from '../../../global/utils/roles';
 
 @Resolver(of => TeacherResponse)
 export class TeacherResolver {
-  constructor(private teacherService: TeacherService) {}
+  constructor(private teacherService: TeacherService) {
+  }
 
   @Query(returns => TeacherListResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
   async getTeacherList(@Args('query') request: TeacherGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<TeacherResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
@@ -23,6 +28,7 @@ export class TeacherResolver {
   }
 
   @Query(returns => TeacherResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
   async getTeacherById(@Args('query') request: TeacherGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<TeacherResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -30,6 +36,7 @@ export class TeacherResolver {
   }
 
   @Mutation(returns => TeacherResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async createTeacher(@Args('body') request: TeacherCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<TeacherResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -37,6 +44,7 @@ export class TeacherResolver {
   }
 
   @Mutation(returns => TeacherResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async updateTeacher(@Args('body') request: TeacherUpdateRequest, @Info() info: GraphQLResolveInfo):
     Promise<TeacherResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -44,6 +52,7 @@ export class TeacherResolver {
   }
 
   @Mutation(returns => IdResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async deleteTeacher(
     @Args('id', {type: () => Int}) id: number,
     @Args('guid', {type: () => String}) guid: string,

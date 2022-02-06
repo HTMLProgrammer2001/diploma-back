@@ -178,11 +178,11 @@ export class UserService {
     }
 
     //validate unique email
-    if(!isNil(request.email)) {
+    if (!isNil(request.email)) {
       const getTeacherByEmailRepoRequest = this.userMapper.initializeGetUserByEmailRepoRequest(request.email);
       const {data: teacherByEmailData} = await this.userRepository.getUsers(getTeacherByEmailRepoRequest);
 
-      if(teacherByEmailData.responseList.length && teacherByEmailData.responseList[0].id !== (request as any).id) {
+      if (teacherByEmailData.responseList.length && teacherByEmailData.responseList[0].id !== (request as any).id) {
         throw new CustomError({
           code: ErrorCodesEnum.VALIDATION,
           message: `User with email ${request.email} already exist`
@@ -191,11 +191,11 @@ export class UserService {
     }
 
     //validate unique phone
-    if(!isNil(request.phone)) {
+    if (!isNil(request.phone)) {
       const getTeacherByPhoneRepoRequest = this.userMapper.initializeGetUserByPhoneRepoRequest(request.phone);
       const {data: teacherByPhoneData} = await this.userRepository.getUsers(getTeacherByPhoneRepoRequest);
 
-      if(teacherByPhoneData.responseList.length && teacherByPhoneData.responseList[0].id !== (request as any).id) {
+      if (teacherByPhoneData.responseList.length && teacherByPhoneData.responseList[0].id !== (request as any).id) {
         throw new CustomError({
           code: ErrorCodesEnum.VALIDATION,
           message: `User with phone ${request.phone} already exist`
@@ -204,11 +204,11 @@ export class UserService {
     }
 
     //validate role
-    if(!isNil(request.roleId)) {
+    if (!isNil(request.roleId)) {
       const getRoleRepoRequest = this.userMapper.initializeGetRoleRepoRequest(request.roleId);
       const {data: roleData} = await this.roleRepository.getRoles(getRoleRepoRequest);
 
-      if(!roleData.responseList.length) {
+      if (!roleData.responseList.length) {
         throw new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Role with id ${request.roleId} not found`

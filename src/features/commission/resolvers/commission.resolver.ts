@@ -10,12 +10,17 @@ import {CommissionCreateRequest} from '../types/request/commission-create.reques
 import {CommissionUpdateRequest} from '../types/request/commission-update.request';
 import {CommissionListResponse} from '../types/response/commission-list.response';
 import {IdResponse} from '../../../global/types/response/id.response';
+import {SetMetadata} from '@nestjs/common';
+import {MetaDataFieldEnum} from '../../../global/constants/meta-data-fields.enum';
+import {readRoles, writeRoles} from '../../../global/utils/roles';
 
 @Resolver(of => CommissionResponse)
 export class CommissionResolver {
-  constructor(private commissionService: CommissionService) {}
+  constructor(private commissionService: CommissionService) {
+  }
 
   @Query(returns => CommissionListResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
   async getCommissionsList(@Args('query') request: CommissionGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<CommissionResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
@@ -23,6 +28,7 @@ export class CommissionResolver {
   }
 
   @Query(returns => CommissionResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
   async getCommissionById(@Args('query') request: CommissionGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<CommissionResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -30,6 +36,7 @@ export class CommissionResolver {
   }
 
   @Mutation(returns => CommissionResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async createCommission(@Args('body') request: CommissionCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<CommissionResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -37,6 +44,7 @@ export class CommissionResolver {
   }
 
   @Mutation(returns => CommissionResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async updateCommission(@Args('body') request: CommissionUpdateRequest, @Info() info: GraphQLResolveInfo):
     Promise<CommissionResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -44,6 +52,7 @@ export class CommissionResolver {
   }
 
   @Mutation(returns => IdResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async deleteCommission(
     @Args('id', {type: () => Int}) id: number,
     @Args('guid', {type: () => String}) guid: string,

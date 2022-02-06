@@ -5,7 +5,7 @@ import {AppController} from './app.controller';
 import {GraphQLModule} from '@nestjs/graphql';
 import {GraphQLError} from 'graphql';
 import {CommissionModule} from './features/commission/commission.module';
-import {APP_FILTER} from '@nestjs/core';
+import {APP_FILTER, APP_GUARD, APP_INTERCEPTOR} from '@nestjs/core';
 import {DepartmentModule} from './features/department/department.module';
 import {RoleModule} from './features/role/role.module';
 import {TeachingRankModule} from './features/teaching-rank/teaching-rank.module';
@@ -22,8 +22,11 @@ import {ErrorCodesEnum} from './global/constants/error-codes.enum';
 import {AllErrorFilter} from './global/filters/all-error.filter';
 import {ValidationErrorFilter} from './global/filters/validation-error.filter';
 import {UserModule} from './features/user/user.module';
-import {RequestContextMiddleware} from './global/middlewares/request-context.middleware';
+import {AuthorizationHeaderMiddleware} from './global/middlewares/authorization-header.middleware';
 import {AuthModule} from './features/auth/auth.module';
+import {IsAuthorisedGuard} from './global/guards/is-authorised-guard.service';
+import {LoggerInterceptor} from './global/interceptors/logger.interceptor';
+import {RoleGuard} from './global/guards/role.guard';
 
 @Module({
   imports: [
@@ -50,20 +53,18 @@ import {AuthModule} from './features/auth/auth.module';
       formatError: (error: GraphQLError) => {
         const originalError = error.originalError;
 
-        if(originalError instanceof CustomArrayError){
+        if (originalError instanceof CustomArrayError) {
           return {
             message: originalError.message,
             code: originalError.code,
             errors: originalError.errors
           };
-        }
-        else if(originalError instanceof CustomError) {
+        } else if (originalError instanceof CustomError) {
           return {
             message: originalError.message,
             code: originalError.code,
           };
-        }
-        else {
+        } else {
           return {
             message: error.message,
             code: ErrorCodesEnum.GENERAL,
@@ -94,10 +95,22 @@ import {AuthModule} from './features/auth/auth.module';
       provide: APP_FILTER,
       useClass: ValidationErrorFilter
     },
+    {
+      provide: APP_GUARD,
+      useClass: IsAuthorisedGuard
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggerInterceptor
+    }
   ]
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestContextMiddleware).forRoutes('');
+    consumer.apply(AuthorizationHeaderMiddleware).forRoutes('');
   }
 }

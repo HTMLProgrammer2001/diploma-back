@@ -1,6 +1,6 @@
 import {IPaginator} from '../types/interface/IPaginator.interface';
 
-export function convertFindAndCountToPaginator<T>(data: {rows: Array<T>, count: number}, page: number, size: number):
+export function convertFindAndCountToPaginator<T>(data: { rows: Array<T>, count: number }, page: number, size: number):
   IPaginator<T> {
   return {
     page,

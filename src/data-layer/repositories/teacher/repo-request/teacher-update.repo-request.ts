@@ -2,7 +2,7 @@ export class TeacherUpdateRepoRequest {
   id: number;
   fullName?: string;
   email?: string;
-  birthday?: string;
+  birthday?: Date;
   phone?: string;
   address?: string;
   avatarUrl?: string;
@@ -11,5 +11,5 @@ export class TeacherUpdateRepoRequest {
   teacherRankId?: number;
   academicDegreeId?: number;
   academicTitleId?: number;
-  workStartDate?: string;
+  workStartDate?: Date;
 }

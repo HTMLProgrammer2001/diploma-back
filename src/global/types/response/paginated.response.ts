@@ -21,7 +21,7 @@ export abstract class PaginatedData {
 }
 
 export function Paginated<T>(classRef: Type<T>): Type<IPaginator<T>> {
-  @ObjectType({ isAbstract: true, implements: [PaginatedData] })
+  @ObjectType({isAbstract: true, implements: [PaginatedData]})
   abstract class PaginatedType extends PaginatedData implements IPaginator<T> {
     @Field((type) => [classRef])
     responseList: Array<T>;

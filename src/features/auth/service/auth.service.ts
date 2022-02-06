@@ -1,26 +1,28 @@
 import {Injectable, Logger} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import crypto from 'crypto';
+import * as crypto from 'crypto';
 import {AuthMapper} from '../mapper/auth.mapper';
 import {LoginResponse} from '../types/response/login.response';
 import {LoginRequest} from '../types/request/login.request';
-import {TokenRepository} from '../../../data-layer/repositories/token/token.repository';
+import {RefreshTokenRepository} from '../../../data-layer/repositories/refresh-token/refresh-token.repository';
 import {ResultResponse} from '../../../global/types/response/result.response';
 import {RefreshTokenResponse} from '../types/response/refresh-token.response';
-import {RequestContext} from '../../../global/services/request-context';
 import {UserRepository} from '../../../data-layer/repositories/user/user.repository';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
+import {JwtService} from '@nestjs/jwt';
+import {IAccessTokenInfoInterface} from '../../../global/types/interface/IAccessTokenInfo.interface';
+import {IRefreshTokenInfoInterface} from '../../../global/types/interface/IRefreshTokenInfo.interface';
 
 @Injectable()
 export class AuthService {
   private logger: Logger;
 
   constructor(
-    private tokenRepository: TokenRepository,
+    private jwtService: JwtService,
+    private refreshTokenRepository: RefreshTokenRepository,
     private userRepository: UserRepository,
     private authMapper: AuthMapper,
-    private requestContext: RequestContext,
   ) {
     this.logger = new Logger(AuthService.name);
   }
@@ -32,25 +34,42 @@ export class AuthService {
 
       const userModel = getUserByEmailResponse.responseList[0];
 
-      if(!userModel) {
+      if (!userModel) {
         throw new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `User with email ${request.email} not exist`
         });
       }
 
-      if(!bcrypt.compareSync(request.password, userModel.passwordHash)) {
+      if (!bcrypt.compareSync(request.password, userModel.passwordHash)) {
         throw new CustomError({
           code: ErrorCodesEnum.VALIDATION,
           message: 'Incorrect password'
         });
       }
 
-      const userSessionToken = crypto.randomBytes(20).toString('hex');
-      const createTokenRepoRequest = this.authMapper.loginRequestToCreateTokenRepoRequest(userModel.id, userSessionToken);
-      await this.tokenRepository.createToken(createTokenRepoRequest);
+      const userSessionCode = crypto.randomBytes(20).toString('hex');
+      const createRefreshTokenRepoRequest = this.authMapper
+        .loginRequestToCreateRefreshTokenRepoRequest(userModel.id, userSessionCode);
 
-      return {token: this.requestContext.getToken()};
+      await this.refreshTokenRepository.createRefreshToken(createRefreshTokenRepoRequest);
+      const refreshTokenPayload: IRefreshTokenInfoInterface = {sessionCode: userSessionCode};
+      const refreshToken = this.jwtService.sign(refreshTokenPayload, {
+        secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+        expiresIn: Number(process.env.JWT_REFRESH_TOKEN_TTL_SECONDS)
+      });
+
+      const accessTokenPayload: IAccessTokenInfoInterface = {
+        userId: userModel.id,
+        role: userModel.role?.id
+      };
+
+      const accessToken = this.jwtService.sign(accessTokenPayload, {
+        secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+        expiresIn: Number(process.env.JWT_ACCESS_TOKEN_TTL_SECONDS)
+      });
+
+      return {refreshToken, accessToken};
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);
@@ -61,11 +80,103 @@ export class AuthService {
     }
   }
 
-  async logout(): Promise<ResultResponse> {
-    return {result: true};
+  async logout(refreshToken: string): Promise<ResultResponse> {
+    try {
+      const {sessionCode} = await this.jwtService.verify<IRefreshTokenInfoInterface>(
+        refreshToken,
+        {secret: process.env.JWT_REFRESH_TOKEN_SECRET}
+      );
+
+      const getRefreshTokenRepoRequest = this.authMapper.initializeGetRefreshTokenRepoRequest(sessionCode);
+      const {data: getRefreshTokenResponse} = await this.refreshTokenRepository.getRefreshToken(getRefreshTokenRepoRequest);
+
+      if (!getRefreshTokenResponse) {
+        throw new CustomError({
+          code: ErrorCodesEnum.NOT_FOUND,
+          message: `Session code ${sessionCode} not exist`
+        });
+      }
+
+      const deleteRefreshTokenRepoRequest = this.authMapper.logoutRequestToDeleteRefreshTokenRepoRequest(sessionCode);
+      await this.refreshTokenRepository.deleteRefreshToken(deleteRefreshTokenRepoRequest);
+
+      return {result: true};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
   }
 
-  async refreshToken(): Promise<RefreshTokenResponse> {
-    return {token: ''};
+  async refreshToken(refreshToken: string): Promise<RefreshTokenResponse> {
+    try {
+      //check refresh token validity
+      const {sessionCode} = await this.jwtService.verify<IRefreshTokenInfoInterface>(
+        refreshToken,
+        {secret: process.env.JWT_REFRESH_TOKEN_SECRET}
+      );
+
+      const getRefreshTokenRepoRequest = this.authMapper.initializeGetRefreshTokenRepoRequest(sessionCode);
+      const {data: getRefreshTokenResponse} = await this.refreshTokenRepository.getRefreshToken(getRefreshTokenRepoRequest);
+
+      if (!getRefreshTokenResponse) {
+        throw new CustomError({
+          code: ErrorCodesEnum.NOT_FOUND,
+          message: `Session code ${sessionCode} not exist`
+        });
+      }
+
+      //check user state
+      const getUserByIdRequest = this.authMapper.initializeGetUserByIdRepoRequest(getRefreshTokenResponse.userId);
+      const {data: getUserByIdResponse} = await this.userRepository.getUsers(getUserByIdRequest);
+
+      const userModel = getUserByIdResponse.responseList[0];
+
+      if (!userModel) {
+        throw new CustomError({
+          code: ErrorCodesEnum.NOT_FOUND,
+          message: `User with id ${getRefreshTokenResponse.userId} not exist`
+        });
+      }
+      else if(userModel.isDeleted) {
+        throw new CustomError({
+          code: ErrorCodesEnum.VALIDATION,
+          message: `User with id ${getRefreshTokenResponse.userId} is deleted`
+        });
+      }
+
+      const newUserSessionCode = crypto.randomBytes(20).toString('hex');
+      const updateRefreshTokenRepoRequest = this.authMapper
+        .refreshTokenRequestToUpdateRefreshTokenRepoRequest(sessionCode, newUserSessionCode);
+
+      await this.refreshTokenRepository.updateRefreshToken(updateRefreshTokenRepoRequest);
+      const newRefreshTokenPayload: IRefreshTokenInfoInterface = {sessionCode: newUserSessionCode};
+      const newRefreshToken = this.jwtService.sign(newRefreshTokenPayload, {
+        secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+        expiresIn: Number(process.env.JWT_REFRESH_TOKEN_TTL_SECONDS)
+      });
+
+      const newAccessTokenPayload: IAccessTokenInfoInterface = {
+        userId: userModel.id,
+        role: userModel.roleId
+      };
+
+      const newAccessToken = this.jwtService.sign(newAccessTokenPayload, {
+        secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+        expiresIn: Number(process.env.JWT_ACCESS_TOKEN_TTL_SECONDS)
+      });
+
+      return {refreshToken: newRefreshToken, accessToken: newAccessToken};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
   }
 }

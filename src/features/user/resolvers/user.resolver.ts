@@ -10,12 +10,17 @@ import {UserGetByIdRequest} from '../types/request/user-get-by-id.request';
 import {UserCreateRequest} from '../types/request/user-create.request';
 import {IdResponse} from '../../../global/types/response/id.response';
 import {UserUpdateRequest} from '../types/request/user-update.request';
+import {SetMetadata} from '@nestjs/common';
+import {MetaDataFieldEnum} from '../../../global/constants/meta-data-fields.enum';
+import {readRoles, writeRoles} from '../../../global/utils/roles';
 
 @Resolver(of => UserResponse)
 export class UserResolver {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) {
+  }
 
   @Query(returns => UserListResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
   async getUserList(@Args('query') request: UserGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<UserResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
@@ -23,6 +28,7 @@ export class UserResolver {
   }
 
   @Query(returns => UserResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
   async getUserById(@Args('query') request: UserGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<UserResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -30,6 +36,7 @@ export class UserResolver {
   }
 
   @Mutation(returns => UserResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async createUser(@Args('body') request: UserCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<UserResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -37,6 +44,7 @@ export class UserResolver {
   }
 
   @Mutation(returns => UserResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async updateUser(@Args('body') request: UserUpdateRequest, @Info() info: GraphQLResolveInfo):
     Promise<UserResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -44,6 +52,7 @@ export class UserResolver {
   }
 
   @Mutation(returns => IdResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async deleteUser(
     @Args('id', {type: () => Int}) id: number,
     @Args('guid', {type: () => String}) guid: string,
