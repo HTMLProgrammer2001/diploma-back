@@ -34,6 +34,7 @@ export class TeacherMapper {
     destination.teacherRankId = source.teachingRankId;
     destination.academicTitleId = source.academicTitleId;
     destination.academicDegreeId = source.academicDegreeId;
+    destination.showDeleted = source.showDeleted;
     destination.orderField = source.orderField;
     destination.isDesc = !!source.isDesc;
     destination.select = [...source.select];
@@ -107,6 +108,7 @@ export class TeacherMapper {
 
     destination.id = source.id;
     destination.select = source.select;
+    destination.showDeleted = source.showDeleted;
     destination.page = 1;
     destination.size = 1;
 
@@ -118,6 +120,7 @@ export class TeacherMapper {
 
     destination.id = id;
     destination.select = select;
+    destination.showDeleted = true;
     destination.page = 1;
     destination.size = 1;
 

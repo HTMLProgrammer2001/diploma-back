@@ -1,24 +1,24 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {InjectModel} from '@nestjs/sequelize';
-import {UserGetRepoRequest} from './repo-request/user-get.repo-request';
-import {UserGetRepoResponse} from './repo-response/user-get.repo-response';
 import {FindAttributeOptions, IncludeOptions, ProjectionAlias} from 'sequelize/dist/lib/model';
-import {UserSelectFieldsEnum} from './enums/user-select-fields.enum';
 import sequelize, {Op, WhereOptions} from 'sequelize';
 import {isEmpty, isNil, isUndefined} from 'lodash';
+import {Model} from 'sequelize-typescript';
 import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
-import {UserOrderFieldsEnum} from './enums/user-order-fields.enum';
-import {UserCreateRepoRequest} from './repo-request/user-create.repo-request';
-import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
-import {UserDeleteRepoRequest} from './repo-request/user-delete.repo-request';
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
-import {UserUpdateRepoRequest} from './repo-request/user-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {Model} from 'sequelize-typescript';
 import {UserDbModel} from '../../db-models/user.db-model';
 import {RoleDbModel} from '../../db-models/role.db-model';
+import {UserGetRepoRequest} from './repo-request/user-get.repo-request';
+import {UserGetRepoResponse} from './repo-response/user-get.repo-response';
+import {UserSelectFieldsEnum} from './enums/user-select-fields.enum';
+import {UserOrderFieldsEnum} from './enums/user-order-fields.enum';
+import {UserCreateRepoRequest} from './repo-request/user-create.repo-request';
+import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
+import {UserUpdateRepoRequest} from './repo-request/user-update.repo-request';
+import {UserDeleteRepoRequest} from './repo-request/user-delete.repo-request';
 
 @Injectable()
 export class UserRepository {

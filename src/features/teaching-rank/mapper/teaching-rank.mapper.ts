@@ -17,6 +17,7 @@ export class TeachingRankMapper {
     const destination = new TeachingRankGetRepoRequest();
 
     destination.name = source.name;
+    destination.showDeleted = source.showDeleted;
     destination.orderField = source.orderField;
     destination.isDesc = !!source.isDesc;
     destination.select = [...source.select];

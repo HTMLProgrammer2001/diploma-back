@@ -1,52 +1,44 @@
 import {Field, ID, InputType} from '@nestjs/graphql';
 import {BasePaginatorRequest} from '../../../../global/types/request/base-paginator.request';
-import {IsBoolean, IsEnum, IsNumber, IsOptional, IsString} from 'class-validator';
+import {IsBoolean, IsEnum, IsNumber, IsOptional, IsString, MaxDate, MinDate} from 'class-validator';
 import {TeacherOrderFieldsEnum} from '../../../../data-layer/repositories/teacher/enums/teacher-order-fields.enum';
 import {ParseNumber} from '../../../../global/pipes/parse-number';
+import {ValidateDate} from '../../../../global/pipes/validate-date';
 
 @InputType()
-export class TeacherGetListRequest extends BasePaginatorRequest {
+export class HonorGetListRequest extends BasePaginatorRequest {
   select: Array<string>;
 
   @Field({nullable: true})
   @IsOptional()
   @IsString()
-  fullName: string;
+  title: string;
+
+  @Field(type => String, {nullable: true})
+  @IsOptional()
+  @ValidateDate()
+  dateMore: Date;
+
+  @Field(type => String, {nullable: true})
+  @IsOptional()
+  @ValidateDate()
+  dateLess: Date;
 
   @Field({nullable: true})
   @IsOptional()
   @IsString()
-  email: string;
+  orderNumber: string;
 
   @Field(type => ID, {nullable: true})
   @IsOptional()
   @ParseNumber()
   @IsNumber()
-  departmentId: number;
+  userId: number;
 
-  @Field(type => ID, {nullable: true})
+  @Field({nullable: true})
   @IsOptional()
-  @ParseNumber()
-  @IsNumber()
-  commissionId: number;
-
-  @Field(type => ID, {nullable: true})
-  @IsOptional()
-  @ParseNumber()
-  @IsNumber()
-  teachingRankId: number;
-
-  @Field(type => ID, {nullable: true})
-  @IsOptional()
-  @ParseNumber()
-  @IsNumber()
-  academicDegreeId: number;
-
-  @Field(type => ID, {nullable: true})
-  @IsOptional()
-  @ParseNumber()
-  @IsNumber()
-  academicTitleId: number;
+  @IsBoolean()
+  showInActive: boolean;
 
   @Field({nullable: true})
   @IsOptional()

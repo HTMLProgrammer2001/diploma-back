@@ -17,6 +17,7 @@ export class AcademicDegreeMapper {
     const destination = new AcademicDegreeGetRepoRequest();
 
     destination.name = source.name;
+    destination.showDeleted = source.showDeleted;
     destination.orderField = source.orderField;
     destination.isDesc = !!source.isDesc;
     destination.select = [...source.select];

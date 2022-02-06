@@ -17,6 +17,7 @@ export class AcademicTitleMapper {
     const destination = new AcademicTitleGetRepoRequest();
 
     destination.name = source.name;
+    destination.showDeleted = source.showDeleted;
     destination.orderField = source.orderField;
     destination.isDesc = !!source.isDesc;
     destination.select = [...source.select];
@@ -61,7 +62,7 @@ export class AcademicTitleMapper {
 
     destination.id = id;
     destination.select = select;
-    destination.showDeleted = false;
+    destination.showDeleted = true;
     destination.page = 1;
     destination.size = 1;
 

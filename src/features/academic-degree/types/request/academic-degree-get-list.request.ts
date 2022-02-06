@@ -12,6 +12,11 @@ export class AcademicDegreeGetListRequest extends BasePaginatorRequest {
   @IsString()
   name: string;
 
+  @Field({nullable: true})
+  @IsOptional()
+  @IsBoolean()
+  showDeleted: boolean;
+
   @Field({nullable: true, defaultValue: AcademicDegreeOrderFieldsEnum.ID})
   @IsOptional()
   @IsEnum(AcademicDegreeOrderFieldsEnum)

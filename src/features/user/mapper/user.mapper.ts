@@ -6,14 +6,14 @@ import {UserResponse} from '../types/response/user.response';
 import {UserGetByIdRequest} from '../types/request/user-get-by-id.request';
 import {UserCreateRequest} from '../types/request/user-create.request';
 import {UserUpdateRequest} from '../types/request/user-update.request';
-import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-get.repo-request';
 import {UserDbModel} from '../../../data-layer/db-models/user.db-model';
-import {UserCreateRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-create.repo-request';
-import {UserUpdateRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-update.repo-request';
-import {UserDeleteRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-delete.repo-request';
 import {RoleGetRepoRequest} from '../../../data-layer/repositories/role/repo-request/role-get.repo-request';
 import {RoleSelectFieldsEnum} from '../../../data-layer/repositories/role/enums/role-select-fields.enum';
+import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-get.repo-request';
+import {UserCreateRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-create.repo-request';
 import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
+import {UserUpdateRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-update.repo-request';
+import {UserDeleteRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-delete.repo-request';
 
 @Injectable()
 export class UserMapper {
@@ -23,6 +23,7 @@ export class UserMapper {
     destination.fullName = source.fullName;
     destination.email = source.email;
     destination.roleId = source.roleId;
+    destination.showDeleted = source.showDeleted;
     destination.orderField = source.orderField;
     destination.isDesc = !!source.isDesc;
     destination.select = [...source.select];
@@ -65,6 +66,7 @@ export class UserMapper {
 
     destination.id = source.id;
     destination.select = source.select;
+    destination.showDeleted = source.showDeleted;
     destination.page = 1;
     destination.size = 1;
 
@@ -76,6 +78,7 @@ export class UserMapper {
 
     destination.id = id;
     destination.select = select;
+    destination.showDeleted = true;
     destination.page = 1;
     destination.size = 1;
 

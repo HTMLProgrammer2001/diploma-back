@@ -12,6 +12,11 @@ export class TeachingRankGetListRequest extends BasePaginatorRequest {
   @IsString()
   name: string;
 
+  @Field({nullable: true})
+  @IsOptional()
+  @IsBoolean()
+  showDeleted: boolean;
+
   @Field({nullable: true, defaultValue: TeachingRankOrderFieldsEnum.ID})
   @IsOptional()
   @IsEnum(TeachingRankOrderFieldsEnum)
