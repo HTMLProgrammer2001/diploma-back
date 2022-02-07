@@ -1,22 +1,22 @@
 import {Injectable} from '@nestjs/common';
-import {HonorGetListRequest} from '../types/request/honor-get-list.request';
+import {RebukeGetListRequest} from '../types/request/rebuke-get-list.request';
+import {RebukeGetRepoRequest} from '../../../data-layer/repositories/rebuke/repo-request/rebuke-get.repo-request';
 import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
-import {HonorResponse} from '../types/response/honor.response';
-import {HonorGetByIdRequest} from '../types/request/honor-get-by-id.request';
-import {HonorCreateRequest} from '../types/request/honor-create.request';
-import {HonorUpdateRequest} from '../types/request/honor-update.request';
-import {HonorGetRepoRequest} from '../../../data-layer/repositories/honor/repo-request/honor-get.repo-request';
-import {HonorDbModel} from '../../../data-layer/db-models/honor.db-model';
-import {HonorCreateRepoRequest} from '../../../data-layer/repositories/honor/repo-request/honor-create.repo-request';
-import {HonorUpdateRepoRequest} from '../../../data-layer/repositories/honor/repo-request/honor-update.repo-request';
-import {HonorDeleteRepoRequest} from '../../../data-layer/repositories/honor/repo-request/honor-delete.repo-request';
+import {RebukeDbModel} from '../../../data-layer/db-models/rebuke.db-model';
+import {RebukeResponse} from '../types/response/rebuke.response';
+import {RebukeGetByIdRequest} from '../types/request/rebuke-get-by-id.request';
+import {RebukeCreateRequest} from '../types/request/rebuke-create.request';
+import {RebukeCreateRepoRequest} from '../../../data-layer/repositories/rebuke/repo-request/rebuke-create.repo-request';
 import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-get.repo-request';
 import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
+import {RebukeUpdateRequest} from '../types/request/rebuke-update.request';
+import {RebukeUpdateRepoRequest} from '../../../data-layer/repositories/rebuke/repo-request/rebuke-update.repo-request';
+import {RebukeDeleteRepoRequest} from '../../../data-layer/repositories/rebuke/repo-request/rebuke-delete.repo-request';
 
 @Injectable()
-export class HonorMapper {
-  getHonorListRequestToRepoRequest(source: HonorGetListRequest): HonorGetRepoRequest {
-    const destination = new HonorGetRepoRequest();
+export class RebukeMapper {
+  getRebukeListRequestToRepoRequest(source: RebukeGetListRequest): RebukeGetRepoRequest {
+    const destination = new RebukeGetRepoRequest();
 
     destination.title = source.title;
     destination.dateLess = source.dateLess;
@@ -34,15 +34,15 @@ export class HonorMapper {
     return destination;
   }
 
-  honorPaginatorDbModelToResponse(source: IPaginator<HonorDbModel>): IPaginator<HonorResponse> {
+  rebukePaginatorDbModelToResponse(source: IPaginator<RebukeDbModel>): IPaginator<RebukeResponse> {
     return {
       ...source,
-      responseList: source.responseList.map(el => this.honorDbModelToResponse(el))
+      responseList: source.responseList.map(el => this.rebukeDbModelToResponse(el))
     };
   }
 
-  honorDbModelToResponse(source: HonorDbModel): HonorResponse {
-    const destination = new HonorResponse();
+  rebukeDbModelToResponse(source: RebukeDbModel): RebukeResponse {
+    const destination = new RebukeResponse();
 
     destination.id = source.id;
     destination.title = source.title;
@@ -63,8 +63,8 @@ export class HonorMapper {
     return destination;
   }
 
-  getHonorByIdRequestToRepoRequest(source: HonorGetByIdRequest): HonorGetRepoRequest {
-    const destination = new HonorGetRepoRequest();
+  getRebukeByIdRequestToRepoRequest(source: RebukeGetByIdRequest): RebukeGetRepoRequest {
+    const destination = new RebukeGetRepoRequest();
 
     destination.id = source.id;
     destination.select = source.select;
@@ -75,8 +75,8 @@ export class HonorMapper {
     return destination;
   }
 
-  initializeGetHonorByIdRepoRequest(id: number, select: Array<string>): HonorGetRepoRequest {
-    const destination = new HonorGetRepoRequest();
+  initializeGetRebukeByIdRepoRequest(id: number, select: Array<string>): RebukeGetRepoRequest {
+    const destination = new RebukeGetRepoRequest();
 
     destination.id = id;
     destination.select = select;
@@ -87,8 +87,8 @@ export class HonorMapper {
     return destination;
   }
 
-  createHonorRequestToRepoRequest(source: HonorCreateRequest): HonorCreateRepoRequest {
-    const destination = new HonorCreateRepoRequest();
+  createRebukeRequestToRepoRequest(source: RebukeCreateRequest): RebukeCreateRepoRequest {
+    const destination = new RebukeCreateRepoRequest();
 
     destination.date = source.date;
     destination.userId = source.userId;
@@ -110,8 +110,8 @@ export class HonorMapper {
     return destination;
   }
 
-  updateHonorRequestToRepoRequest(source: HonorUpdateRequest): HonorUpdateRepoRequest {
-    const destination = new HonorUpdateRepoRequest();
+  updateRebukeRequestToRepoRequest(source: RebukeUpdateRequest): RebukeUpdateRepoRequest {
+    const destination = new RebukeUpdateRepoRequest();
 
     destination.id = source.id;
     destination.title = source.title;
@@ -123,8 +123,8 @@ export class HonorMapper {
     return destination;
   }
 
-  deleteHonorRequestToRepoRequest(id: number): HonorDeleteRepoRequest {
-    const destination = new HonorDeleteRepoRequest();
+  deleteRebukeRequestToRepoRequest(id: number): RebukeDeleteRepoRequest {
+    const destination = new RebukeDeleteRepoRequest();
 
     destination.id = id;
 

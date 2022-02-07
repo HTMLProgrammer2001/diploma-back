@@ -28,6 +28,7 @@ import {IsAuthorisedGuard} from './global/guards/is-authorised-guard.service';
 import {LoggerInterceptor} from './global/interceptors/logger.interceptor';
 import {RoleGuard} from './global/guards/role.guard';
 import {HonorModule} from './features/honor/honor.module';
+import {RebukeModule} from './features/rebuke/rebuke.module';
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import {HonorModule} from './features/honor/honor.module';
     UserModule,
     AuthModule,
     HonorModule,
+    RebukeModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,12 +1,13 @@
 import {Field, ID, InputType} from '@nestjs/graphql';
 import {BasePaginatorRequest} from '../../../../global/types/request/base-paginator.request';
 import {IsBoolean, IsEnum, IsNumber, IsOptional, IsString} from 'class-validator';
+import {TeacherOrderFieldsEnum} from '../../../../data-layer/repositories/teacher/enums/teacher-order-fields.enum';
 import {ParseNumber} from '../../../../global/pipes/parse-number';
 import {ValidateDate} from '../../../../global/pipes/validate-date';
-import {HonorOrderFieldsEnum} from '../../../../data-layer/repositories/honor/enums/honor-order-fields.enum';
+import {RebukeOrderFieldsEnum} from '../../../../data-layer/repositories/rebuke/enums/rebuke-order-fields.enum';
 
 @InputType()
-export class HonorGetListRequest extends BasePaginatorRequest {
+export class RebukeGetListRequest extends BasePaginatorRequest {
   select: Array<string>;
 
   @Field({nullable: true})
@@ -45,9 +46,9 @@ export class HonorGetListRequest extends BasePaginatorRequest {
   @IsBoolean()
   showDeleted: boolean;
 
-  @Field({nullable: true, defaultValue: HonorOrderFieldsEnum.ID})
+  @Field({nullable: true, defaultValue: RebukeOrderFieldsEnum.ID})
   @IsOptional()
-  @IsEnum(HonorOrderFieldsEnum)
+  @IsEnum(RebukeOrderFieldsEnum)
   orderField: string;
 
   @Field({nullable: true})

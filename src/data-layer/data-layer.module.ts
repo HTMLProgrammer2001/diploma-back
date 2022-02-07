@@ -20,6 +20,8 @@ import {RefreshTokenDbModel} from './db-models/refresh-token-db.model';
 import {RefreshTokenRepository} from './repositories/refresh-token/refresh-token.repository';
 import {HonorDbModel} from './db-models/honor.db-model';
 import {HonorRepository} from './repositories/honor/honor.repository';
+import {RebukeDbModel} from './db-models/rebuke.db-model';
+import {RebukeRepository} from './repositories/rebuke/rebuke.repository';
 
 const getAppModels = () => SequelizeModule.forFeature([
   CommissionDbModel,
@@ -31,7 +33,8 @@ const getAppModels = () => SequelizeModule.forFeature([
   TeacherDbModel,
   UserDbModel,
   RefreshTokenDbModel,
-  HonorDbModel
+  HonorDbModel,
+  RebukeDbModel,
 ]);
 
 const getAppRepositories = () => [
@@ -45,6 +48,7 @@ const getAppRepositories = () => [
   UserRepository,
   RefreshTokenRepository,
   HonorRepository,
+  RebukeRepository,
 ]
 
 @Global()

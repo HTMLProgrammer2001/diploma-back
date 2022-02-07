@@ -1,35 +1,35 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {InjectModel} from '@nestjs/sequelize';
-import {HonorGetRepoRequest} from './repo-request/honor-get.repo-request';
-import {HonorGetRepoResponse} from './repo-response/honor-get.repo-response';
 import {FindAttributeOptions, IncludeOptions, ProjectionAlias} from 'sequelize/dist/lib/model';
-import {HonorSelectFieldsEnum} from './enums/honor-select-fields.enum';
 import sequelize, {Op, WhereOptions} from 'sequelize';
 import {isEmpty, isNil, isUndefined} from 'lodash';
 import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
-import {HonorOrderFieldsEnum} from './enums/honor-order-fields.enum';
 import {DepartmentDbModel} from '../../db-models/department.db-model';
-import {HonorCreateRepoRequest} from './repo-request/honor-create.repo-request';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
-import {HonorDeleteRepoRequest} from './repo-request/honor-delete.repo-request';
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
-import {HonorUpdateRepoRequest} from './repo-request/honor-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {Model} from 'sequelize-typescript';
-import {HonorDbModel} from '../../db-models/honor.db-model';
 import {UserDbModel} from '../../db-models/user.db-model';
+import {RebukeDbModel} from '../../db-models/rebuke.db-model';
+import {RebukeGetRepoRequest} from './repo-request/rebuke-get.repo-request';
+import {RebukeGetRepoResponse} from './repo-response/rebuke-get.repo-response';
+import {RebukeSelectFieldsEnum} from './enums/rebuke-select-fields.enum';
+import {RebukeOrderFieldsEnum} from './enums/rebuke-order-fields.enum';
+import {RebukeCreateRepoRequest} from './repo-request/rebuke-create.repo-request';
+import {RebukeUpdateRepoRequest} from './repo-request/rebuke-update.repo-request';
+import {RebukeDeleteRepoRequest} from './repo-request/rebuke-delete.repo-request';
 
 @Injectable()
-export class HonorRepository {
+export class RebukeRepository {
   private logger: Logger;
 
-  constructor(@InjectModel(HonorDbModel) private honorDbModel: typeof HonorDbModel) {
-    this.logger = new Logger(HonorRepository.name);
+  constructor(@InjectModel(RebukeDbModel) private rebukeDbModel: typeof RebukeDbModel) {
+    this.logger = new Logger(RebukeRepository.name);
   }
 
-  async getHonors(repoRequest: HonorGetRepoRequest): Promise<HonorGetRepoResponse> {
+  async getRebukes(repoRequest: RebukeGetRepoRequest): Promise<RebukeGetRepoResponse> {
     try {
       repoRequest.page = repoRequest.page ?? 1;
       repoRequest.size = repoRequest.size ?? 5;
@@ -41,51 +41,51 @@ export class HonorRepository {
       const attributes: FindAttributeOptions = [];
 
       if (!repoRequest) {
-        repoRequest.select = [HonorSelectFieldsEnum.ID, HonorSelectFieldsEnum.TITLE];
+        repoRequest.select = [RebukeSelectFieldsEnum.ID, RebukeSelectFieldsEnum.TITLE];
       }
 
       repoRequest.select.forEach(field => {
         switch (field) {
-          case HonorSelectFieldsEnum.ID:
+          case RebukeSelectFieldsEnum.ID:
             attributes.push('id');
             break;
 
-          case HonorSelectFieldsEnum.TITLE:
+          case RebukeSelectFieldsEnum.TITLE:
             attributes.push('title');
             break;
 
-          case HonorSelectFieldsEnum.DATE:
+          case RebukeSelectFieldsEnum.DATE:
             attributes.push('date');
             break;
 
-          case HonorSelectFieldsEnum.DESCRIPTION:
+          case RebukeSelectFieldsEnum.DESCRIPTION:
             attributes.push('description');
             break;
 
-          case HonorSelectFieldsEnum.ORDER_NUMBER:
+          case RebukeSelectFieldsEnum.ORDER_NUMBER:
             attributes.push('orderNumber');
             break;
 
-          case HonorSelectFieldsEnum.IS_ACTIVE:
+          case RebukeSelectFieldsEnum.IS_ACTIVE:
             attributes.push('isActive');
             break;
 
-          case HonorSelectFieldsEnum.IS_DELETED:
+          case RebukeSelectFieldsEnum.IS_DELETED:
             attributes.push('isDeleted');
             break;
 
-          case HonorSelectFieldsEnum.GUID:
+          case RebukeSelectFieldsEnum.GUID:
             attributes.push('guid');
             break;
 
-          case HonorSelectFieldsEnum.USER_ID:
+          case RebukeSelectFieldsEnum.USER_ID:
             if (!includes.user)
               includes.user = {model: UserDbModel, attributes: ['id']}
             else
               (includes.user.attributes as Array<string | ProjectionAlias>).push('id');
             break;
 
-          case HonorSelectFieldsEnum.USER_NAME:
+          case RebukeSelectFieldsEnum.USER_NAME:
             if (!includes.user)
               includes.user = {model: UserDbModel, attributes: ['fullName']}
             else
@@ -144,19 +144,19 @@ export class HonorRepository {
 
       if (!isNil(repoRequest.orderField)) {
         switch (repoRequest.orderField) {
-          case HonorOrderFieldsEnum.ID:
+          case RebukeOrderFieldsEnum.ID:
             order.push(['id', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
-          case HonorOrderFieldsEnum.TITLE:
+          case RebukeOrderFieldsEnum.TITLE:
             order.push(['title', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
-          case HonorOrderFieldsEnum.DATE:
+          case RebukeOrderFieldsEnum.DATE:
             order.push(['date', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
-          case HonorOrderFieldsEnum.USER:
+          case RebukeOrderFieldsEnum.USER:
             includes.user = includes.user ?? {model: UserDbModel, attributes: []};
             order.push([{model: UserDbModel, as: 'user'}, 'fullName', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
@@ -167,7 +167,7 @@ export class HonorRepository {
 
       //endregion
 
-      const data = await this.honorDbModel.findAndCountAll({
+      const data = await this.rebukeDbModel.findAndCountAll({
         where: filters,
         order,
         attributes,
@@ -187,9 +187,9 @@ export class HonorRepository {
     }
   }
 
-  async createHonor(repoRequest: HonorCreateRepoRequest): Promise<CommonCreateRepoResponse> {
+  async createRebuke(repoRequest: RebukeCreateRepoRequest): Promise<CommonCreateRepoResponse> {
     try {
-      const {id} = await this.honorDbModel.create({
+      const {id} = await this.rebukeDbModel.create({
         title: repoRequest.title,
         date: repoRequest.date,
         description: repoRequest.description,
@@ -208,8 +208,8 @@ export class HonorRepository {
     }
   }
 
-  async updateHonor(repoRequest: HonorUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
-    const updateData = {} as Omit<HonorDbModel, keyof Model>;
+  async updateRebuke(repoRequest: RebukeUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
+    const updateData = {} as Omit<RebukeDbModel, keyof Model>;
 
     if (!isUndefined(repoRequest.title)) {
       updateData.title = repoRequest.title;
@@ -237,15 +237,15 @@ export class HonorRepository {
 
     if (!isEmpty(updateData)) {
       updateData.guid = sequelize.literal('UUID()') as any;
-      await this.honorDbModel.update(updateData, {where: {id: repoRequest.id}});
+      await this.rebukeDbModel.update(updateData, {where: {id: repoRequest.id}});
     }
 
     return {updatedID: repoRequest.id};
   }
 
-  async deleteHonor(repoRequest: HonorDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
+  async deleteRebuke(repoRequest: RebukeDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
     try {
-      await this.honorDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
+      await this.rebukeDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
       return {deletedID: repoRequest.id};
     } catch (e) {
       if (!(e instanceof CustomError)) {

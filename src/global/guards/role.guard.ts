@@ -23,7 +23,7 @@ export class RoleGuard implements CanActivate {
 
     const roles = this.reflector.get<Array<RolesEnum>>(MetaDataFieldEnum.ROLES, gqlContext.getHandler());
 
-    if(!isNil(roles)) {
+    if (!isNil(roles)) {
       const token = gqlContext.getContext().req.headers['authorization'];
       try {
         const payload = this.jwtService.verify<IAccessTokenInfoInterface>(
@@ -31,10 +31,9 @@ export class RoleGuard implements CanActivate {
           {secret: process.env.JWT_ACCESS_TOKEN_SECRET}
         );
 
-        if(roles.includes(payload.role)) {
+        if (roles.includes(payload.role)) {
           return true;
-        }
-        else {
+        } else {
           throw new CustomError({
             code: ErrorCodesEnum.FORBID,
             message: 'You have not access to do this'
@@ -48,8 +47,7 @@ export class RoleGuard implements CanActivate {
 
         throw e;
       }
-    }
-    else {
+    } else {
       return true;
     }
   }

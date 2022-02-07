@@ -23,9 +23,9 @@ export class RefreshTokenRepository {
   async getRefreshToken(repoRequest: RefreshTokenGetRepoRequest): Promise<RefreshTokenGetRepoResponse> {
     try {
       const token = await this.refreshTokenDbModel.findOne({
-        where: { sessionCode: repoRequest.sessionCode },
+        where: {sessionCode: repoRequest.sessionCode},
       });
-      return { data: token };
+      return {data: token};
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);
@@ -67,7 +67,7 @@ export class RefreshTokenRepository {
           expirationTime: repoRequest.expirationTime,
           creationTime: new Date().toISOString()
         },
-        { where: { sessionCode: repoRequest.currentSessionCode } },
+        {where: {sessionCode: repoRequest.currentSessionCode}},
       );
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -84,7 +84,7 @@ export class RefreshTokenRepository {
 
   async deleteRefreshToken(repoRequest: RefreshTokenDeleteRepoRequest): Promise<void> {
     try {
-      await this.refreshTokenDbModel.destroy({ where: { sessionCode: repoRequest.sessionCode } });
+      await this.refreshTokenDbModel.destroy({where: {sessionCode: repoRequest.sessionCode}});
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

@@ -140,8 +140,7 @@ export class AuthService {
           code: ErrorCodesEnum.NOT_FOUND,
           message: `User with id ${getRefreshTokenResponse.userId} not exist`
         });
-      }
-      else if(userModel.isDeleted) {
+      } else if (userModel.isDeleted) {
         throw new CustomError({
           code: ErrorCodesEnum.VALIDATION,
           message: `User with id ${getRefreshTokenResponse.userId} is deleted`

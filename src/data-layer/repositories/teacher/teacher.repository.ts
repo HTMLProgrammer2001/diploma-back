@@ -233,12 +233,12 @@ export class TeacherRepository {
 
           case TeacherOrderFieldsEnum.COMMISSION_NAME:
             includes.commission = includes.commission ?? {model: CommissionDbModel, attributes: []};
-            order.push([CommissionDbModel, 'name', repoRequest.isDesc ? 'DESC' : 'ASC']);
+            order.push([{model: CommissionDbModel, as: 'commission'}, 'name', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
           case TeacherOrderFieldsEnum.DEPARTMENT_NAME:
             includes.commission = includes.commission ?? {model: DepartmentDbModel, attributes: []};
-            order.push([DepartmentDbModel, 'name', repoRequest.isDesc ? 'DESC' : 'ASC']);
+            order.push([{model: DepartmentDbModel, as: 'department'}, 'name', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
         }
       } else {

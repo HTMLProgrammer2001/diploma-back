@@ -11,13 +11,14 @@ import {MetaDataFieldEnum} from '../constants/meta-data-fields.enum';
 
 @Injectable()
 export class IsAuthorisedGuard implements CanActivate {
-  constructor(private jwtService: JwtService, private reflector: Reflector) {}
+  constructor(private jwtService: JwtService, private reflector: Reflector) {
+  }
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const gqlContext = GqlExecutionContext.create(context);
 
     const isAuthorized = this.reflector.get<boolean>(MetaDataFieldEnum.IS_CHECK_AUTHORIZATION, gqlContext.getHandler());
-    if(isAuthorized || isNil(isAuthorized)) {
+    if (isAuthorized || isNil(isAuthorized)) {
       const token = gqlContext.getContext().req.headers['authorization'];
       try {
         const payload = this.jwtService.verify<IAccessTokenInfoInterface>(
@@ -32,8 +33,7 @@ export class IsAuthorisedGuard implements CanActivate {
           message: e.message
         })
       }
-    }
-    else {
+    } else {
       return true;
     }
   }

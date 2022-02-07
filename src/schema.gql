@@ -242,6 +242,7 @@ type Mutation {
   createCommission(body: CommissionCreateRequest!): CommissionResponse!
   createDepartment(body: DepartmentCreateRequest!): DepartmentResponse!
   createHonor(body: HonorCreateRequest!): HonorResponse!
+  createRebuke(body: RebukeCreateRequest!): RebukeResponse!
   createTeacher(body: TeacherCreateRequest!): TeacherResponse!
   createTeachingRank(body: TeachingRankCreateRequest!): TeachingRankResponse!
   createUser(body: UserCreateRequest!): UserResponse!
@@ -250,6 +251,7 @@ type Mutation {
   deleteCommission(guid: String!, id: Int!): IdResponse!
   deleteDepartment(guid: String!, id: Int!): IdResponse!
   deleteHonor(guid: String!, id: Int!): IdResponse!
+  deleteRebuke(guid: String!, id: Int!): IdResponse!
   deleteTeacher(guid: String!, id: Int!): IdResponse!
   deleteTeachingRank(guid: String!, id: Int!): IdResponse!
   deleteUser(guid: String!, id: Int!): IdResponse!
@@ -261,6 +263,7 @@ type Mutation {
   updateCommission(body: CommissionUpdateRequest!): CommissionResponse!
   updateDepartment(body: DepartmentUpdateRequest!): DepartmentResponse!
   updateHonor(body: HonorUpdateRequest!): HonorResponse!
+  updateRebuke(body: RebukeUpdateRequest!): RebukeResponse!
   updateRole(body: RoleUpdateRequest!): RoleResponse!
   updateTeacher(body: TeacherUpdateRequest!): TeacherResponse!
   updateTeachingRank(body: TeachingRankUpdateRequest!): TeachingRankResponse!
@@ -286,6 +289,8 @@ type Query {
   getDepartmentsList(query: DepartmentGetListRequest!): DepartmentListResponse!
   getHonorById(query: HonorGetByIdRequest!): HonorResponse!
   getHonorList(query: HonorGetListRequest!): HonorListResponse!
+  getRebukeById(query: RebukeGetByIdRequest!): RebukeResponse!
+  getRebukeList(query: RebukeGetListRequest!): RebukeListResponse!
   getRoleById(query: RoleGetByIdRequest!): RoleResponse!
   getRoleList(query: RoleGetListRequest!): RoleListResponse!
   getTeacherById(query: TeacherGetByIdRequest!): TeacherResponse!
@@ -294,6 +299,64 @@ type Query {
   getTeachingRankList(query: TeachingRankGetListRequest!): TeachingRankListResponse!
   getUserById(query: UserGetByIdRequest!): UserResponse!
   getUserList(query: UserGetListRequest!): UserListResponse!
+}
+
+input RebukeCreateRequest {
+  date: String
+  description: String
+  isActive: Boolean = true
+  orderNumber: String
+  title: String!
+  userId: ID!
+}
+
+input RebukeGetByIdRequest {
+  id: ID!
+  showDeleted: Boolean
+}
+
+input RebukeGetListRequest {
+  dateLess: String
+  dateMore: String
+  isDesc: Boolean
+  orderField: String = "id"
+  orderNumber: String
+  showDeleted: Boolean
+  showInActive: Boolean
+  title: String
+  userId: ID
+}
+
+type RebukeListResponse implements PaginatedData {
+  page: Int!
+  responseList: [RebukeResponse!]!
+  size: Int!
+  skip: Int!
+  totalElements: Int!
+  totalPages: Int!
+}
+
+type RebukeResponse {
+  date: String!
+  description: String
+  guid: String!
+  id: ID!
+  isActive: Boolean!
+  isDeleted: Boolean!
+  orderNumber: String
+  title: String!
+  user: IdNameResponse!
+}
+
+input RebukeUpdateRequest {
+  date: String
+  description: String
+  guid: String!
+  id: ID!
+  isActive: Boolean
+  orderNumber: String
+  title: String
+  userId: ID
 }
 
 type RefreshTokenResponse {
