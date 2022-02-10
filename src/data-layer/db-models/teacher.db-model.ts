@@ -36,10 +36,7 @@ export class TeacherDbModel extends Model<TeacherInterface, Omit<TeacherInterfac
   @Column({allowNull: false})
   email: string;
 
-  @Column({
-    allowNull: true,
-    type: DataType.DATEONLY
-  })
+  @Column({allowNull: true, type: DataType.DATEONLY})
   birthday?: Date;
 
   @Column({allowNull: true})

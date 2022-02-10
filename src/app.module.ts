@@ -29,6 +29,7 @@ import {LoggerInterceptor} from './global/interceptors/logger.interceptor';
 import {RoleGuard} from './global/guards/role.guard';
 import {HonorModule} from './features/honor/honor.module';
 import {RebukeModule} from './features/rebuke/rebuke.module';
+import {PublicationModule} from './features/publication/publication.module';
 
 @Module({
   imports: [
@@ -47,7 +48,10 @@ import {RebukeModule} from './features/rebuke/rebuke.module';
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
       autoLoadModels: true,
-      synchronize: false
+      synchronize: false,
+      define: {
+        timestamps: false
+      }
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -88,6 +92,7 @@ import {RebukeModule} from './features/rebuke/rebuke.module';
     AuthModule,
     HonorModule,
     RebukeModule,
+    PublicationModule,
   ],
   controllers: [AppController],
   providers: [

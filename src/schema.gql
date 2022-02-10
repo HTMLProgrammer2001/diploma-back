@@ -242,6 +242,7 @@ type Mutation {
   createCommission(body: CommissionCreateRequest!): CommissionResponse!
   createDepartment(body: DepartmentCreateRequest!): DepartmentResponse!
   createHonor(body: HonorCreateRequest!): HonorResponse!
+  createPublication(body: PublicationCreateRequest!): PublicationResponse!
   createRebuke(body: RebukeCreateRequest!): RebukeResponse!
   createTeacher(body: TeacherCreateRequest!): TeacherResponse!
   createTeachingRank(body: TeachingRankCreateRequest!): TeachingRankResponse!
@@ -251,6 +252,7 @@ type Mutation {
   deleteCommission(guid: String!, id: Int!): IdResponse!
   deleteDepartment(guid: String!, id: Int!): IdResponse!
   deleteHonor(guid: String!, id: Int!): IdResponse!
+  deletePublication(guid: String!, id: Int!): IdResponse!
   deleteRebuke(guid: String!, id: Int!): IdResponse!
   deleteTeacher(guid: String!, id: Int!): IdResponse!
   deleteTeachingRank(guid: String!, id: Int!): IdResponse!
@@ -263,6 +265,7 @@ type Mutation {
   updateCommission(body: CommissionUpdateRequest!): CommissionResponse!
   updateDepartment(body: DepartmentUpdateRequest!): DepartmentResponse!
   updateHonor(body: HonorUpdateRequest!): HonorResponse!
+  updatePublication(body: PublicationUpdateRequest!): PublicationResponse!
   updateRebuke(body: RebukeUpdateRequest!): RebukeResponse!
   updateRole(body: RoleUpdateRequest!): RoleResponse!
   updateTeacher(body: TeacherUpdateRequest!): TeacherResponse!
@@ -278,6 +281,66 @@ interface PaginatedData {
   totalPages: Int!
 }
 
+input PublicationCreateRequest {
+  anotherAuthors: String
+  date: String!
+  description: String
+  publisher: String
+  title: String!
+  url: String
+  userIds: [ID!]!
+}
+
+input PublicationGetByIdRequest {
+  id: ID!
+  showDeleted: Boolean
+}
+
+input PublicationGetListRequest {
+  dateLess: String
+  dateMore: String
+  isDesc: Boolean
+  orderField: String = "id"
+  publisher: String
+  showDeleted: Boolean
+  title: String
+  userIds: [ID!]
+}
+
+type PublicationListResponse implements PaginatedData {
+  page: Int!
+  responseList: [PublicationResponse!]!
+  size: Int!
+  skip: Int!
+  totalElements: Int!
+  totalPages: Int!
+}
+
+type PublicationResponse {
+  anotherAuthors: String
+  date: String!
+  description: String
+  guid: String!
+  id: ID!
+  isDeleted: Boolean!
+  publisher: String
+  title: String!
+  url: String
+  users: [IdNameResponse!]
+}
+
+input PublicationUpdateRequest {
+  anotherAuthors: String
+  date: String
+  description: String
+  guid: String!
+  id: ID!
+  publisher: String
+  title: String
+  url: String
+  userIds: [ID!]
+}
+
 type Query {
   getAcademicDegreeById(query: AcademicDegreeGetByIdRequest!): AcademicDegreeResponse!
   getAcademicDegreeList(query: AcademicDegreeGetListRequest!): AcademicDegreeListResponse!
@@ -289,6 +352,8 @@ type Query {
   getDepartmentsList(query: DepartmentGetListRequest!): DepartmentListResponse!
   getHonorById(query: HonorGetByIdRequest!): HonorResponse!
   getHonorList(query: HonorGetListRequest!): HonorListResponse!
+  getPublicationById(query: PublicationGetByIdRequest!): PublicationResponse!
+  getPublicationList(query: PublicationGetListRequest!): PublicationListResponse!
   getRebukeById(query: RebukeGetByIdRequest!): RebukeResponse!
   getRebukeList(query: RebukeGetListRequest!): RebukeListResponse!
   getRoleById(query: RoleGetByIdRequest!): RoleResponse!
