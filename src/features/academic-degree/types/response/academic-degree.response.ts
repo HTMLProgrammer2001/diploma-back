@@ -2,15 +2,15 @@ import {Field, ID, ObjectType} from '@nestjs/graphql';
 
 @ObjectType()
 export class AcademicDegreeResponse {
-  @Field(type => ID)
+  @Field(type => ID, {nullable: true})
   id: number;
 
-  @Field({nullable: false})
+  @Field({nullable: true})
   name: string;
 
-  @Field({nullable: false})
+  @Field({nullable: true})
   isDeleted: boolean;
 
-  @Field({nullable: false})
+  @Field({nullable: true})
   guid: string;
 }

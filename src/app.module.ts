@@ -30,6 +30,7 @@ import {RoleGuard} from './global/guards/role.guard';
 import {HonorModule} from './features/honor/honor.module';
 import {RebukeModule} from './features/rebuke/rebuke.module';
 import {PublicationModule} from './features/publication/publication.module';
+import {ProfileModule} from './features/profile/profile.module';
 
 @Module({
   imports: [
@@ -93,6 +94,7 @@ import {PublicationModule} from './features/publication/publication.module';
     HonorModule,
     RebukeModule,
     PublicationModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [

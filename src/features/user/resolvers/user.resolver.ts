@@ -12,7 +12,7 @@ import {IdResponse} from '../../../global/types/response/id.response';
 import {UserUpdateRequest} from '../types/request/user-update.request';
 import {SetMetadata} from '@nestjs/common';
 import {MetaDataFieldEnum} from '../../../global/constants/meta-data-fields.enum';
-import {readRoles, writeRoles} from '../../../global/utils/roles';
+import {readRoles, userEditRoles} from '../../../global/utils/roles';
 
 @Resolver(of => UserResponse)
 export class UserResolver {
@@ -36,7 +36,7 @@ export class UserResolver {
   }
 
   @Mutation(returns => UserResponse)
-  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
+  @SetMetadata(MetaDataFieldEnum.ROLES, userEditRoles)
   async createUser(@Args('body') request: UserCreateRequest, @Info() info: GraphQLResolveInfo):
     Promise<UserResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -44,7 +44,7 @@ export class UserResolver {
   }
 
   @Mutation(returns => UserResponse)
-  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
+  @SetMetadata(MetaDataFieldEnum.ROLES, userEditRoles)
   async updateUser(@Args('body') request: UserUpdateRequest, @Info() info: GraphQLResolveInfo):
     Promise<UserResponse> {
     request.select = Object.keys(fieldsProjection(info));
@@ -52,7 +52,7 @@ export class UserResolver {
   }
 
   @Mutation(returns => IdResponse)
-  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
+  @SetMetadata(MetaDataFieldEnum.ROLES, userEditRoles)
   async deleteUser(
     @Args('id', {type: () => Int}) id: number,
     @Args('guid', {type: () => String}) guid: string,
