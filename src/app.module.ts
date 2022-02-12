@@ -32,6 +32,7 @@ import {RebukeModule} from './features/rebuke/rebuke.module';
 import {PublicationModule} from './features/publication/publication.module';
 import {ProfileModule} from './features/profile/profile.module';
 import {InternshipModule} from './features/internship/internship.module';
+import {EducationQualificationModule} from './features/education-qualification/education-qualification.module';
 
 @Module({
   imports: [
@@ -99,6 +100,7 @@ import {InternshipModule} from './features/internship/internship.module';
     PublicationModule,
     ProfileModule,
     InternshipModule,
+    EducationQualificationModule,
   ],
   controllers: [AppController],
   providers: [

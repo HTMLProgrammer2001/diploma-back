@@ -26,6 +26,8 @@ import {PublicationDbModel} from './db-models/publication.db-model';
 import {PublicationRepository} from './repositories/publication/publication.repository';
 import {InternshipDbModel} from './db-models/internship.db-model';
 import {InternshipRepository} from './repositories/internship/internship.repository';
+import {EducationQualificationDbModel} from './db-models/education-qualification.db-model';
+import {EducationQualificationRepository} from './repositories/education-qualification/education-qualification.repository';
 
 const getAppModels = () => SequelizeModule.forFeature([
   CommissionDbModel,
@@ -41,6 +43,7 @@ const getAppModels = () => SequelizeModule.forFeature([
   RebukeDbModel,
   PublicationDbModel,
   InternshipDbModel,
+  EducationQualificationDbModel,
 ]);
 
 const getAppRepositories = () => [
@@ -57,6 +60,7 @@ const getAppRepositories = () => [
   RebukeRepository,
   PublicationRepository,
   InternshipRepository,
+  EducationQualificationRepository,
 ]
 
 @Global()
