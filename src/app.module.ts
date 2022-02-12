@@ -31,6 +31,7 @@ import {HonorModule} from './features/honor/honor.module';
 import {RebukeModule} from './features/rebuke/rebuke.module';
 import {PublicationModule} from './features/publication/publication.module';
 import {ProfileModule} from './features/profile/profile.module';
+import {InternshipModule} from './features/internship/internship.module';
 
 @Module({
   imports: [
@@ -51,6 +52,8 @@ import {ProfileModule} from './features/profile/profile.module';
       autoLoadModels: true,
       synchronize: false,
       define: {
+        charset: 'utf8',
+        collate: 'utf8_general_ci',
         timestamps: false
       }
     }),
@@ -95,6 +98,7 @@ import {ProfileModule} from './features/profile/profile.module';
     RebukeModule,
     PublicationModule,
     ProfileModule,
+    InternshipModule,
   ],
   controllers: [AppController],
   providers: [

@@ -6,7 +6,7 @@ import {ValidateDate} from '../../../../global/pipes/validate-date';
 import {RebukeOrderFieldsEnum} from '../../../../data-layer/repositories/rebuke/enums/rebuke-order-fields.enum';
 
 @InputType()
-export class RebukeGetListRequest extends BasePaginatorRequest {
+export class InternshipGetListRequest extends BasePaginatorRequest {
   select: Array<string>;
 
   @Field({nullable: true})
@@ -14,31 +14,31 @@ export class RebukeGetListRequest extends BasePaginatorRequest {
   @IsString()
   title: string;
 
-  @Field(type => String, {nullable: true})
+  @Field({nullable: true})
   @IsOptional()
-  @ValidateDate()
-  dateMore: Date;
-
-  @Field(type => String, {nullable: true})
-  @IsOptional()
-  @ValidateDate()
-  dateLess: Date;
+  @IsString()
+  code: string;
 
   @Field({nullable: true})
   @IsOptional()
   @IsString()
-  orderNumber: string;
+  place: string;
+
+  @Field(type => String, {nullable: true})
+  @IsOptional()
+  @ValidateDate()
+  dateFromMore: Date;
+
+  @Field(type => String, {nullable: true})
+  @IsOptional()
+  @ValidateDate()
+  dateToLess: Date;
 
   @Field(type => ID, {nullable: true})
   @IsOptional()
   @ParseNumber()
   @IsNumber()
   userId: number;
-
-  @Field({nullable: true})
-  @IsOptional()
-  @IsBoolean()
-  showInActive: boolean;
 
   @Field({nullable: true})
   @IsOptional()

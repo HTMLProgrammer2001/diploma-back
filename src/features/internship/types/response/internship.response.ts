@@ -2,7 +2,7 @@ import {Field, ID, ObjectType} from '@nestjs/graphql';
 import {IdNameResponse} from '../../../../global/types/response/id-name.response';
 
 @ObjectType()
-export class PublicationResponse {
+export class InternshipResponse {
   @Field(type => ID)
   id: number;
 
@@ -10,26 +10,32 @@ export class PublicationResponse {
   title: string;
 
   @Field({nullable: false})
-  date: string;
+  code: string;
 
   @Field({nullable: true})
-  publisher: string;
+  from: string;
 
   @Field({nullable: true})
-  url: string;
+  to: string;
 
   @Field({nullable: true})
-  anotherAuthors: string;
+  place: string;
+
+  @Field({nullable: true})
+  hours: number;
+
+  @Field({nullable: true})
+  credits: number;
 
   @Field({nullable: true})
   description: string;
-
-  @Field(type => [IdNameResponse], {nullable: true})
-  users: Array<IdNameResponse>;
 
   @Field({nullable: false})
   isDeleted: boolean;
 
   @Field({nullable: false})
   guid: string;
+
+  @Field(type => IdNameResponse, {nullable: false})
+  user: IdNameResponse;
 }

@@ -11,24 +11,24 @@ import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {Model} from 'sequelize-typescript';
 import {UserDbModel} from '../../db-models/user.db-model';
-import {RebukeDbModel} from '../../db-models/rebuke.db-model';
-import {RebukeGetRepoRequest} from './repo-request/rebuke-get.repo-request';
-import {RebukeGetRepoResponse} from './repo-response/rebuke-get.repo-response';
-import {RebukeSelectFieldsEnum} from './enums/rebuke-select-fields.enum';
-import {RebukeOrderFieldsEnum} from './enums/rebuke-order-fields.enum';
-import {RebukeCreateRepoRequest} from './repo-request/rebuke-create.repo-request';
-import {RebukeUpdateRepoRequest} from './repo-request/rebuke-update.repo-request';
-import {RebukeDeleteRepoRequest} from './repo-request/rebuke-delete.repo-request';
+import {InternshipDbModel} from '../../db-models/internship.db-model';
+import {InternshipGetRepoRequest} from './repo-request/internship-get.repo-request';
+import {InternshipGetRepoResponse} from './repo-response/internship-get.repo-response';
+import {InternshipSelectFieldsEnum} from './enums/internship-select-fields.enum';
+import {InternshipOrderFieldsEnum} from './enums/internship-order-fields.enum';
+import {InternshipCreateRepoRequest} from './repo-request/internship-create.repo-request';
+import {InternshipUpdateRepoRequest} from './repo-request/internship-update.repo-request';
+import {InternshipDeleteRepoRequest} from './repo-request/internship-delete.repo-request';
 
 @Injectable()
-export class RebukeRepository {
+export class InternshipRepository {
   private logger: Logger;
 
-  constructor(@InjectModel(RebukeDbModel) private rebukeDbModel: typeof RebukeDbModel) {
-    this.logger = new Logger(RebukeRepository.name);
+  constructor(@InjectModel(InternshipDbModel) private internshipDbModel: typeof InternshipDbModel) {
+    this.logger = new Logger(InternshipRepository.name);
   }
 
-  async getRebukes(repoRequest: RebukeGetRepoRequest): Promise<RebukeGetRepoResponse> {
+  async getInternships(repoRequest: InternshipGetRepoRequest): Promise<InternshipGetRepoResponse> {
     try {
       repoRequest.page = repoRequest.page ?? 1;
       repoRequest.size = repoRequest.size ?? 5;
@@ -40,51 +40,63 @@ export class RebukeRepository {
       const attributes: FindAttributeOptions = [];
 
       if (!repoRequest) {
-        repoRequest.select = [RebukeSelectFieldsEnum.ID, RebukeSelectFieldsEnum.TITLE];
+        repoRequest.select = [InternshipSelectFieldsEnum.ID, InternshipSelectFieldsEnum.TITLE];
       }
 
       repoRequest.select.forEach(field => {
         switch (field) {
-          case RebukeSelectFieldsEnum.ID:
+          case InternshipSelectFieldsEnum.ID:
             attributes.push('id');
             break;
 
-          case RebukeSelectFieldsEnum.TITLE:
+          case InternshipSelectFieldsEnum.TITLE:
             attributes.push('title');
             break;
 
-          case RebukeSelectFieldsEnum.DATE:
-            attributes.push('date');
+          case InternshipSelectFieldsEnum.FROM:
+            attributes.push('from');
             break;
 
-          case RebukeSelectFieldsEnum.DESCRIPTION:
+          case InternshipSelectFieldsEnum.TO:
+            attributes.push('to');
+            break;
+
+          case InternshipSelectFieldsEnum.DESCRIPTION:
             attributes.push('description');
             break;
 
-          case RebukeSelectFieldsEnum.ORDER_NUMBER:
-            attributes.push('orderNumber');
+          case InternshipSelectFieldsEnum.CODE:
+            attributes.push('code');
             break;
 
-          case RebukeSelectFieldsEnum.IS_ACTIVE:
-            attributes.push('isActive');
+          case InternshipSelectFieldsEnum.HOURS:
+            attributes.push('hours');
             break;
 
-          case RebukeSelectFieldsEnum.IS_DELETED:
+          case InternshipSelectFieldsEnum.CREDITS:
+            attributes.push('credits');
+            break;
+
+          case InternshipSelectFieldsEnum.PLACE:
+            attributes.push('place');
+            break;
+
+          case InternshipSelectFieldsEnum.IS_DELETED:
             attributes.push('isDeleted');
             break;
 
-          case RebukeSelectFieldsEnum.GUID:
+          case InternshipSelectFieldsEnum.GUID:
             attributes.push('guid');
             break;
 
-          case RebukeSelectFieldsEnum.USER_ID:
+          case InternshipSelectFieldsEnum.USER_ID:
             if (!includes.user)
               includes.user = {model: UserDbModel, attributes: ['id']}
             else
               (includes.user.attributes as Array<string | ProjectionAlias>).push('id');
             break;
 
-          case RebukeSelectFieldsEnum.USER_NAME:
+          case InternshipSelectFieldsEnum.USER_NAME:
             if (!includes.user)
               includes.user = {model: UserDbModel, attributes: ['fullName']}
             else
@@ -103,24 +115,24 @@ export class RebukeRepository {
         filters.title = {[Op.like]: `%${repoRequest.title || ''}%`};
       }
 
-      if (!isNil(repoRequest.orderNumber)) {
-        filters.orderNumber = {[Op.like]: `%${repoRequest.orderNumber || ''}%`};
+      if (!isNil(repoRequest.code)) {
+        filters.orderNumber = {[Op.like]: `%${repoRequest.code || ''}%`};
       }
 
-      if (!isNil(repoRequest.dateMore)) {
-        filters.date = {[Op.gte]: repoRequest.dateMore};
+      if (!isNil(repoRequest.place)) {
+        filters.place = {[Op.like]: `%${repoRequest.place || ''}%`};
       }
 
-      if (!isNil(repoRequest.dateLess)) {
-        filters.date = {[Op.lte]: repoRequest.dateLess};
+      if (!isNil(repoRequest.dateFromMore)) {
+        filters.from = {[Op.gte]: repoRequest.dateFromMore};
+      }
+
+      if (!isNil(repoRequest.dateToLess)) {
+        filters.to = {[Op.lte]: repoRequest.dateToLess};
       }
 
       if (!isNil(repoRequest.userId)) {
         filters.userId = repoRequest.userId;
-      }
-
-      if (!repoRequest.showInActive) {
-        filters.isActive = true;
       }
 
       if (!repoRequest.showDeleted) {
@@ -143,19 +155,23 @@ export class RebukeRepository {
 
       if (!isNil(repoRequest.orderField)) {
         switch (repoRequest.orderField) {
-          case RebukeOrderFieldsEnum.ID:
+          case InternshipOrderFieldsEnum.ID:
             order.push(['id', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
-          case RebukeOrderFieldsEnum.TITLE:
+          case InternshipOrderFieldsEnum.TITLE:
             order.push(['title', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
-          case RebukeOrderFieldsEnum.DATE:
-            order.push(['date', repoRequest.isDesc ? 'DESC' : 'ASC']);
+          case InternshipOrderFieldsEnum.DATE_FROM:
+            order.push(['from', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
-          case RebukeOrderFieldsEnum.USER:
+          case InternshipOrderFieldsEnum.DATE_TO:
+            order.push(['from', repoRequest.isDesc ? 'DESC' : 'ASC']);
+            break;
+
+          case InternshipOrderFieldsEnum.USER:
             includes.user = includes.user ?? {model: UserDbModel, attributes: []};
             order.push([{model: UserDbModel, as: 'user'}, 'fullName', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
@@ -166,7 +182,7 @@ export class RebukeRepository {
 
       //endregion
 
-      const data = await this.rebukeDbModel.findAndCountAll({
+      const data = await this.internshipDbModel.findAndCountAll({
         where: filters,
         order,
         attributes,
@@ -186,15 +202,18 @@ export class RebukeRepository {
     }
   }
 
-  async createRebuke(repoRequest: RebukeCreateRepoRequest): Promise<CommonCreateRepoResponse> {
+  async createInternship(repoRequest: InternshipCreateRepoRequest): Promise<CommonCreateRepoResponse> {
     try {
-      const {id} = await this.rebukeDbModel.create({
+      const {id} = await this.internshipDbModel.create({
         title: repoRequest.title,
-        date: repoRequest.date,
+        from: repoRequest.from,
+        to: repoRequest.to,
         description: repoRequest.description,
-        orderNumber: repoRequest.orderNumber,
+        code: repoRequest.code,
+        place: repoRequest.place,
+        credits: repoRequest.credits,
+        hours: repoRequest.hours,
         userId: repoRequest.userId,
-        isActive: repoRequest.isActive
       });
       return {createdID: id};
     } catch (e) {
@@ -207,44 +226,56 @@ export class RebukeRepository {
     }
   }
 
-  async updateRebuke(repoRequest: RebukeUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
-    const updateData = {} as Omit<RebukeDbModel, keyof Model>;
+  async updateInternship(repoRequest: InternshipUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
+    const updateData = {} as Omit<InternshipDbModel, keyof Model>;
 
     if (!isUndefined(repoRequest.title)) {
       updateData.title = repoRequest.title;
     }
 
-    if (!isUndefined(repoRequest.date)) {
-      updateData.date = repoRequest.date;
+    if (!isUndefined(repoRequest.from)) {
+      updateData.from = repoRequest.from;
     }
 
-    if (!isUndefined(repoRequest.userId)) {
-      updateData.userId = repoRequest.userId;
+    if (!isUndefined(repoRequest.to)) {
+      updateData.to = repoRequest.to;
     }
 
-    if (!isUndefined(repoRequest.orderNumber)) {
-      updateData.orderNumber = repoRequest.orderNumber;
+    if (!isUndefined(repoRequest.code)) {
+      updateData.code = repoRequest.code;
+    }
+
+    if (!isUndefined(repoRequest.credits)) {
+      updateData.credits = repoRequest.credits;
+    }
+
+    if (!isUndefined(repoRequest.hours)) {
+      updateData.hours = repoRequest.hours;
     }
 
     if (!isUndefined(repoRequest.description)) {
       updateData.description = repoRequest.description;
     }
 
-    if (!isUndefined(repoRequest.isActive)) {
-      updateData.isActive = repoRequest.isActive;
+    if (!isUndefined(repoRequest.place)) {
+      updateData.place = repoRequest.place;
+    }
+
+    if (!isUndefined(repoRequest.userId)) {
+      updateData.userId = repoRequest.userId;
     }
 
     if (!isEmpty(updateData)) {
       updateData.guid = sequelize.literal('UUID()') as any;
-      await this.rebukeDbModel.update(updateData, {where: {id: repoRequest.id}});
+      await this.internshipDbModel.update(updateData, {where: {id: repoRequest.id}});
     }
 
     return {updatedID: repoRequest.id};
   }
 
-  async deleteRebuke(repoRequest: RebukeDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
+  async deleteInternship(repoRequest: InternshipDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
     try {
-      await this.rebukeDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
+      await this.internshipDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
       return {deletedID: repoRequest.id};
     } catch (e) {
       if (!(e instanceof CustomError)) {

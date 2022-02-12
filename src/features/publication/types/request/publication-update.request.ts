@@ -8,13 +8,11 @@ import {
   IsOptional,
   IsString,
   IsUrl,
-  MaxDate,
-  MaxLength,
-  MinDate
+  MaxLength
 } from 'class-validator';
-import {ValidateDate} from '../../../../global/pipes/validate-date';
 import {Transform} from 'class-transformer';
 import {ParseNumber} from '../../../../global/pipes/parse-number';
+import {ValidateDateRange} from '../../../../global/pipes/validate-date-range';
 
 @InputType()
 export class PublicationUpdateRequest {
@@ -39,9 +37,7 @@ export class PublicationUpdateRequest {
 
   @Field(type => String, {nullable: true})
   @IsOptional()
-  @MaxDate(new Date())
-  @MinDate(new Date(Date.now() - 100 * 365 * 24 * 60 * 60 * 1000))
-  @ValidateDate()
+  @ValidateDateRange()
   date: Date;
 
   @Field({nullable: true})

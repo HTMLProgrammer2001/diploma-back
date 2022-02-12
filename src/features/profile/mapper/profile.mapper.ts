@@ -21,7 +21,7 @@ export class ProfileMapper {
     destination.guid = source.guid;
     destination.isDeleted = source.isDeleted;
 
-    if(!isNil(source.role)) {
+    if (!isNil(source.role)) {
       destination.role = {
         id: source.role.id,
         name: source.role.name

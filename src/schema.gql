@@ -235,6 +235,73 @@ type IdResponse {
   id: ID!
 }
 
+input InternshipCreateRequest {
+  code: String!
+  credits: Float
+  description: String
+  from: String!
+  hours: Int!
+  place: String
+  title: String!
+  to: String!
+  userId: ID!
+}
+
+input InternshipGetByIdRequest {
+  id: ID!
+  showDeleted: Boolean
+}
+
+input InternshipGetListRequest {
+  code: String
+  dateFromMore: String
+  dateToLess: String
+  isDesc: Boolean
+  orderField: String = "id"
+  place: String
+  showDeleted: Boolean
+  title: String
+  userId: ID
+}
+
+type InternshipListResponse implements PaginatedData {
+  page: Int!
+  responseList: [InternshipResponse!]!
+  size: Int!
+  skip: Int!
+  totalElements: Int!
+  totalPages: Int!
+}
+
+type InternshipResponse {
+  code: String!
+  credits: Float
+  description: String
+  from: String
+  guid: String!
+  hours: Float
+  id: ID!
+  isDeleted: Boolean!
+  place: String
+  title: String!
+  to: String
+  user: IdNameResponse!
+}
+
+input InternshipUpdateRequest {
+  code: String
+  credits: Float
+  description: String
+  from: String
+  guid: String!
+  hours: Int
+  id: ID!
+  place: String
+  title: String
+  to: String
+  userId: ID
+}
+
 input LoginRequest {
   email: String!
   password: String!
@@ -251,6 +318,7 @@ type Mutation {
   createCommission(body: CommissionCreateRequest!): CommissionResponse!
   createDepartment(body: DepartmentCreateRequest!): DepartmentResponse!
   createHonor(body: HonorCreateRequest!): HonorResponse!
+  createInternship(body: InternshipCreateRequest!): InternshipResponse!
   createPublication(body: PublicationCreateRequest!): PublicationResponse!
   createRebuke(body: RebukeCreateRequest!): RebukeResponse!
   createTeacher(body: TeacherCreateRequest!): TeacherResponse!
@@ -261,6 +329,7 @@ type Mutation {
   deleteCommission(guid: String!, id: Int!): IdResponse!
   deleteDepartment(guid: String!, id: Int!): IdResponse!
   deleteHonor(guid: String!, id: Int!): IdResponse!
+  deleteInternship(guid: String!, id: Int!): IdResponse!
   deleteProfile(guid: String!): IdResponse!
   deletePublication(guid: String!, id: Int!): IdResponse!
   deleteRebuke(guid: String!, id: Int!): IdResponse!
@@ -276,6 +345,7 @@ type Mutation {
   updateCommission(body: CommissionUpdateRequest!): CommissionResponse!
   updateDepartment(body: DepartmentUpdateRequest!): DepartmentResponse!
   updateHonor(body: HonorUpdateRequest!): HonorResponse!
+  updateInternship(body: InternshipUpdateRequest!): InternshipResponse!
   updatePublication(body: PublicationUpdateRequest!): PublicationResponse!
   updateRebuke(body: RebukeUpdateRequest!): RebukeResponse!
   updateRole(body: RoleUpdateRequest!): RoleResponse!
@@ -374,6 +444,8 @@ type Query {
   getDepartmentsList(query: DepartmentGetListRequest!): DepartmentListResponse!
   getHonorById(query: HonorGetByIdRequest!): HonorResponse!
   getHonorList(query: HonorGetListRequest!): HonorListResponse!
+  getInternshipById(query: InternshipGetByIdRequest!): InternshipResponse!
+  getInternshipList(query: InternshipGetListRequest!): InternshipListResponse!
   getProfile: ProfileResponse!
   getPublicationById(query: PublicationGetByIdRequest!): PublicationResponse!
   getPublicationList(query: PublicationGetListRequest!): PublicationListResponse!

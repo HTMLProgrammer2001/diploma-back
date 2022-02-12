@@ -52,7 +52,7 @@ export class PublicationMapper {
     destination.isDeleted = source.isDeleted;
     destination.guid = source.guid;
 
-    if(source.users) {
+    if (source.users) {
       destination.users = source.users.map(el => ({
         id: el.id,
         name: el.fullName

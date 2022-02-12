@@ -24,6 +24,8 @@ import {RebukeDbModel} from './db-models/rebuke.db-model';
 import {RebukeRepository} from './repositories/rebuke/rebuke.repository';
 import {PublicationDbModel} from './db-models/publication.db-model';
 import {PublicationRepository} from './repositories/publication/publication.repository';
+import {InternshipDbModel} from './db-models/internship.db-model';
+import {InternshipRepository} from './repositories/internship/internship.repository';
 
 const getAppModels = () => SequelizeModule.forFeature([
   CommissionDbModel,
@@ -38,6 +40,7 @@ const getAppModels = () => SequelizeModule.forFeature([
   HonorDbModel,
   RebukeDbModel,
   PublicationDbModel,
+  InternshipDbModel,
 ]);
 
 const getAppRepositories = () => [
@@ -53,6 +56,7 @@ const getAppRepositories = () => [
   HonorRepository,
   RebukeRepository,
   PublicationRepository,
+  InternshipRepository,
 ]
 
 @Global()

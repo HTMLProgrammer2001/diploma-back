@@ -8,9 +8,7 @@ import {
   IsOptional,
   IsString,
   IsUrl,
-  MaxDate,
   MaxLength,
-  MinDate,
 } from 'class-validator';
 import {ValidateDate} from '../../../../global/pipes/validate-date';
 import {Transform} from 'class-transformer';
@@ -26,8 +24,6 @@ export class PublicationCreateRequest {
   title: string;
 
   @Field(type => String, {nullable: false})
-  @MaxDate(new Date())
-  @MinDate(new Date(Date.now() - 100 * 365 * 24 * 60 * 60 * 1000))
   @ValidateDate()
   date: Date;
 

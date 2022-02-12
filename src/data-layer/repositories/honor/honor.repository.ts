@@ -8,7 +8,6 @@ import sequelize, {Op, WhereOptions} from 'sequelize';
 import {isEmpty, isNil, isUndefined} from 'lodash';
 import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
 import {HonorOrderFieldsEnum} from './enums/honor-order-fields.enum';
-import {DepartmentDbModel} from '../../db-models/department.db-model';
 import {HonorCreateRepoRequest} from './repo-request/honor-create.repo-request';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
 import {HonorDeleteRepoRequest} from './repo-request/honor-delete.repo-request';

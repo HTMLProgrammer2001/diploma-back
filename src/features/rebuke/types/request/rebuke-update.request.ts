@@ -1,7 +1,7 @@
 import {Field, ID, InputType} from '@nestjs/graphql';
-import {IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, MaxDate, MaxLength, MinDate} from 'class-validator';
+import {IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength} from 'class-validator';
 import {ParseNumber} from '../../../../global/pipes/parse-number';
-import {ValidateDate} from '../../../../global/pipes/validate-date';
+import {ValidateDateRange} from '../../../../global/pipes/validate-date-range';
 
 @InputType()
 export class RebukeUpdateRequest {
@@ -26,9 +26,7 @@ export class RebukeUpdateRequest {
 
   @Field(type => String, {nullable: true})
   @IsOptional()
-  @MaxDate(new Date())
-  @MinDate(new Date(Date.now() - 100 * 365 * 24 * 60 * 60 * 1000))
-  @ValidateDate()
+  @ValidateDateRange()
   date: Date;
 
   @Field({nullable: true})
