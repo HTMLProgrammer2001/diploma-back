@@ -9,6 +9,7 @@ export class RebukeGetRepoRequest extends BaseRepoRequest {
   dateMore: Date;
   dateLess: Date;
   orderNumber: string;
+  orderNumberEqual: string;
   userId: number;
   showDeleted: boolean;
   showInActive: boolean;

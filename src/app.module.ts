@@ -33,6 +33,7 @@ import {PublicationModule} from './features/publication/publication.module';
 import {ProfileModule} from './features/profile/profile.module';
 import {InternshipModule} from './features/internship/internship.module';
 import {EducationQualificationModule} from './features/education-qualification/education-qualification.module';
+import {EducationModule} from './features/education/education.module';
 
 @Module({
   imports: [
@@ -101,6 +102,7 @@ import {EducationQualificationModule} from './features/education-qualification/e
     ProfileModule,
     InternshipModule,
     EducationQualificationModule,
+    EducationModule,
   ],
   controllers: [AppController],
   providers: [

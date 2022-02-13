@@ -12,6 +12,7 @@ import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/
 import {RebukeUpdateRequest} from '../types/request/rebuke-update.request';
 import {RebukeUpdateRepoRequest} from '../../../data-layer/repositories/rebuke/repo-request/rebuke-update.repo-request';
 import {RebukeDeleteRepoRequest} from '../../../data-layer/repositories/rebuke/repo-request/rebuke-delete.repo-request';
+import {RebukeSelectFieldsEnum} from '../../../data-layer/repositories/rebuke/enums/rebuke-select-fields.enum';
 
 @Injectable()
 export class RebukeMapper {
@@ -80,6 +81,18 @@ export class RebukeMapper {
 
     destination.id = id;
     destination.select = select;
+    destination.showDeleted = true;
+    destination.page = 1;
+    destination.size = 1;
+
+    return destination;
+  }
+
+  initializeGetRebukeByOrderNumberRepoRequest(orderNumber: string): RebukeGetRepoRequest {
+    const destination = new RebukeGetRepoRequest();
+
+    destination.select = [RebukeSelectFieldsEnum.ID];
+    destination.orderNumberEqual = orderNumber;
     destination.showDeleted = true;
     destination.page = 1;
     destination.size = 1;

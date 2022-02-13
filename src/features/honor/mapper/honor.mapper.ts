@@ -12,6 +12,7 @@ import {HonorUpdateRepoRequest} from '../../../data-layer/repositories/honor/rep
 import {HonorDeleteRepoRequest} from '../../../data-layer/repositories/honor/repo-request/honor-delete.repo-request';
 import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-get.repo-request';
 import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
+import {HonorSelectFieldsEnum} from '../../../data-layer/repositories/honor/enums/honor-select-fields.enum';
 
 @Injectable()
 export class HonorMapper {
@@ -80,6 +81,18 @@ export class HonorMapper {
 
     destination.id = id;
     destination.select = select;
+    destination.showDeleted = true;
+    destination.page = 1;
+    destination.size = 1;
+
+    return destination;
+  }
+
+  initializeGetHonorByOrderNumberRepoRequest(orderNumber): HonorGetRepoRequest {
+    const destination = new HonorGetRepoRequest();
+
+    destination.select = [HonorSelectFieldsEnum.ID];
+    destination.orderNumberEqual = orderNumber;
     destination.showDeleted = true;
     destination.page = 1;
     destination.size = 1;

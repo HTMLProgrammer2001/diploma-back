@@ -1,17 +1,16 @@
 import {BaseRepoRequest} from '../../common/base-repo-request';
 
-export class InternshipGetRepoRequest extends BaseRepoRequest {
+export class EducationGetRepoRequest extends BaseRepoRequest {
   page: number;
   size: number;
   id: number;
   ids: Array<number>;
-  title: string;
-  dateFromMore: Date;
-  dateToLess: Date;
-  code: string;
-  codeEqual: string;
-  place: string;
+  institution: string;
+  specialty: string;
+  yearOfIssueMore: number;
+  yearOfIssueLess: number;
   userId: number;
+  educationQualificationId: number;
   showDeleted: boolean;
   select: Array<string>;
   orderField: string;

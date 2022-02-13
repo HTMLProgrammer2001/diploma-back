@@ -170,5 +170,18 @@ export class HonorService {
         });
       }
     }
+
+    //validate unique orderNumber
+    if (!isNil(request.orderNumber)) {
+      const getHonorByOrderNumberRepoRequest = this.honorMapper.initializeGetHonorByOrderNumberRepoRequest(request.orderNumber);
+      const {data: honorByOrderNumberData} = await this.honorRepository.getHonors(getHonorByOrderNumberRepoRequest);
+
+      if (honorByOrderNumberData.responseList.length && honorByOrderNumberData.responseList[0].id !== (request as any).id) {
+        throw new CustomError({
+          code: ErrorCodesEnum.VALIDATION,
+          message: `Honor with order number ${request.orderNumber} already exist`
+        });
+      }
+    }
   }
 }

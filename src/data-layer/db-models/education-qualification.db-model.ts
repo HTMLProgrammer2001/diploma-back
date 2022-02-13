@@ -1,5 +1,6 @@
-import {AutoIncrement, Column, DataType, Model, Table} from 'sequelize-typescript';
+import {AutoIncrement, Column, DataType, HasMany, Model, Table} from 'sequelize-typescript';
 import sequelize from 'sequelize';
+import {EducationDbModel} from './education.db-model';
 
 
 @Table({tableName: 'EducationQualification', timestamps: false})
@@ -16,4 +17,7 @@ export class EducationQualificationDbModel extends Model {
 
   @Column({defaultValue: sequelize.literal('(UUID())'), unique: true})
   guid: string;
+
+  @HasMany(() => EducationDbModel)
+  educations: Array<EducationDbModel>;
 }

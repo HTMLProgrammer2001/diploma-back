@@ -63,6 +63,13 @@ export class InternshipService {
 
   async createInternship(request: InternshipCreateRequest): Promise<InternshipResponse> {
     try {
+      if (request.from > request.to) {
+        throw new CustomError({
+          code: ErrorCodesEnum.NOT_FOUND,
+          message: 'Internship to must be more than from'
+        });
+      }
+
       await this.validateRequest(request);
 
       const createRepoRequest = this.internshipMapper.createInternshipRequestToRepoRequest(request);
@@ -85,7 +92,10 @@ export class InternshipService {
     try {
       const getCurrentInternshipRepoRequest = this.internshipMapper.initializeGetInternshipByIdRepoRequest(
         request.id,
-        [InternshipSelectFieldsEnum.GUID, InternshipSelectFieldsEnum.IS_DELETED]
+        [
+          InternshipSelectFieldsEnum.GUID, InternshipSelectFieldsEnum.IS_DELETED,
+          InternshipSelectFieldsEnum.FROM, InternshipSelectFieldsEnum.TO
+        ]
       );
       const currentInternship = await this.internshipRepository.getInternships(getCurrentInternshipRepoRequest);
 
@@ -98,6 +108,27 @@ export class InternshipService {
         });
       } else if (currentInternship.data.responseList[0].guid !== request.guid) {
         throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Internship guid was changed'});
+      }
+
+      if (!isNil(request.from) && !isNil(request.to) && request.from > request.to) {
+        throw new CustomError({
+          code: ErrorCodesEnum.NOT_FOUND,
+          message: 'Internship to must be more than from'
+        });
+      }
+
+      if (!isNil(request.from) && request.from > currentInternship.data.responseList[0].to) {
+        throw new CustomError({
+          code: ErrorCodesEnum.NOT_FOUND,
+          message: 'Internship to must be more than from'
+        });
+      }
+
+      if (!isNil(request.to) && currentInternship.data.responseList[0].from > request.to) {
+        throw new CustomError({
+          code: ErrorCodesEnum.NOT_FOUND,
+          message: 'Internship to must be more than from'
+        });
       }
 
       await this.validateRequest(request);
@@ -167,6 +198,19 @@ export class InternshipService {
         throw new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `User with id ${request.userId} is deleted`
+        });
+      }
+    }
+
+    //validate unique code
+    if (!isNil(request.code)) {
+      const getInternshipByCodeRepoRequest = this.internshipMapper.initializeGetInternshipByCodeRepoRequest(request.code);
+      const {data: internshipByCodeData} = await this.internshipRepository.getInternships(getInternshipByCodeRepoRequest);
+
+      if (internshipByCodeData.responseList.length && internshipByCodeData.responseList[0].id !== (request as any).id) {
+        throw new CustomError({
+          code: ErrorCodesEnum.VALIDATION,
+          message: `Internship with code ${request.code} already exist`
         });
       }
     }

@@ -12,6 +12,7 @@ import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/
 import {InternshipDeleteRepoRequest} from '../../../data-layer/repositories/internship/repo-request/internship-delete.repo-request';
 import {InternshipUpdateRequest} from '../types/request/internship-update.request';
 import {InternshipUpdateRepoRequest} from '../../../data-layer/repositories/internship/repo-request/internship-update.repo-request';
+import {InternshipSelectFieldsEnum} from '../../../data-layer/repositories/internship/enums/internship-select-fields.enum';
 
 @Injectable()
 export class InternshipMapper {
@@ -83,6 +84,18 @@ export class InternshipMapper {
 
     destination.id = id;
     destination.select = select;
+    destination.showDeleted = true;
+    destination.page = 1;
+    destination.size = 1;
+
+    return destination;
+  }
+
+  initializeGetInternshipByCodeRepoRequest(code: string): InternshipGetRepoRequest {
+    const destination = new InternshipGetRepoRequest();
+
+    destination.codeEqual = code;
+    destination.select = [InternshipSelectFieldsEnum.ID];
     destination.showDeleted = true;
     destination.page = 1;
     destination.size = 1;

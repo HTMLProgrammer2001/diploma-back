@@ -119,6 +119,10 @@ export class InternshipRepository {
         filters.orderNumber = {[Op.like]: `%${repoRequest.code || ''}%`};
       }
 
+      if (!isNil(repoRequest.codeEqual)) {
+        filters.code = repoRequest.codeEqual;
+      }
+
       if (!isNil(repoRequest.place)) {
         filters.place = {[Op.like]: `%${repoRequest.place || ''}%`};
       }

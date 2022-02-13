@@ -168,6 +168,41 @@ input EditProfileRequest {
   phone: String
 }
 
+input EducationCreateRequest {
+  description: String
+  educationQualificationId: ID!
+  institution: String!
+  specialty: String!
+  userId: ID!
+  yearOfIssue: Float!
+}
+
+input EducationGetByIdRequest {
+  id: ID!
+  showDeleted: Boolean
+}
+
+input EducationGetListRequest {
+  educationQualificationId: ID
+  institution: String
+  isDesc: Boolean
+  orderField: String = "id"
+  showDeleted: Boolean
+  specialty: String
+  userId: ID
+  yearOfIssueLess: Float
+  yearOfIssueMore: Float
+}
+
+type EducationListResponse implements PaginatedData {
+  page: Int!
+  responseList: [EducationResponse!]!
+  size: Int!
+  skip: Int!
+  totalElements: Int!
+  totalPages: Int!
+}
+
 input EducationQualificationCreateRequest {
   name: String
 }
@@ -204,6 +239,29 @@ input EducationQualificationUpdateRequest {
   guid: String!
   id: ID!
   name: String
+}
+
+type EducationResponse {
+  description: String
+  educationQualification: IdNameResponse!
+  guid: String!
+  id: ID!
+  institution: String!
+  isDeleted: Boolean!
+  specialty: String!
+  user: IdNameResponse!
+  yearOfIssue: Float
+}
+
+input EducationUpdateRequest {
+  description: String
+  educationQualificationId: ID
+  guid: String!
+  id: ID!
+  institution: String
+  specialty: String
+  userId: ID
+  yearOfIssue: Float
 }
 
 input HonorCreateRequest {
@@ -355,6 +413,7 @@ type Mutation {
   createAcademicTitle(body: AcademicTitleCreateRequest!): AcademicTitleResponse!
   createCommission(body: CommissionCreateRequest!): CommissionResponse!
   createDepartment(body: DepartmentCreateRequest!): DepartmentResponse!
+  createEducation(body: EducationCreateRequest!): EducationResponse!
   createEducationQualification(body: EducationQualificationCreateRequest!): EducationQualificationResponse!
   createHonor(body: HonorCreateRequest!): HonorResponse!
   createInternship(body: InternshipCreateRequest!): InternshipResponse!
@@ -367,6 +426,7 @@ type Mutation {
   deleteAcademicTitle(guid: String!, id: Int!): IdResponse!
   deleteCommission(guid: String!, id: Int!): IdResponse!
   deleteDepartment(guid: String!, id: Int!): IdResponse!
+  deleteEducation(guid: String!, id: Int!): IdResponse!
   deleteEducationQualification(guid: String!, id: Int!): IdResponse!
   deleteHonor(guid: String!, id: Int!): IdResponse!
   deleteInternship(guid: String!, id: Int!): IdResponse!
@@ -384,6 +444,7 @@ type Mutation {
   updateAcademicTitle(body: AcademicTitleUpdateRequest!): AcademicTitleResponse!
   updateCommission(body: CommissionUpdateRequest!): CommissionResponse!
   updateDepartment(body: DepartmentUpdateRequest!): DepartmentResponse!
+  updateEducation(body: EducationUpdateRequest!): EducationResponse!
   updateEducationQualification(body: EducationQualificationUpdateRequest!): EducationQualificationResponse!
   updateHonor(body: HonorUpdateRequest!): HonorResponse!
   updateInternship(body: InternshipUpdateRequest!): InternshipResponse!
@@ -483,6 +544,8 @@ type Query {
   getCommissionsList(query: CommissionGetListRequest!): CommissionListResponse!
   getDepartmentById(query: DepartmentGetByIdRequest!): DepartmentResponse!
   getDepartmentsList(query: DepartmentGetListRequest!): DepartmentListResponse!
+  getEducationById(query: EducationGetByIdRequest!): EducationResponse!
+  getEducationList(query: EducationGetListRequest!): EducationListResponse!
   getEducationQualificationById(query: EducationQualificationGetByIdRequest!): EducationQualificationResponse!
   getEducationQualificationList(query: EducationQualificationGetListRequest!): EducationQualificationListResponse!
   getHonorById(query: HonorGetByIdRequest!): HonorResponse!

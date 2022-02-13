@@ -107,6 +107,10 @@ export class HonorRepository {
         filters.orderNumber = {[Op.like]: `%${repoRequest.orderNumber || ''}%`};
       }
 
+      if (!isNil(repoRequest.orderNumberEqual)) {
+        filters.orderNumber = repoRequest.orderNumberEqual;
+      }
+
       if (!isNil(repoRequest.dateMore)) {
         filters.date = {[Op.gte]: repoRequest.dateMore};
       }
