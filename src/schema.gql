@@ -408,6 +408,10 @@ type LoginResponse {
   refreshToken: String!
 }
 
+type LoginTeacherResponse {
+  token: String!
+}
+
 type Mutation {
   createAcademicDegree(body: AcademicDegreeCreateRequest!): AcademicDegreeResponse!
   createAcademicTitle(body: AcademicTitleCreateRequest!): AcademicTitleResponse!
@@ -438,6 +442,7 @@ type Mutation {
   deleteUser(guid: String!, id: Int!): IdResponse!
   editProfile(body: EditProfileRequest!): ProfileResponse!
   login(body: LoginRequest!): LoginResponse!
+  loginTeacher(email: String!): LoginTeacherResponse!
   logout(refreshToken: String!): ResultResponse!
   refreshToken(refreshToken: String!): RefreshTokenResponse!
   updateAcademicDegree(body: AcademicDegreeUpdateRequest!): AcademicDegreeResponse!

@@ -20,6 +20,7 @@ export class InternshipResolver {
 
   @Query(returns => InternshipListResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
+  @SetMetadata(MetaDataFieldEnum.IS_TEACHER_HAS_ACCESS, true)
   async getInternshipList(@Args('query') request: InternshipGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<InternshipResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
@@ -28,6 +29,7 @@ export class InternshipResolver {
 
   @Query(returns => InternshipResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
+  @SetMetadata(MetaDataFieldEnum.IS_TEACHER_HAS_ACCESS, true)
   async getInternshipById(@Args('query') request: InternshipGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<InternshipResponse> {
     request.select = Object.keys(fieldsProjection(info));

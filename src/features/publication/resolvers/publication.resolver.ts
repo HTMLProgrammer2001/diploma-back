@@ -21,6 +21,7 @@ export class PublicationResolver {
 
   @Query(returns => PublicationListResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
+  @SetMetadata(MetaDataFieldEnum.IS_TEACHER_HAS_ACCESS, true)
   async getPublicationList(@Args('query') request: PublicationGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<PublicationResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
@@ -29,6 +30,7 @@ export class PublicationResolver {
 
   @Query(returns => PublicationResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
+  @SetMetadata(MetaDataFieldEnum.IS_TEACHER_HAS_ACCESS, true)
   async getPublicationById(@Args('query') request: PublicationGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<PublicationResponse> {
     request.select = Object.keys(fieldsProjection(info));

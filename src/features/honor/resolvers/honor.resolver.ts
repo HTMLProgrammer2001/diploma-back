@@ -21,6 +21,7 @@ export class HonorResolver {
 
   @Query(returns => HonorListResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
+  @SetMetadata(MetaDataFieldEnum.IS_TEACHER_HAS_ACCESS, true)
   async getHonorList(@Args('query') request: HonorGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<HonorResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
@@ -29,6 +30,7 @@ export class HonorResolver {
 
   @Query(returns => HonorResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
+  @SetMetadata(MetaDataFieldEnum.IS_TEACHER_HAS_ACCESS, true)
   async getHonorById(@Args('query') request: HonorGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<HonorResponse> {
     request.select = Object.keys(fieldsProjection(info));

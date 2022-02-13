@@ -21,6 +21,7 @@ export class RebukeResolver {
 
   @Query(returns => RebukeListResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
+  @SetMetadata(MetaDataFieldEnum.IS_TEACHER_HAS_ACCESS, true)
   async getRebukeList(@Args('query') request: RebukeGetListRequest, @Info() info: GraphQLResolveInfo):
     Promise<IPaginator<RebukeResponse>> {
     request.select = Object.keys(fieldsProjection(info, {path: 'responseList'}));
@@ -29,6 +30,7 @@ export class RebukeResolver {
 
   @Query(returns => RebukeResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
+  @SetMetadata(MetaDataFieldEnum.IS_TEACHER_HAS_ACCESS, true)
   async getRebukeById(@Args('query') request: RebukeGetByIdRequest, @Info() info: GraphQLResolveInfo):
     Promise<RebukeResponse> {
     request.select = Object.keys(fieldsProjection(info));

@@ -6,6 +6,7 @@ import {LoginRequest} from '../types/request/login.request';
 import {ResultResponse} from '../../../global/types/response/result.response';
 import {RefreshTokenResponse} from '../types/response/refresh-token.response';
 import {MetaDataFieldEnum} from '../../../global/constants/meta-data-fields.enum';
+import {LoginTeacherResponse} from '../types/response/login-teacher.response';
 
 @Resolver()
 export class AuthResolver {
@@ -28,5 +29,11 @@ export class AuthResolver {
   @SetMetadata(MetaDataFieldEnum.IS_CHECK_AUTHORIZATION, false)
   async refreshToken(@Args('refreshToken') refreshToken: string): Promise<RefreshTokenResponse> {
     return this.authService.refreshToken(refreshToken);
+  }
+
+  @Mutation(returns => LoginTeacherResponse)
+  @SetMetadata(MetaDataFieldEnum.IS_CHECK_AUTHORIZATION, false)
+  async loginTeacher(@Args('email') email: string): Promise<LoginTeacherResponse> {
+    return this.authService.loginTeacher(email);
   }
 }

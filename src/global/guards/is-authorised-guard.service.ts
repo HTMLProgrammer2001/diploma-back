@@ -8,6 +8,7 @@ import {IAccessTokenInfoInterface} from '../types/interface/IAccessTokenInfo.int
 import {CustomError} from '../class/custom-error';
 import {ErrorCodesEnum} from '../constants/error-codes.enum';
 import {MetaDataFieldEnum} from '../constants/meta-data-fields.enum';
+import {AccessTokenTypeEnum} from '../constants/access-token-type.enum';
 
 @Injectable()
 export class IsAuthorisedGuard implements CanActivate {
@@ -21,12 +22,13 @@ export class IsAuthorisedGuard implements CanActivate {
     if (isAuthorized || isNil(isAuthorized)) {
       const token = gqlContext.getContext().req.headers['authorization'];
       try {
+        const isTeacherHasAccess = this.reflector.get<boolean>(MetaDataFieldEnum.IS_TEACHER_HAS_ACCESS, gqlContext.getHandler());
         const payload = this.jwtService.verify<IAccessTokenInfoInterface>(
           token,
           {secret: process.env.JWT_ACCESS_TOKEN_SECRET}
         );
 
-        return !!payload.userId;
+        return !!payload.userId && (isTeacherHasAccess || payload.type === AccessTokenTypeEnum.user);
       } catch (e) {
         throw new CustomError({
           code: ErrorCodesEnum.UNAUTHORIZED,

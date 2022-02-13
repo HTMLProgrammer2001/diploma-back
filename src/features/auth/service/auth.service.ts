@@ -13,6 +13,10 @@ import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {JwtService} from '@nestjs/jwt';
 import {IAccessTokenInfoInterface} from '../../../global/types/interface/IAccessTokenInfo.interface';
 import {IRefreshTokenInfoInterface} from '../../../global/types/interface/IRefreshTokenInfo.interface';
+import {LoginTeacherResponse} from '../types/response/login-teacher.response';
+import {TeacherRepository} from '../../../data-layer/repositories/teacher/teacher.repository';
+import {RolesEnum} from '../../../global/constants/roles.enum';
+import {AccessTokenTypeEnum} from '../../../global/constants/access-token-type.enum';
 
 @Injectable()
 export class AuthService {
@@ -22,6 +26,7 @@ export class AuthService {
     private jwtService: JwtService,
     private refreshTokenRepository: RefreshTokenRepository,
     private userRepository: UserRepository,
+    private teacherRepository: TeacherRepository,
     private authMapper: AuthMapper,
   ) {
     this.logger = new Logger(AuthService.name);
@@ -60,6 +65,7 @@ export class AuthService {
       });
 
       const accessTokenPayload: IAccessTokenInfoInterface = {
+        type: AccessTokenTypeEnum.user,
         userId: userModel.id,
         role: userModel.role?.id
       };
@@ -159,6 +165,7 @@ export class AuthService {
       });
 
       const newAccessTokenPayload: IAccessTokenInfoInterface = {
+        type: AccessTokenTypeEnum.user,
         userId: userModel.id,
         role: userModel.roleId
       };
@@ -169,6 +176,40 @@ export class AuthService {
       });
 
       return {refreshToken: newRefreshToken, accessToken: newAccessToken};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async loginTeacher(email: string): Promise<LoginTeacherResponse> {
+    try {
+      const getTeacherByEmailRepoRequest = this.authMapper.initializeGetTeacherByEmailRepoRequest(email);
+      const {data: getTeacherResponse} = await this.teacherRepository.getTeachers(getTeacherByEmailRepoRequest);
+
+      if (!getTeacherResponse.responseList.length) {
+        throw new CustomError({
+          code: ErrorCodesEnum.NOT_FOUND,
+          message: `Teacher with email ${email} not exist`
+        });
+      }
+
+      const accessTokenPayload: IAccessTokenInfoInterface = {
+        type: AccessTokenTypeEnum.teacher,
+        userId: getTeacherResponse.responseList[0].id,
+        role: RolesEnum.VIEWER
+      };
+
+      const accessToken = this.jwtService.sign(accessTokenPayload, {
+        secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+        expiresIn: Number(process.env.JWT_ACCESS_TOKEN_TTL_SECONDS)
+      });
+
+      return {token: accessToken};
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

@@ -5,6 +5,8 @@ import {RefreshTokenDeleteRepoRequest} from '../../../data-layer/repositories/re
 import {RefreshTokenUpdateRepoRequest} from '../../../data-layer/repositories/refresh-token/repo-request/refresh-token-update.repo-request';
 import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-get.repo-request';
 import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
+import {TeacherGetRepoRequest} from '../../../data-layer/repositories/teacher/repo-request/teacher-get.repo-request';
+import {TeacherSelectFieldsEnum} from '../../../data-layer/repositories/teacher/enums/teacher-select-fields.enum';
 
 @Injectable()
 export class AuthMapper {
@@ -65,6 +67,15 @@ export class AuthMapper {
     destination.currentSessionCode = currentSessionCode;
     destination.newSessionCode = newSessionCode;
     destination.expirationTime = new Date(Date.now() + Number(process.env.JWT_REFRESH_TOKEN_TTL_SECONDS) * 1000).toISOString();
+
+    return destination;
+  }
+
+  initializeGetTeacherByEmailRepoRequest(email: string): TeacherGetRepoRequest {
+    const destination = new TeacherGetRepoRequest();
+
+    destination.select = [TeacherSelectFieldsEnum.ID];
+    destination.emailEqual = email;
 
     return destination;
   }
