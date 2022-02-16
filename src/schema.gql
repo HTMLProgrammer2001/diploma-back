@@ -15,7 +15,9 @@ input AcademicDegreeGetListRequest {
   isDesc: Boolean
   name: String
   orderField: String = "id"
+  page: Int = 1
   showDeleted: Boolean
+  size: Int = 5
 }
 
 type AcademicDegreeListResponse implements PaginatedData {
@@ -53,7 +55,9 @@ input AcademicTitleGetListRequest {
   isDesc: Boolean
   name: String
   orderField: String = "id"
+  page: Int = 1
   showDeleted: Boolean
+  size: Int = 5
 }
 
 type AcademicTitleListResponse implements PaginatedData {
@@ -78,6 +82,46 @@ input AcademicTitleUpdateRequest {
   name: String
 }
 
+input CategoryCreateRequest {
+  name: String
+}
+
+input CategoryGetByIdRequest {
+  id: ID!
+  showDeleted: Boolean = false
+}
+
+input CategoryGetListRequest {
+  isDesc: Boolean
+  name: String
+  orderField: String = "id"
+  page: Int = 1
+  showDeleted: Boolean
+  size: Int = 5
+}
+
+type CategoryListResponse implements PaginatedData {
+  page: Int!
+  responseList: [CategoryResponse!]!
+  size: Int!
+  skip: Int!
+  totalElements: Int!
+  totalPages: Int!
+}
+
+type CategoryResponse {
+  guid: String
+  id: ID
+  isDeleted: Boolean
+  name: String
+}
+
+input CategoryUpdateRequest {
+  guid: String!
+  id: ID!
+  name: String
+}
+
 input CommissionCreateRequest {
   name: String
 }
@@ -91,7 +135,9 @@ input CommissionGetListRequest {
   isDesc: Boolean
   name: String
   orderField: String = "id"
+  page: Int = 1
   showDeleted: Boolean
+  size: Int = 5
 }
 
 type CommissionListResponse implements PaginatedData {
@@ -134,7 +180,9 @@ input DepartmentGetListRequest {
   isDesc: Boolean
   name: String
   orderField: String = "id"
+  page: Int = 1
   showDeleted: Boolean
+  size: Int = 5
 }
 
 type DepartmentListResponse implements PaginatedData {
@@ -187,7 +235,9 @@ input EducationGetListRequest {
   institution: String
   isDesc: Boolean
   orderField: String = "id"
+  page: Int = 1
   showDeleted: Boolean
+  size: Int = 5
   specialty: String
   userId: ID
   yearOfIssueLess: Float
@@ -216,7 +266,9 @@ input EducationQualificationGetListRequest {
   isDesc: Boolean
   name: String
   orderField: String = "id"
+  page: Int = 1
   showDeleted: Boolean
+  size: Int = 5
 }
 
 type EducationQualificationListResponse implements PaginatedData {
@@ -284,8 +336,10 @@ input HonorGetListRequest {
   isDesc: Boolean
   orderField: String = "id"
   orderNumber: String
+  page: Int = 1
   showDeleted: Boolean
   showInActive: Boolean
+  size: Int = 5
   title: String
   userId: ID
 }
@@ -354,8 +408,10 @@ input InternshipGetListRequest {
   dateToLess: String
   isDesc: Boolean
   orderField: String = "id"
+  page: Int = 1
   place: String
   showDeleted: Boolean
+  size: Int = 5
   title: String
   userId: ID
 }
@@ -415,6 +471,7 @@ type LoginTeacherResponse {
 type Mutation {
   createAcademicDegree(body: AcademicDegreeCreateRequest!): AcademicDegreeResponse!
   createAcademicTitle(body: AcademicTitleCreateRequest!): AcademicTitleResponse!
+  createCategory(body: CategoryCreateRequest!): CategoryResponse!
   createCommission(body: CommissionCreateRequest!): CommissionResponse!
   createDepartment(body: DepartmentCreateRequest!): DepartmentResponse!
   createEducation(body: EducationCreateRequest!): EducationResponse!
@@ -428,6 +485,7 @@ type Mutation {
   createUser(body: UserCreateRequest!): UserResponse!
   deleteAcademicDegree(guid: String!, id: Int!): IdResponse!
   deleteAcademicTitle(guid: String!, id: Int!): IdResponse!
+  deleteCategory(guid: String!, id: Int!): IdResponse!
   deleteCommission(guid: String!, id: Int!): IdResponse!
   deleteDepartment(guid: String!, id: Int!): IdResponse!
   deleteEducation(guid: String!, id: Int!): IdResponse!
@@ -447,6 +505,7 @@ type Mutation {
   refreshToken(refreshToken: String!): RefreshTokenResponse!
   updateAcademicDegree(body: AcademicDegreeUpdateRequest!): AcademicDegreeResponse!
   updateAcademicTitle(body: AcademicTitleUpdateRequest!): AcademicTitleResponse!
+  updateCategory(body: CategoryUpdateRequest!): CategoryResponse!
   updateCommission(body: CommissionUpdateRequest!): CommissionResponse!
   updateDepartment(body: DepartmentUpdateRequest!): DepartmentResponse!
   updateEducation(body: EducationUpdateRequest!): EducationResponse!
@@ -500,8 +559,10 @@ input PublicationGetListRequest {
   dateMore: String
   isDesc: Boolean
   orderField: String = "id"
+  page: Int = 1
   publisher: String
   showDeleted: Boolean
+  size: Int = 5
   title: String
   userIds: [ID!]
 }
@@ -545,6 +606,8 @@ type Query {
   getAcademicDegreeList(query: AcademicDegreeGetListRequest!): AcademicDegreeListResponse!
   getAcademicTitleById(query: AcademicTitleGetByIdRequest!): AcademicTitleResponse!
   getAcademicTitleList(query: AcademicTitleGetListRequest!): AcademicTitleListResponse!
+  getCategoryById(query: CategoryGetByIdRequest!): CategoryResponse!
+  getCategoryList(query: CategoryGetListRequest!): CategoryListResponse!
   getCommissionById(query: CommissionGetByIdRequest!): CommissionResponse!
   getCommissionsList(query: CommissionGetListRequest!): CommissionListResponse!
   getDepartmentById(query: DepartmentGetByIdRequest!): DepartmentResponse!
@@ -592,8 +655,10 @@ input RebukeGetListRequest {
   isDesc: Boolean
   orderField: String = "id"
   orderNumber: String
+  page: Int = 1
   showDeleted: Boolean
   showInActive: Boolean
+  size: Int = 5
   title: String
   userId: ID
 }
@@ -647,6 +712,8 @@ input RoleGetListRequest {
   isDesc: Boolean
   name: String
   orderField: String = "id"
+  page: Int = 1
+  size: Int = 5
 }
 
 type RoleListResponse implements PaginatedData {
@@ -699,7 +766,9 @@ input TeacherGetListRequest {
   fullName: String
   isDesc: Boolean
   orderField: String = "id"
+  page: Int = 1
   showDeleted: Boolean
+  size: Int = 5
   teachingRankId: ID
 }
 
@@ -760,7 +829,9 @@ input TeachingRankGetListRequest {
   isDesc: Boolean
   name: String
   orderField: String = "id"
+  page: Int = 1
   showDeleted: Boolean
+  size: Int = 5
 }
 
 type TeachingRankListResponse implements PaginatedData {
@@ -807,8 +878,10 @@ input UserGetListRequest {
   fullName: String
   isDesc: Boolean
   orderField: String = "id"
+  page: Int = 1
   roleId: ID
   showDeleted: Boolean
+  size: Int = 5
 }
 
 type UserListResponse implements PaginatedData {

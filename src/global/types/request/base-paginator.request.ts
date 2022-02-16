@@ -1,6 +1,6 @@
-import {ArgsType, Field, Int} from '@nestjs/graphql';
+import {Field, InputType, Int} from '@nestjs/graphql';
 
-@ArgsType()
+@InputType()
 export class BasePaginatorRequest {
   @Field(type => Int, {nullable: true})
   page: number = 1;

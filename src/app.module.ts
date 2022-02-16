@@ -34,6 +34,7 @@ import {ProfileModule} from './features/profile/profile.module';
 import {InternshipModule} from './features/internship/internship.module';
 import {EducationQualificationModule} from './features/education-qualification/education-qualification.module';
 import {EducationModule} from './features/education/education.module';
+import {CategoryModule} from './features/category/category.module';
 
 @Module({
   imports: [
@@ -103,6 +104,7 @@ import {EducationModule} from './features/education/education.module';
     InternshipModule,
     EducationQualificationModule,
     EducationModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [
