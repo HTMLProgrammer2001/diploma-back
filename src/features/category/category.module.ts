@@ -4,7 +4,8 @@ import {CategoryService} from './service/category.service';
 import {CategoryResolver} from './resolvers/category.resolver';
 
 @Module({
-  providers: [CategoryMapper, CategoryService, CategoryResolver]
+  providers: [CategoryMapper, CategoryService, CategoryResolver],
+  exports: [CategoryService]
 })
 export class CategoryModule {
 

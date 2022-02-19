@@ -4,7 +4,8 @@ import {InternshipService} from './service/internship.service';
 import {InternshipResolver} from './resolvers/internship.resolver';
 
 @Module({
-  providers: [InternshipMapper, InternshipService, InternshipResolver]
+  providers: [InternshipMapper, InternshipService, InternshipResolver],
+  exports: [InternshipService]
 })
 export class InternshipModule {
 

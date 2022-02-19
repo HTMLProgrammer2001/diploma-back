@@ -4,7 +4,8 @@ import {AcademicDegreeService} from './service/academic-degree.service';
 import {AcademicDegreeResolver} from './resolvers/academic-degree.resolver';
 
 @Module({
-  providers: [AcademicDegreeMapper, AcademicDegreeService, AcademicDegreeResolver]
+  providers: [AcademicDegreeMapper, AcademicDegreeService, AcademicDegreeResolver],
+  exports: [AcademicDegreeService]
 })
 export class AcademicDegreeModule {
 

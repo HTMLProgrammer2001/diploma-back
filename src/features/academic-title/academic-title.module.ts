@@ -4,7 +4,8 @@ import {AcademicTitleService} from './service/academic-title.service';
 import {AcademicTitleResolver} from './resolvers/academic-title.resolver';
 
 @Module({
-  providers: [AcademicTitleMapper, AcademicTitleService, AcademicTitleResolver]
+  providers: [AcademicTitleMapper, AcademicTitleService, AcademicTitleResolver],
+  exports: [AcademicTitleService]
 })
 export class AcademicTitleModule {
 

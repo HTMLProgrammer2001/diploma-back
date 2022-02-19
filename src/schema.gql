@@ -454,6 +454,14 @@ input InternshipGetByIdRequest {
   showDeleted: Boolean
 }
 
+input InternshipGetHoursFromLastAttestationRequest {
+  userId: ID!
+}
+
+type InternshipGetHoursFromLastAttestationResponse {
+  hours: Float!
+}
+
 input InternshipGetListRequest {
   code: String
   dateFromMore: String
@@ -676,6 +684,7 @@ type Query {
   getHonorById(query: HonorGetByIdRequest!): HonorResponse!
   getHonorList(query: HonorGetListRequest!): HonorListResponse!
   getInternshipById(query: InternshipGetByIdRequest!): InternshipResponse!
+  getInternshipHoursFromLastAttestation(query: InternshipGetHoursFromLastAttestationRequest!): InternshipGetHoursFromLastAttestationResponse!
   getInternshipList(query: InternshipGetListRequest!): InternshipListResponse!
   getProfile: ProfileResponse!
   getPublicationById(query: PublicationGetByIdRequest!): PublicationResponse!

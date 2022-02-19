@@ -4,7 +4,8 @@ import {PublicationService} from './service/publication.service';
 import {PublicationResolver} from './resolvers/publication.resolver';
 
 @Module({
-  providers: [PublicationMapper, PublicationService, PublicationResolver]
+  providers: [PublicationMapper, PublicationService, PublicationResolver],
+  exports: [PublicationService]
 })
 export class PublicationModule {
 

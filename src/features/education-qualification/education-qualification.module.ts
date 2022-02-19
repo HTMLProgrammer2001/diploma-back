@@ -4,7 +4,8 @@ import {EducationQualificationService} from './service/education-qualification.s
 import {EducationQualificationResolver} from './resolvers/education-qualification.resolver';
 
 @Module({
-  providers: [EducationQualificationMapper, EducationQualificationService, EducationQualificationResolver]
+  providers: [EducationQualificationMapper, EducationQualificationService, EducationQualificationResolver],
+  exports: [EducationQualificationService]
 })
 export class EducationQualificationModule {
 

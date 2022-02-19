@@ -4,7 +4,8 @@ import {TeachingRankService} from './service/teaching-rank.service';
 import {TeachingRankResolver} from './resolvers/teaching-rank.resolver';
 
 @Module({
-  providers: [TeachingRankMapper, TeachingRankService, TeachingRankResolver]
+  providers: [TeachingRankMapper, TeachingRankService, TeachingRankResolver],
+  exports: [TeachingRankService]
 })
 export class TeachingRankModule {
 

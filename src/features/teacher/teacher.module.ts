@@ -4,7 +4,8 @@ import {TeacherService} from './service/teacher.service';
 import {TeacherResolver} from './resolvers/teacher.resolver';
 
 @Module({
-  providers: [TeacherMapper, TeacherService, TeacherResolver]
+  providers: [TeacherMapper, TeacherService, TeacherResolver],
+  exports: [TeacherService]
 })
 export class TeacherModule {
 

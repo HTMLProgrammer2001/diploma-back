@@ -4,7 +4,8 @@ import {HonorService} from './service/honor.service';
 import {HonorResolver} from './resolvers/honor.resolver';
 
 @Module({
-  providers: [HonorMapper, HonorService, HonorResolver]
+  providers: [HonorMapper, HonorService, HonorResolver],
+  exports: [HonorService]
 })
 export class HonorModule {
 

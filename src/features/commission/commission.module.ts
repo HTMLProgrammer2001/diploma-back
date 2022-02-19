@@ -4,7 +4,8 @@ import {CommissionService} from './service/commission.service';
 import {CommissionResolver} from './resolvers/commission.resolver';
 
 @Module({
-  providers: [CommissionMapper, CommissionService, CommissionResolver]
+  providers: [CommissionMapper, CommissionService, CommissionResolver],
+  exports: [CommissionService]
 })
 export class CommissionModule {
 

@@ -13,6 +13,10 @@ import {InternshipDeleteRepoRequest} from '../../../data-layer/repositories/inte
 import {InternshipUpdateRequest} from '../types/request/internship-update.request';
 import {InternshipUpdateRepoRequest} from '../../../data-layer/repositories/internship/repo-request/internship-update.repo-request';
 import {InternshipSelectFieldsEnum} from '../../../data-layer/repositories/internship/enums/internship-select-fields.enum';
+import {AttestationGetRepoRequest} from '../../../data-layer/repositories/attestation/repo-request/attestation-get.repo-request';
+import {AttestationOrderFieldsEnum} from '../../../data-layer/repositories/attestation/enums/attestation-order-fields.enum';
+import {AttestationSelectFieldsEnum} from '../../../data-layer/repositories/attestation/enums/attestation-select-fields.enum';
+import {InternshipGetHoursRepoRequest} from '../../../data-layer/repositories/internship/repo-request/internship-get-hours.repo-request';
 
 @Injectable()
 export class InternshipMapper {
@@ -75,6 +79,29 @@ export class InternshipMapper {
     destination.showDeleted = source.showDeleted;
     destination.page = 1;
     destination.size = 1;
+
+    return destination;
+  }
+
+  initializeGetLastAttestationRepoRequest(userId: number): AttestationGetRepoRequest {
+    const destination = new AttestationGetRepoRequest();
+
+    destination.userId = userId;
+    destination.orderField = AttestationOrderFieldsEnum.DATE;
+    destination.isDesc = true;
+    destination.showDeleted = false;
+    destination.select = [AttestationSelectFieldsEnum.DATE];
+    destination.page = 1;
+    destination.size = 1;
+
+    return destination;
+  }
+
+  initializeGetInternshipHoursRepoRequest(userId: number, date: Date): InternshipGetHoursRepoRequest {
+    const destination = new InternshipGetHoursRepoRequest();
+
+    destination.userId = userId;
+    destination.from = date;
 
     return destination;
   }

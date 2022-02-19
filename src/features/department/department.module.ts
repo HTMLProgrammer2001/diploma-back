@@ -4,7 +4,8 @@ import {DepartmentService} from './service/department.service';
 import {DepartmentResolver} from './resolvers/department.resolver';
 
 @Module({
-  providers: [DepartmentMapper, DepartmentService, DepartmentResolver]
+  providers: [DepartmentMapper, DepartmentService, DepartmentResolver],
+  exports: [DepartmentService]
 })
 export class DepartmentModule {
 

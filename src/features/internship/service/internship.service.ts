@@ -13,6 +13,9 @@ import {InternshipGetByIdRequest} from '../types/request/internship-get-by-id.re
 import {InternshipCreateRequest} from '../types/request/internship-create.request';
 import {InternshipUpdateRequest} from '../types/request/internship-update.request';
 import {InternshipSelectFieldsEnum} from '../../../data-layer/repositories/internship/enums/internship-select-fields.enum';
+import {InternshipGetHoursFromLastAttestationRequest} from '../types/request/internship-get-hours-from-last-attestation.request';
+import {InternshipGetHoursFromLastAttestationResponse} from '../types/response/internship-get-hours-from-last-attestation.response';
+import {AttestationRepository} from '../../../data-layer/repositories/attestation/attestation.repository';
 
 @Injectable()
 export class InternshipService {
@@ -22,6 +25,7 @@ export class InternshipService {
     private internshipRepository: InternshipRepository,
     private userRepository: UserRepository,
     private internshipMapper: InternshipMapper,
+    private attestationRepository: AttestationRepository,
   ) {
     this.logger = new Logger(InternshipService.name);
   }
@@ -50,6 +54,34 @@ export class InternshipService {
         return this.internshipMapper.internshipDbModelToResponse(data.responseList[0]);
       } else {
         throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Internship with id ${request.id} not exist`});
+      }
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async getInternshipHoursFromLastAttestation(request: InternshipGetHoursFromLastAttestationRequest):
+    Promise<InternshipGetHoursFromLastAttestationResponse> {
+    try {
+      const attestationRepoRequest = this.internshipMapper.initializeGetLastAttestationRepoRequest(request.userId);
+      const {data: lastAttestation} = await this.attestationRepository.getAttestations(attestationRepoRequest);
+
+      if(!lastAttestation.responseList.length) {
+        return {hours: 0};
+      }
+      else {
+        const getInternshipHoursRepoRequest = this.internshipMapper.initializeGetInternshipHoursRepoRequest(
+          request.userId,
+          lastAttestation.responseList[0].date
+        );
+
+        const {data: hours} = await this.internshipRepository.getInternshipHours(getInternshipHoursRepoRequest);
+        return {hours};
       }
     } catch (e) {
       if (!(e instanceof CustomError)) {

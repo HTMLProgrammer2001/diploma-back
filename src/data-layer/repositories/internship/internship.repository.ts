@@ -9,7 +9,6 @@ import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {Model} from 'sequelize-typescript';
 import {UserDbModel} from '../../db-models/user.db-model';
 import {InternshipDbModel, InternshipInterface} from '../../db-models/internship.db-model';
 import {InternshipGetRepoRequest} from './repo-request/internship-get.repo-request';
@@ -19,6 +18,8 @@ import {InternshipOrderFieldsEnum} from './enums/internship-order-fields.enum';
 import {InternshipCreateRepoRequest} from './repo-request/internship-create.repo-request';
 import {InternshipUpdateRepoRequest} from './repo-request/internship-update.repo-request';
 import {InternshipDeleteRepoRequest} from './repo-request/internship-delete.repo-request';
+import {InternshipGetHoursRepoRequest} from './repo-request/internship-get-hours.repo-request';
+import {InternshipGetHoursRepoResponse} from './repo-response/internship-get-hours.repo-response';
 
 @Injectable()
 export class InternshipRepository {
@@ -196,6 +197,34 @@ export class InternshipRepository {
       });
 
       return {data: convertFindAndCountToPaginator(data, repoRequest.page, repoRequest.size)};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async getInternshipHours(repoRequest: InternshipGetHoursRepoRequest): Promise<InternshipGetHoursRepoResponse> {
+    try {
+      const filters: WhereOptions<InternshipInterface> = {};
+
+      if(!isNil(repoRequest.userId)) {
+        filters.userId = repoRequest.userId;
+      }
+
+      if(!isNil(repoRequest.from)) {
+        filters.from = {[Op.gte]: repoRequest.from};
+      }
+
+      if(!isNil(repoRequest.to)) {
+        filters.to = {[Op.lte]: repoRequest.to};
+      }
+
+      const hours = await this.internshipDbModel.sum('hours', {where: filters});
+      return {data: hours};
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

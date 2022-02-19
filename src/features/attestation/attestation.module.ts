@@ -4,7 +4,8 @@ import {AttestationService} from './service/attestation.service';
 import {AttestationResolver} from './resolvers/attestation.resolver';
 
 @Module({
-  providers: [AttestationMapper, AttestationService, AttestationResolver]
+  providers: [AttestationMapper, AttestationService, AttestationResolver],
+  exports: [AttestationService]
 })
 export class AttestationModule {
 

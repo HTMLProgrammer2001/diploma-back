@@ -4,7 +4,8 @@ import {RebukeService} from './service/rebuke.service';
 import {RebukeResolver} from './resolvers/rebuke.resolver';
 
 @Module({
-  providers: [RebukeMapper, RebukeService, RebukeResolver]
+  providers: [RebukeMapper, RebukeService, RebukeResolver],
+  exports: [RebukeService]
 })
 export class RebukeModule {
 
