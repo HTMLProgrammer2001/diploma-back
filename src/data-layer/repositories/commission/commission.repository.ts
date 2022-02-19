@@ -1,6 +1,6 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {InjectModel} from '@nestjs/sequelize';
-import {CommissionDbModel} from '../../db-models/commission.db-model';
+import {CommissionDbModel, CommissionInterface} from '../../db-models/commission.db-model';
 import {isEmpty, isNil, isUndefined} from 'lodash';
 import {CommissionGetRepoRequest} from './repo-request/commission-get.repo-request';
 import sequelize, {Op} from 'sequelize';
@@ -63,7 +63,7 @@ export class CommissionRepository {
 
       //region Filters
 
-      const filters: WhereOptions = {};
+      const filters: WhereOptions<CommissionInterface> = {};
 
       if (!isNil(repoRequest.name)) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
@@ -73,12 +73,12 @@ export class CommissionRepository {
         filters.isDeleted = false;
       }
 
-      if (!isNil(repoRequest.id)) {
-        filters.id = repoRequest.id;
-      }
-
       if (!isNil(repoRequest.ids)) {
         filters.id = {[Op.in]: repoRequest.ids};
+      }
+
+      if (!isNil(repoRequest.id)) {
+        filters.id = repoRequest.id;
       }
 
       //endregion
@@ -128,7 +128,7 @@ export class CommissionRepository {
 
   async updateCommission(repoRequest: CommissionUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
     try {
-      const updateData = {} as Omit<CommissionDbModel, keyof Model>;
+      const updateData = {} as CommissionInterface;
 
       if (!isUndefined(repoRequest.name)) {
         updateData.name = repoRequest.name;

@@ -7,7 +7,7 @@ import {FindAttributeOptions, WhereOptions} from 'sequelize/dist/lib/model';
 import {AcademicDegreeSelectFieldsEnum} from './enums/academic-degree-select-fields.enum';
 import {AcademicDegreeGetRepoResponse} from './repo-response/academic-degree-get.repo-response';
 import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
-import {AcademicDegreeDbModel} from '../../db-models/academic-degree.db-model';
+import {AcademicDegreeDbModel, AcademicDegreeInterface} from '../../db-models/academic-degree.db-model';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
@@ -63,18 +63,18 @@ export class AcademicDegreeRepository {
 
       //region Filters
 
-      const filters: WhereOptions = {};
+      const filters: WhereOptions<AcademicDegreeInterface> = {};
 
       if (!isNil(repoRequest.name)) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
       }
 
-      if (!isNil(repoRequest.id)) {
-        filters.id = repoRequest.id;
-      }
-
       if (!isNil(repoRequest.ids)) {
         filters.id = {[Op.in]: repoRequest.ids};
+      }
+
+      if (!isNil(repoRequest.id)) {
+        filters.id = repoRequest.id;
       }
 
       if (!repoRequest.showDeleted) {
@@ -128,7 +128,7 @@ export class AcademicDegreeRepository {
 
   async updateAcademicDegree(repoRequest: AcademicDegreeUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
     try {
-      const updateData = {} as Omit<AcademicDegreeDbModel, keyof Model>;
+      const updateData = {} as AcademicDegreeInterface;
 
       if (!isUndefined(repoRequest.name)) {
         updateData.name = repoRequest.name;

@@ -1,6 +1,7 @@
 import {AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, Table} from 'sequelize-typescript';
 import sequelize from 'sequelize';
 import {UserDbModel} from './user.db-model';
+import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 
 export interface HonorInterface {
   id: number;
@@ -15,7 +16,7 @@ export interface HonorInterface {
 }
 
 @Table({tableName: 'Honor', timestamps: false})
-export class HonorDbModel extends Model<HonorInterface, Omit<HonorInterface, 'guid' | 'id' | 'isDeleted'>> {
+export class HonorDbModel extends Model<HonorInterface, CreateDbModelType<HonorInterface>> {
   @AutoIncrement
   @Column({primaryKey: true})
   id: number;

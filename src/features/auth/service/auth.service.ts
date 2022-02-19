@@ -17,6 +17,7 @@ import {LoginTeacherResponse} from '../types/response/login-teacher.response';
 import {TeacherRepository} from '../../../data-layer/repositories/teacher/teacher.repository';
 import {RolesEnum} from '../../../global/constants/roles.enum';
 import {AccessTokenTypeEnum} from '../../../global/constants/access-token-type.enum';
+import {MailServiceInterface} from '../../../global/services/mail-service/mail-service.interface';
 
 @Injectable()
 export class AuthService {
@@ -27,6 +28,7 @@ export class AuthService {
     private refreshTokenRepository: RefreshTokenRepository,
     private userRepository: UserRepository,
     private teacherRepository: TeacherRepository,
+    private mailService: MailServiceInterface,
     private authMapper: AuthMapper,
   ) {
     this.logger = new Logger(AuthService.name);
@@ -209,7 +211,8 @@ export class AuthService {
         expiresIn: Number(process.env.JWT_ACCESS_TOKEN_TTL_SECONDS)
       });
 
-      return {token: accessToken};
+      await this.mailService.sendTeacherLoginMail(email, accessToken);
+      return {result: true};
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

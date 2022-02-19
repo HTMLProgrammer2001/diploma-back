@@ -1,6 +1,7 @@
 import {AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, Table} from 'sequelize-typescript';
 import sequelize from 'sequelize';
 import {UserDbModel} from './user.db-model';
+import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 
 export interface RebukeInterface {
   id: number;
@@ -15,7 +16,7 @@ export interface RebukeInterface {
 }
 
 @Table({tableName: 'Rebuke', timestamps: false})
-export class RebukeDbModel extends Model<RebukeInterface, Omit<RebukeInterface, 'guid' | 'id' | 'isDeleted'>> {
+export class RebukeDbModel extends Model<RebukeInterface, CreateDbModelType<RebukeInterface>> {
   @AutoIncrement
   @Column({primaryKey: true})
   id: number;

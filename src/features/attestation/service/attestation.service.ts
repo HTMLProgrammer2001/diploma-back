@@ -1,0 +1,196 @@
+import {Injectable, Logger} from '@nestjs/common';
+import {isNil} from 'lodash';
+import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
+import {CustomError} from '../../../global/class/custom-error';
+import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
+import {IdResponse} from '../../../global/types/response/id.response';
+import {UserRepository} from '../../../data-layer/repositories/user/user.repository';
+import {AttestationGetListRequest} from '../types/request/attestation-get-list.request';
+import {AttestationResponse} from '../types/response/attestation.response';
+import {AttestationGetByIdRequest} from '../types/request/attestation-get-by-id.request';
+import {AttestationCreateRequest} from '../types/request/attestation-create.request';
+import {AttestationUpdateRequest} from '../types/request/attestation-update.request';
+import {AttestationMapper} from '../mapper/attestation.mapper';
+import {AttestationRepository} from '../../../data-layer/repositories/attestation/attestation.repository';
+import {CategoryRepository} from '../../../data-layer/repositories/category/category.repository';
+import {AttestationSelectFieldsEnum} from '../../../data-layer/repositories/attestation/enums/attestation-select-fields.enum';
+
+@Injectable()
+export class AttestationService {
+  private logger: Logger;
+
+  constructor(
+    private attestationRepository: AttestationRepository,
+    private userRepository: UserRepository,
+    private categoryRepository: CategoryRepository,
+    private attestationMapper: AttestationMapper,
+  ) {
+    this.logger = new Logger(AttestationService.name);
+  }
+
+  async getAttestationList(request: AttestationGetListRequest): Promise<IPaginator<AttestationResponse>> {
+    try {
+      const repoRequest = this.attestationMapper.getAttestationListRequestToRepoRequest(request);
+      const {data} = await this.attestationRepository.getAttestations(repoRequest);
+      return this.attestationMapper.attestationPaginatorDbModelToResponse(data);
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async getAttestationById(request: AttestationGetByIdRequest): Promise<AttestationResponse> {
+    try {
+      const repoRequest = this.attestationMapper.getAttestationByIdRequestToRepoRequest(request);
+      const {data} = await this.attestationRepository.getAttestations(repoRequest);
+
+      if (data.responseList?.length) {
+        return this.attestationMapper.attestationDbModelToResponse(data.responseList[0]);
+      } else {
+        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Attestation with id ${request.id} not exist`});
+      }
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async createAttestation(request: AttestationCreateRequest): Promise<AttestationResponse> {
+    try {
+      await this.validateRequest(request);
+
+      const createRepoRequest = this.attestationMapper.createRebukeRequestToRepoRequest(request);
+      const {createdID} = await this.attestationRepository.createAttestation(createRepoRequest);
+
+      const repoRequest = this.attestationMapper.initializeGetAttestationByIdRepoRequest(createdID, request.select);
+      const {data} = await this.attestationRepository.getAttestations(repoRequest);
+      return this.attestationMapper.attestationDbModelToResponse(data.responseList[0]);
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async updateAttestation(request: AttestationUpdateRequest): Promise<AttestationResponse> {
+    try {
+      const getCurrentAttestationRepoRequest = this.attestationMapper.initializeGetAttestationByIdRepoRequest(
+        request.id,
+        [AttestationSelectFieldsEnum.GUID, AttestationSelectFieldsEnum.IS_DELETED]
+      );
+      const currentAttestation = await this.attestationRepository.getAttestations(getCurrentAttestationRepoRequest);
+
+      if (!currentAttestation.data.responseList?.length) {
+        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Attestation with id ${request.id} not exist`});
+      } else if (currentAttestation.data.responseList[0].isDeleted) {
+        throw new CustomError({
+          code: ErrorCodesEnum.ALREADY_DELETED,
+          message: `Attestation with id ${request.id} is deleted`
+        });
+      } else if (currentAttestation.data.responseList[0].guid !== request.guid) {
+        throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Attestation guid was changed'});
+      }
+
+      await this.validateRequest(request);
+
+      const updateRepoRequest = this.attestationMapper.updateAttestationRequestToRepoRequest(request);
+      const {updatedID} = await this.attestationRepository.updateAttestation(updateRepoRequest);
+
+      const repoRequest = this.attestationMapper.initializeGetAttestationByIdRepoRequest(updatedID, request.select);
+      const {data} = await this.attestationRepository.getAttestations(repoRequest);
+      return this.attestationMapper.attestationDbModelToResponse(data.responseList[0]);
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async deleteAttestation(id: number, guid: string): Promise<IdResponse> {
+    try {
+      const getCurrentAttestationRepoRequest = this.attestationMapper.initializeGetAttestationByIdRepoRequest(
+        id,
+        [AttestationSelectFieldsEnum.GUID, AttestationSelectFieldsEnum.IS_DELETED]
+      );
+      const currentAttestation = await this.attestationRepository.getAttestations(getCurrentAttestationRepoRequest);
+
+      if (!currentAttestation.data.responseList?.length) {
+        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Attestation with id ${id} not exist`});
+      } else if (currentAttestation.data.responseList[0].isDeleted) {
+        throw new CustomError({
+          code: ErrorCodesEnum.ALREADY_DELETED,
+          message: `Attestation with id ${id} already deleted`
+        });
+      } else if (currentAttestation.data.responseList[0].guid !== guid) {
+        throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Attestation guid was changed`});
+      }
+
+      const deleteRepoRequest = this.attestationMapper.deleteAttestationRequestToRepoRequest(id);
+      const {deletedID} = await this.attestationRepository.deleteAttestation(deleteRepoRequest);
+      return {id: deletedID};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async validateRequest(request: AttestationCreateRequest) {
+    //validate user
+    if (!isNil(request.userId)) {
+      const getUserRepoRequest = this.attestationMapper.initializeGetUserRepoRequest(request.userId);
+      const {data: userData} = await this.userRepository.getUsers(getUserRepoRequest);
+
+      if (!userData.responseList.length) {
+        throw new CustomError({
+          code: ErrorCodesEnum.NOT_FOUND,
+          message: `User with id ${request.userId} not found`
+        });
+      }
+
+      if (userData.responseList[0].isDeleted) {
+        throw new CustomError({
+          code: ErrorCodesEnum.ALREADY_DELETED,
+          message: `User with id ${request.userId} is deleted`
+        });
+      }
+    }
+
+    //validate category
+    if (!isNil(request.categoryId)) {
+      const getCategoryRepoRequest = this.attestationMapper.initializeGetCategoryRepoRequest(request.userId);
+      const {data: categoryData} = await this.categoryRepository.getCategories(getCategoryRepoRequest);
+
+      if (!categoryData.responseList.length) {
+        throw new CustomError({
+          code: ErrorCodesEnum.NOT_FOUND,
+          message: `Category with id ${request.userId} not found`
+        });
+      }
+
+      if (categoryData.responseList[0].isDeleted) {
+        throw new CustomError({
+          code: ErrorCodesEnum.ALREADY_DELETED,
+          message: `Category with id ${request.userId} is deleted`
+        });
+      }
+    }
+  }
+}

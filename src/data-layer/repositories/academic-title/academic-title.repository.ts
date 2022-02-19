@@ -7,7 +7,7 @@ import {FindAttributeOptions, WhereOptions} from 'sequelize/dist/lib/model';
 import {AcademicTitleSelectFieldsEnum} from './enums/academic-title-select-fields.enum';
 import {AcademicTitleGetRepoResponse} from './repo-response/academic-title-get.repo-response';
 import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
-import {AcademicTitleDbModel} from '../../db-models/academic-title.db-model';
+import {AcademicTitleDbModel, AcademicTitleInterface} from '../../db-models/academic-title.db-model';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
@@ -63,18 +63,18 @@ export class AcademicTitleRepository {
 
       //region Filters
 
-      const filters: WhereOptions = {};
+      const filters: WhereOptions<AcademicTitleInterface> = {};
 
       if (!isNil(repoRequest.name)) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
       }
 
-      if (!isNil(repoRequest.id)) {
-        filters.id = repoRequest.id;
-      }
-
       if (!isNil(repoRequest.ids)) {
         filters.id = {[Op.in]: repoRequest.ids};
+      }
+
+      if (!isNil(repoRequest.id)) {
+        filters.id = repoRequest.id;
       }
 
       if (!repoRequest.showDeleted) {
@@ -128,7 +128,7 @@ export class AcademicTitleRepository {
 
   async updateAcademicTitle(repoRequest: AcademicTitleUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
     try {
-      const updateData = {} as Omit<AcademicTitleDbModel, keyof Model>;
+      const updateData = {} as AcademicTitleInterface;
 
       if (!isUndefined(repoRequest.name)) {
         updateData.name = repoRequest.name;

@@ -17,7 +17,7 @@ import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {HonorUpdateRepoRequest} from './repo-request/honor-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {Model} from 'sequelize-typescript';
-import {HonorDbModel} from '../../db-models/honor.db-model';
+import {HonorDbModel, HonorInterface} from '../../db-models/honor.db-model';
 import {UserDbModel} from '../../db-models/user.db-model';
 
 @Injectable()
@@ -97,7 +97,7 @@ export class HonorRepository {
 
       //region Filters
 
-      const filters: WhereOptions = {};
+      const filters: WhereOptions<HonorInterface> = {};
 
       if (!isNil(repoRequest.title)) {
         filters.title = {[Op.like]: `%${repoRequest.title || ''}%`};
@@ -116,7 +116,12 @@ export class HonorRepository {
       }
 
       if (!isNil(repoRequest.dateLess)) {
-        filters.date = {[Op.lte]: repoRequest.dateLess};
+        if(!filters.date) {
+          filters.date = {[Op.lte]: repoRequest.dateLess};
+        }
+        else {
+          filters.date[Op.lte] = repoRequest.dateLess;
+        }
       }
 
       if (!isNil(repoRequest.userId)) {
@@ -131,12 +136,12 @@ export class HonorRepository {
         filters.isDeleted = false;
       }
 
-      if (!isNil(repoRequest.id)) {
-        filters.id = repoRequest.id;
-      }
-
       if (!isNil(repoRequest.ids)) {
         filters.id = {[Op.in]: repoRequest.ids};
+      }
+
+      if (!isNil(repoRequest.id)) {
+        filters.id = repoRequest.id;
       }
 
       //endregion
@@ -212,7 +217,7 @@ export class HonorRepository {
   }
 
   async updateHonor(repoRequest: HonorUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
-    const updateData = {} as Omit<HonorDbModel, keyof Model>;
+    const updateData = {} as HonorInterface;
 
     if (!isUndefined(repoRequest.title)) {
       updateData.title = repoRequest.title;

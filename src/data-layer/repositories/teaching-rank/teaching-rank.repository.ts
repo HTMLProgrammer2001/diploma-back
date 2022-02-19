@@ -7,7 +7,7 @@ import {FindAttributeOptions, WhereOptions} from 'sequelize/dist/lib/model';
 import {TeachingRankSelectFieldsEnum} from './enums/teaching-rank-select-fields.enum';
 import {TeachingRankGetRepoResponse} from './repo-response/teaching-rank-get.repo-response';
 import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
-import {TeachingRankDbModel} from '../../db-models/teaching-rank.db-model';
+import {TeachingRankDbModel, TeachingRankInterface} from '../../db-models/teaching-rank.db-model';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
@@ -63,18 +63,18 @@ export class TeachingRankRepository {
 
       //region Filters
 
-      const filters: WhereOptions = {};
+      const filters: WhereOptions<TeachingRankInterface> = {};
 
       if (!isNil(repoRequest.name)) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
       }
 
-      if (!isNil(repoRequest.id)) {
-        filters.id = repoRequest.id;
-      }
-
       if (!isNil(repoRequest.ids)) {
         filters.id = {[Op.in]: repoRequest.ids};
+      }
+
+      if (!isNil(repoRequest.id)) {
+        filters.id = repoRequest.id;
       }
 
       if (!repoRequest.showDeleted) {
@@ -128,7 +128,7 @@ export class TeachingRankRepository {
 
   async updateTeachingRank(repoRequest: TeachingRankUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
     try {
-      const updateData = {} as Omit<TeachingRankDbModel, keyof Model>;
+      const updateData = {} as TeachingRankInterface;
 
       if (!isUndefined(repoRequest.name)) {
         updateData.name = repoRequest.name;

@@ -11,7 +11,7 @@ import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {Model} from 'sequelize-typescript';
 import {UserDbModel} from '../../db-models/user.db-model';
-import {InternshipDbModel} from '../../db-models/internship.db-model';
+import {InternshipDbModel, InternshipInterface} from '../../db-models/internship.db-model';
 import {InternshipGetRepoRequest} from './repo-request/internship-get.repo-request';
 import {InternshipGetRepoResponse} from './repo-response/internship-get.repo-response';
 import {InternshipSelectFieldsEnum} from './enums/internship-select-fields.enum';
@@ -109,14 +109,14 @@ export class InternshipRepository {
 
       //region Filters
 
-      const filters: WhereOptions = {};
+      const filters: WhereOptions<InternshipInterface> = {};
 
       if (!isNil(repoRequest.title)) {
         filters.title = {[Op.like]: `%${repoRequest.title || ''}%`};
       }
 
       if (!isNil(repoRequest.code)) {
-        filters.orderNumber = {[Op.like]: `%${repoRequest.code || ''}%`};
+        filters.code = {[Op.like]: `%${repoRequest.code || ''}%`};
       }
 
       if (!isNil(repoRequest.codeEqual)) {
@@ -143,12 +143,12 @@ export class InternshipRepository {
         filters.isDeleted = false;
       }
 
-      if (!isNil(repoRequest.id)) {
-        filters.id = repoRequest.id;
-      }
-
       if (!isNil(repoRequest.ids)) {
         filters.id = {[Op.in]: repoRequest.ids};
+      }
+
+      if (!isNil(repoRequest.id)) {
+        filters.id = repoRequest.id;
       }
 
       //endregion
@@ -231,7 +231,7 @@ export class InternshipRepository {
   }
 
   async updateInternship(repoRequest: InternshipUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
-    const updateData = {} as Omit<InternshipDbModel, keyof Model>;
+    const updateData = {} as InternshipInterface;
 
     if (!isUndefined(repoRequest.title)) {
       updateData.title = repoRequest.title;

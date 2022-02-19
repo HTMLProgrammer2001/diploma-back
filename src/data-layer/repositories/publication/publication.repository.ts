@@ -11,7 +11,7 @@ import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {Model, Sequelize} from 'sequelize-typescript';
 import {UserDbModel} from '../../db-models/user.db-model';
-import {PublicationDbModel} from '../../db-models/publication.db-model';
+import {PublicationDbModel, PublicationInterface} from '../../db-models/publication.db-model';
 import {PublicationGetRepoRequest} from './repo-request/publication-get.repo-request';
 import {PublicationGetRepoResponse} from './repo-response/publication-get.repo-response';
 import {PublicationSelectFieldsEnum} from './enums/publication-select-fields.enum';
@@ -101,7 +101,7 @@ export class PublicationRepository {
 
       //region Filters
 
-      const filters: WhereOptions = {};
+      const filters: WhereOptions<PublicationInterface> = {};
 
       if (!isNil(repoRequest.title)) {
         filters.title = {[Op.like]: `%${repoRequest.title || ''}%`};
@@ -116,7 +116,12 @@ export class PublicationRepository {
       }
 
       if (!isNil(repoRequest.dateLess)) {
-        filters.date = {[Op.lte]: repoRequest.dateLess};
+        if(!filters.date) {
+          filters.date = {[Op.lte]: repoRequest.dateLess};
+        }
+        else {
+          filters.date[Op.lte] = repoRequest.dateLess;
+        }
       }
 
       if (!isNil(repoRequest.userIds)) {
@@ -210,7 +215,7 @@ export class PublicationRepository {
   }
 
   async updatePublication(repoRequest: PublicationUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
-    const updateData = {} as Omit<PublicationDbModel, keyof Model>;
+    const updateData = {} as PublicationInterface;
 
     if (!isUndefined(repoRequest.title)) {
       updateData.title = repoRequest.title;

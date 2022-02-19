@@ -11,7 +11,7 @@ import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {Model} from 'sequelize-typescript';
 import {UserDbModel} from '../../db-models/user.db-model';
-import {RebukeDbModel} from '../../db-models/rebuke.db-model';
+import {RebukeDbModel, RebukeInterface} from '../../db-models/rebuke.db-model';
 import {RebukeGetRepoRequest} from './repo-request/rebuke-get.repo-request';
 import {RebukeGetRepoResponse} from './repo-response/rebuke-get.repo-response';
 import {RebukeSelectFieldsEnum} from './enums/rebuke-select-fields.enum';
@@ -97,7 +97,7 @@ export class RebukeRepository {
 
       //region Filters
 
-      const filters: WhereOptions = {};
+      const filters: WhereOptions<RebukeInterface> = {};
 
       if (!isNil(repoRequest.title)) {
         filters.title = {[Op.like]: `%${repoRequest.title || ''}%`};
@@ -116,7 +116,12 @@ export class RebukeRepository {
       }
 
       if (!isNil(repoRequest.dateLess)) {
-        filters.date = {[Op.lte]: repoRequest.dateLess};
+        if(!filters.date) {
+          filters.date = {[Op.lte]: repoRequest.dateLess};
+        }
+        else {
+          filters.date[Op.lte] = repoRequest.dateLess;
+        }
       }
 
       if (!isNil(repoRequest.userId)) {
@@ -131,12 +136,12 @@ export class RebukeRepository {
         filters.isDeleted = false;
       }
 
-      if (!isNil(repoRequest.id)) {
-        filters.id = repoRequest.id;
-      }
-
       if (!isNil(repoRequest.ids)) {
         filters.id = {[Op.in]: repoRequest.ids};
+      }
+
+      if (!isNil(repoRequest.id)) {
+        filters.id = repoRequest.id;
       }
 
       //endregion
@@ -212,7 +217,7 @@ export class RebukeRepository {
   }
 
   async updateRebuke(repoRequest: RebukeUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
-    const updateData = {} as Omit<RebukeDbModel, keyof Model>;
+    const updateData = {} as RebukeInterface;
 
     if (!isUndefined(repoRequest.title)) {
       updateData.title = repoRequest.title;

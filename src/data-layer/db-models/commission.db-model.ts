@@ -1,9 +1,17 @@
 import {AutoIncrement, Column, DataType, HasMany, Model, Table} from 'sequelize-typescript';
 import sequelize from 'sequelize';
 import {TeacherDbModel} from './teacher.db-model';
+import {CreateDbModelType} from '../repositories/common/create-db-model.type';
+
+export interface CommissionInterface {
+  id: number;
+  name: string;
+  isDeleted: boolean;
+  guid: string;
+}
 
 @Table({tableName: 'Commissions', timestamps: false})
-export class CommissionDbModel extends Model {
+export class CommissionDbModel extends Model<CommissionInterface, CreateDbModelType<CommissionInterface>> {
   @AutoIncrement
   @Column({primaryKey: true})
   id: number;

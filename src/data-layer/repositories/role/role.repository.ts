@@ -7,7 +7,7 @@ import {FindAttributeOptions, WhereOptions} from 'sequelize/dist/lib/model';
 import {RoleSelectFieldsEnum} from './enums/role-select-fields.enum';
 import {RoleGetRepoResponse} from './repo-response/role-get.repo-response';
 import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
-import {RoleDbModel} from '../../db-models/role.db-model';
+import {RoleDbModel, RoleInterface} from '../../db-models/role.db-model';
 import {RoleUpdateRepoRequest} from './repo-request/role-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {Model} from 'sequelize-typescript';
@@ -24,7 +24,7 @@ export class RoleRepository {
 
   async updateRole(repoRequest: RoleUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
     try {
-      const updateData = {} as Omit<RoleDbModel, keyof Model>;
+      const updateData = {} as RoleInterface;
 
       if (!isUndefined(repoRequest.name)) {
         updateData.name = repoRequest.name;
@@ -79,22 +79,18 @@ export class RoleRepository {
 
       //region Filters
 
-      const filters: WhereOptions = {};
+      const filters: WhereOptions<RoleInterface> = {};
 
       if (!isNil(repoRequest.name)) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
-      }
-
-      if (!isNil(repoRequest.id)) {
-        filters.id = repoRequest.id;
       }
 
       if (!isNil(repoRequest.ids)) {
         filters.id = {[Op.in]: repoRequest.ids};
       }
 
-      if (!repoRequest.showDeleted) {
-        filters.isDeleted = false;
+      if (!isNil(repoRequest.id)) {
+        filters.id = repoRequest.id;
       }
 
       //endregion

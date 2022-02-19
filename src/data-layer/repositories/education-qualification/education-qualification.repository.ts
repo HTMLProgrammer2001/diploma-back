@@ -14,7 +14,10 @@ import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {EducationQualificationGetRepoRequest} from './repo-request/education-qualification-get.repo-request';
 import {EducationQualificationGetRepoResponse} from './repo-response/education-qualification-get.repo-response';
 import {EducationQualificationSelectFieldsEnum} from './enums/education-qualification-select-fields.enum';
-import {EducationQualificationDbModel} from '../../db-models/education-qualification.db-model';
+import {
+  EducationQualificationDbModel,
+  EducationQualificationInterface
+} from '../../db-models/education-qualification.db-model';
 import {EducationQualificationCreateRepoRequest} from './repo-request/education-qualification-create.repo-request';
 import {EducationQualificationUpdateRepoRequest} from './repo-request/education-qualification-update.repo-request';
 import {EducationQualificationDeleteRepoRequest} from './repo-request/education-qualification-delete.repo-request';
@@ -65,18 +68,18 @@ export class EducationQualificationRepository {
 
       //region Filters
 
-      const filters: WhereOptions = {};
+      const filters: WhereOptions<EducationQualificationInterface> = {};
 
       if (!isNil(repoRequest.name)) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
       }
 
-      if (!isNil(repoRequest.id)) {
-        filters.id = repoRequest.id;
-      }
-
       if (!isNil(repoRequest.ids)) {
         filters.id = {[Op.in]: repoRequest.ids};
+      }
+
+      if (!isNil(repoRequest.id)) {
+        filters.id = repoRequest.id;
       }
 
       if (!repoRequest.showDeleted) {
@@ -130,7 +133,7 @@ export class EducationQualificationRepository {
 
   async updateEducationQualification(repoRequest: EducationQualificationUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
     try {
-      const updateData = {} as Omit<AcademicDegreeDbModel, keyof Model>;
+      const updateData = {} as EducationQualificationInterface;
 
       if (!isUndefined(repoRequest.name)) {
         updateData.name = repoRequest.name;

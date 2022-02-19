@@ -5,6 +5,7 @@ import {CommissionDbModel} from './commission.db-model';
 import {TeachingRankDbModel} from './teaching-rank.db-model';
 import {AcademicDegreeDbModel} from './academic-degree.db-model';
 import {AcademicTitleDbModel} from './academic-title.db-model';
+import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 
 export interface TeacherInterface {
   id: number;
@@ -25,7 +26,7 @@ export interface TeacherInterface {
 }
 
 @Table({tableName: 'Teacher', timestamps: false})
-export class TeacherDbModel extends Model<TeacherInterface, Omit<TeacherInterface, 'guid' | 'id' | 'isDeleted'>> {
+export class TeacherDbModel extends Model<TeacherInterface, CreateDbModelType<TeacherInterface>> {
   @AutoIncrement
   @Column({primaryKey: true})
   id: number;

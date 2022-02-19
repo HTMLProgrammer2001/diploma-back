@@ -1,6 +1,7 @@
 import {AutoIncrement, BelongsToMany, Column, DataType, Model, Table} from 'sequelize-typescript';
 import sequelize from 'sequelize';
 import {UserDbModel} from './user.db-model';
+import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 
 export interface PublicationInterface {
   id: number;
@@ -15,7 +16,7 @@ export interface PublicationInterface {
 }
 
 @Table({tableName: 'Publication', timestamps: false})
-export class PublicationDbModel extends Model<PublicationInterface, Omit<PublicationInterface, 'guid' | 'id' | 'isDeleted'>> {
+export class PublicationDbModel extends Model<PublicationInterface, CreateDbModelType<PublicationInterface>> {
   @AutoIncrement
   @Column({primaryKey: true})
   id: number;

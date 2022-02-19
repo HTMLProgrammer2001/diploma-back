@@ -14,7 +14,7 @@ import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {DepartmentUpdateRepoRequest} from './repo-request/department-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {Model} from 'sequelize-typescript';
-import {DepartmentDbModel} from '../../db-models/department.db-model';
+import {DepartmentDbModel, DepartmentInterface} from '../../db-models/department.db-model';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 
@@ -63,7 +63,7 @@ export class DepartmentRepository {
 
       //region Filters
 
-      const filters: WhereOptions = {};
+      const filters: WhereOptions<DepartmentInterface> = {};
 
       if (!isNil(repoRequest.name)) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
@@ -73,12 +73,12 @@ export class DepartmentRepository {
         filters.isDeleted = false;
       }
 
-      if (!isNil(repoRequest.id)) {
-        filters.id = repoRequest.id;
-      }
-
       if (!isNil(repoRequest.ids)) {
         filters.id = {[Op.in]: repoRequest.ids};
+      }
+
+      if (!isNil(repoRequest.id)) {
+        filters.id = repoRequest.id;
       }
 
       //endregion
@@ -128,7 +128,7 @@ export class DepartmentRepository {
 
   async updateDepartment(repoRequest: DepartmentUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
     try {
-      const updateData = {} as Omit<DepartmentDbModel, keyof Model>;
+      const updateData = {} as DepartmentInterface;
 
       if (!isUndefined(repoRequest.name)) {
         updateData.name = repoRequest.name;

@@ -1,6 +1,6 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {InjectModel} from '@nestjs/sequelize';
-import {TeacherDbModel} from '../../db-models/teacher.db-model';
+import {TeacherDbModel, TeacherInterface} from '../../db-models/teacher.db-model';
 import {TeacherGetRepoRequest} from './repo-request/teacher-get.repo-request';
 import {TeacherGetRepoResponse} from './repo-response/teacher-get.repo-response';
 import {FindAttributeOptions, IncludeOptions, ProjectionAlias} from 'sequelize/dist/lib/model';
@@ -165,14 +165,14 @@ export class TeacherRepository {
 
       //region Filters
 
-      const filters: WhereOptions = {};
+      const filters: WhereOptions<TeacherInterface> = {};
 
       if (!isNil(repoRequest.fullName)) {
-        filters.name = {[Op.like]: `%${repoRequest.fullName || ''}%`};
+        filters.fullName = {[Op.like]: `%${repoRequest.fullName || ''}%`};
       }
 
       if (!isNil(repoRequest.email)) {
-        filters.name = {[Op.like]: `%${repoRequest.email || ''}%`};
+        filters.fullName = {[Op.like]: `%${repoRequest.email || ''}%`};
       }
 
       if (!isNil(repoRequest.departmentId)) {
@@ -199,12 +199,12 @@ export class TeacherRepository {
         filters.isDeleted = false;
       }
 
-      if (!isNil(repoRequest.id)) {
-        filters.id = repoRequest.id;
-      }
-
       if (!isNil(repoRequest.ids)) {
         filters.id = {[Op.in]: repoRequest.ids};
+      }
+
+      if (!isNil(repoRequest.id)) {
+        filters.id = repoRequest.id;
       }
 
       if (!isNil(repoRequest.emailEqual)) {
@@ -296,7 +296,7 @@ export class TeacherRepository {
 
 
   async updateTeacher(repoRequest: TeacherUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
-    const updateData = {} as Omit<TeacherDbModel, keyof Model>;
+    const updateData = {} as TeacherInterface;
 
     if (!isUndefined(repoRequest.email)) {
       updateData.email = repoRequest.email;

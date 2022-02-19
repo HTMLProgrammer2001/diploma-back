@@ -13,6 +13,7 @@ import sequelize from 'sequelize';
 import {RoleDbModel} from './role.db-model';
 import {RefreshTokenDbModel} from './refresh-token-db.model';
 import {PublicationDbModel} from './publication.db-model';
+import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 
 export interface UserInterface {
   id: number;
@@ -27,7 +28,7 @@ export interface UserInterface {
 }
 
 @Table({tableName: 'User', timestamps: false})
-export class UserDbModel extends Model<UserInterface, Omit<UserInterface, 'guid' | 'id' | 'isDeleted'>> {
+export class UserDbModel extends Model<UserInterface, CreateDbModelType<UserInterface>> {
   @AutoIncrement
   @Column({primaryKey: true})
   id: number;

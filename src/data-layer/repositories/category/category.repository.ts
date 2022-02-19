@@ -11,7 +11,7 @@ import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {Model} from 'sequelize-typescript';
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
-import {CategoryDbModel} from '../../db-models/category.db-model';
+import {CategoryDbModel, CategoryInterface} from '../../db-models/category.db-model';
 import {CategoryGetRepoRequest} from './repo-request/category-get.repo-request';
 import {CategoryGetRepoResponse} from './repo-response/category-get.repo-response';
 import {CategorySelectFieldsEnum} from './enums/category-select-fields.enum';
@@ -64,18 +64,18 @@ export class CategoryRepository {
 
       //region Filters
 
-      const filters: WhereOptions = {};
+      const filters: WhereOptions<CategoryInterface> = {};
 
       if (!isNil(repoRequest.name)) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
       }
 
-      if (!isNil(repoRequest.id)) {
-        filters.id = repoRequest.id;
-      }
-
       if (!isNil(repoRequest.ids)) {
         filters.id = {[Op.in]: repoRequest.ids};
+      }
+
+      if (!isNil(repoRequest.id)) {
+        filters.id = repoRequest.id;
       }
 
       if (!repoRequest.showDeleted) {
@@ -129,7 +129,7 @@ export class CategoryRepository {
 
   async updateCategory(repoRequest: CategoryUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
     try {
-      const updateData = {} as Omit<AcademicDegreeDbModel, keyof Model>;
+      const updateData = {} as CategoryInterface;
 
       if (!isUndefined(repoRequest.name)) {
         updateData.name = repoRequest.name;

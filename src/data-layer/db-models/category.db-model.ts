@@ -1,8 +1,17 @@
-import {AutoIncrement, Column, DataType, Model, Table} from 'sequelize-typescript';
+import {AutoIncrement, Column, DataType, HasMany, Model, Table} from 'sequelize-typescript';
 import sequelize from 'sequelize';
+import {AttestationDbModel} from './attestation.db-model';
+import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 
-@Table({tableName: 'Categories', timestamps: false})
-export class CategoryDbModel extends Model {
+export interface CategoryInterface {
+  id: number;
+  name: string;
+  isDeleted: boolean;
+  guid: string;
+}
+
+@Table({tableName: 'Category', timestamps: false})
+export class CategoryDbModel extends Model<CategoryInterface, CreateDbModelType<CategoryInterface>> {
   @AutoIncrement
   @Column({primaryKey: true})
   id: number;
@@ -15,4 +24,7 @@ export class CategoryDbModel extends Model {
 
   @Column({defaultValue: sequelize.literal('(UUID())'), unique: true})
   guid: string;
+
+  @HasMany(() => AttestationDbModel)
+  attestations: Array<AttestationDbModel>;
 }

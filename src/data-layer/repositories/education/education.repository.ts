@@ -1,6 +1,6 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {InjectModel} from '@nestjs/sequelize';
-import {EducationDbModel} from '../../db-models/education.db-model';
+import {EducationDbModel, EducationInterface} from '../../db-models/education.db-model';
 import {EducationGetRepoRequest} from './repo-request/education-get.repo-request';
 import {EducationGetRepoResponse} from './repo-response/education-get.repo-response';
 import sequelize, {IncludeOptions, Model, Op, WhereOptions} from 'sequelize';
@@ -107,7 +107,7 @@ export class EducationRepository {
 
       //region Filters
 
-      const filters: WhereOptions = {};
+      const filters: WhereOptions<EducationInterface> = {};
 
       if (!isNil(repoRequest.institution)) {
         filters.institution = {[Op.like]: `%${repoRequest.institution || ''}%`};
@@ -122,7 +122,12 @@ export class EducationRepository {
       }
 
       if (!isNil(repoRequest.yearOfIssueLess)) {
-        filters.yearOfIssue = {[Op.lte]: repoRequest.yearOfIssueLess};
+        if(!filters.yearOfIssue) {
+          filters.yearOfIssue = {[Op.lte]: repoRequest.yearOfIssueLess};
+        }
+        else {
+          filters.yearOfIssue[Op.lte] = repoRequest.yearOfIssueLess;
+        }
       }
 
       if (!isNil(repoRequest.userId)) {
@@ -137,12 +142,12 @@ export class EducationRepository {
         filters.isDeleted = false;
       }
 
-      if (!isNil(repoRequest.id)) {
-        filters.id = repoRequest.id;
-      }
-
       if (!isNil(repoRequest.ids)) {
         filters.id = {[Op.in]: repoRequest.ids};
+      }
+
+      if (!isNil(repoRequest.id)) {
+        filters.id = repoRequest.id;
       }
 
       //endregion
@@ -223,7 +228,7 @@ export class EducationRepository {
   }
 
   async updateEducation(repoRequest: EducationUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
-    const updateData = {} as Omit<EducationDbModel, keyof Model>;
+    const updateData = {} as EducationInterface;
 
     if (!isUndefined(repoRequest.institution)) {
       updateData.institution = repoRequest.institution;

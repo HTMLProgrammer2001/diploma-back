@@ -82,6 +82,58 @@ input AcademicTitleUpdateRequest {
   name: String
 }
 
+input AttestationCreateRequest {
+  categoryId: ID!
+  date: String!
+  description: String
+  userId: ID!
+}
+
+input AttestationGetByIdRequest {
+  id: ID!
+  showDeleted: Boolean
+}
+
+input AttestationGetListRequest {
+  categoryId: ID
+  dateLess: String
+  dateMore: String
+  isDesc: Boolean
+  orderField: String = "id"
+  page: Int = 1
+  showDeleted: Boolean
+  size: Int = 5
+  userId: ID
+}
+
+type AttestationListResponse implements PaginatedData {
+  page: Int!
+  responseList: [AttestationResponse!]!
+  size: Int!
+  skip: Int!
+  totalElements: Int!
+  totalPages: Int!
+}
+
+type AttestationResponse {
+  category: IdNameResponse!
+  date: String!
+  description: String
+  guid: String!
+  id: ID!
+  isDeleted: Boolean!
+  user: IdNameResponse!
+}
+
+input AttestationUpdateRequest {
+  categoryId: ID
+  date: String
+  description: String
+  guid: String!
+  id: ID!
+  userId: ID
+}
+
 input CategoryCreateRequest {
   name: String
 }
@@ -465,12 +517,13 @@ type LoginResponse {
 }
 
 type LoginTeacherResponse {
-  token: String!
+  result: Boolean!
 }
 
 type Mutation {
   createAcademicDegree(body: AcademicDegreeCreateRequest!): AcademicDegreeResponse!
   createAcademicTitle(body: AcademicTitleCreateRequest!): AcademicTitleResponse!
+  createAttestation(body: AttestationCreateRequest!): AttestationResponse!
   createCategory(body: CategoryCreateRequest!): CategoryResponse!
   createCommission(body: CommissionCreateRequest!): CommissionResponse!
   createDepartment(body: DepartmentCreateRequest!): DepartmentResponse!
@@ -485,6 +538,7 @@ type Mutation {
   createUser(body: UserCreateRequest!): UserResponse!
   deleteAcademicDegree(guid: String!, id: Int!): IdResponse!
   deleteAcademicTitle(guid: String!, id: Int!): IdResponse!
+  deleteAttestation(guid: String!, id: Int!): IdResponse!
   deleteCategory(guid: String!, id: Int!): IdResponse!
   deleteCommission(guid: String!, id: Int!): IdResponse!
   deleteDepartment(guid: String!, id: Int!): IdResponse!
@@ -505,6 +559,7 @@ type Mutation {
   refreshToken(refreshToken: String!): RefreshTokenResponse!
   updateAcademicDegree(body: AcademicDegreeUpdateRequest!): AcademicDegreeResponse!
   updateAcademicTitle(body: AcademicTitleUpdateRequest!): AcademicTitleResponse!
+  updateAttestation(body: AttestationUpdateRequest!): AttestationResponse!
   updateCategory(body: CategoryUpdateRequest!): CategoryResponse!
   updateCommission(body: CommissionUpdateRequest!): CommissionResponse!
   updateDepartment(body: DepartmentUpdateRequest!): DepartmentResponse!
@@ -606,6 +661,8 @@ type Query {
   getAcademicDegreeList(query: AcademicDegreeGetListRequest!): AcademicDegreeListResponse!
   getAcademicTitleById(query: AcademicTitleGetByIdRequest!): AcademicTitleResponse!
   getAcademicTitleList(query: AcademicTitleGetListRequest!): AcademicTitleListResponse!
+  getAttestationById(query: AttestationGetByIdRequest!): AttestationResponse!
+  getAttestationList(query: AttestationGetListRequest!): AttestationListResponse!
   getCategoryById(query: CategoryGetByIdRequest!): CategoryResponse!
   getCategoryList(query: CategoryGetListRequest!): CategoryListResponse!
   getCommissionById(query: CommissionGetByIdRequest!): CommissionResponse!

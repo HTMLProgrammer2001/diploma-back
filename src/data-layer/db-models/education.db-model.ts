@@ -2,6 +2,7 @@ import {AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, Table} fr
 import sequelize from 'sequelize';
 import {UserDbModel} from './user.db-model';
 import {EducationQualificationDbModel} from './education-qualification.db-model';
+import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 
 export interface EducationInterface {
   id: number;
@@ -16,7 +17,7 @@ export interface EducationInterface {
 }
 
 @Table({tableName: 'Education', timestamps: false})
-export class EducationDbModel extends Model<EducationInterface, Omit<EducationInterface, 'guid' | 'id' | 'isDeleted'>> {
+export class EducationDbModel extends Model<EducationInterface, CreateDbModelType<EducationInterface>> {
   @AutoIncrement
   @Column({primaryKey: true})
   id: number;

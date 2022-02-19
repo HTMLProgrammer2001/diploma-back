@@ -9,7 +9,7 @@ import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {UserDbModel} from '../../db-models/user.db-model';
+import {UserDbModel, UserInterface} from '../../db-models/user.db-model';
 import {RoleDbModel} from '../../db-models/role.db-model';
 import {UserGetRepoRequest} from './repo-request/user-get.repo-request';
 import {UserGetRepoResponse} from './repo-response/user-get.repo-response';
@@ -97,7 +97,7 @@ export class UserRepository {
 
       //region Filters
 
-      const filters: WhereOptions = {};
+      const filters: WhereOptions<UserInterface> = {};
 
       if (!isNil(repoRequest.fullName)) {
         filters.fullName = {[Op.like]: `%${repoRequest.fullName || ''}%`};
@@ -115,12 +115,12 @@ export class UserRepository {
         filters.isDeleted = false;
       }
 
-      if (!isNil(repoRequest.id)) {
-        filters.id = repoRequest.id;
-      }
-
       if (!isNil(repoRequest.ids)) {
         filters.id = {[Op.in]: repoRequest.ids};
+      }
+
+      if (!isNil(repoRequest.id)) {
+        filters.id = repoRequest.id;
       }
 
       if (!isNil(repoRequest.emailEqual)) {
@@ -200,7 +200,7 @@ export class UserRepository {
   }
 
   async updateUser(repoRequest: UserUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
-    const updateData = {} as Omit<UserDbModel, keyof Model>;
+    const updateData = {} as UserInterface;
 
     if (!isUndefined(repoRequest.email)) {
       updateData.email = repoRequest.email;

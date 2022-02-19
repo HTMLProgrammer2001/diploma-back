@@ -1,6 +1,7 @@
 import {AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, Table} from 'sequelize-typescript';
 import sequelize from 'sequelize';
 import {UserDbModel} from './user.db-model';
+import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 
 export interface InternshipInterface {
   id: number;
@@ -18,7 +19,7 @@ export interface InternshipInterface {
 }
 
 @Table({tableName: 'Internship', timestamps: false})
-export class InternshipDbModel extends Model<InternshipInterface, Omit<InternshipInterface, 'guid' | 'id' | 'isDeleted'>> {
+export class InternshipDbModel extends Model<InternshipInterface, CreateDbModelType<InternshipInterface>> {
   @AutoIncrement
   @Column({primaryKey: true})
   id: number;
