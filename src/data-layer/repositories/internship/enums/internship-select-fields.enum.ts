@@ -8,8 +8,8 @@ export class InternshipSelectFieldsEnum {
   static HOURS = 'hours';
   static CREDITS = 'credits';
   static DESCRIPTION = 'description';
-  static USER_ID = 'user.id';
-  static USER_NAME = 'user.name';
+  static TEACHER_ID = 'teacher.id';
+  static TEACHER_NAME = 'teacher.name';
   static IS_DELETED = 'isDeleted';
   static GUID = 'guid';
 }

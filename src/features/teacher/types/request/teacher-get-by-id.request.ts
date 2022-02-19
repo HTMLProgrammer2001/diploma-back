@@ -15,4 +15,9 @@ export class TeacherGetByIdRequest {
   @IsOptional()
   @IsBoolean()
   showDeleted?: boolean;
+
+  @Field({nullable: true})
+  @IsOptional()
+  @IsBoolean()
+  showCascadeDeleted?: boolean;
 }

@@ -3,7 +3,7 @@ import {InjectModel} from '@nestjs/sequelize';
 import {EducationDbModel, EducationInterface} from '../../db-models/education.db-model';
 import {EducationGetRepoRequest} from './repo-request/education-get.repo-request';
 import {EducationGetRepoResponse} from './repo-response/education-get.repo-response';
-import sequelize, {IncludeOptions, Model, Op, WhereOptions} from 'sequelize';
+import sequelize, {IncludeOptions, Op, WhereOptions} from 'sequelize';
 import {FindAttributeOptions, ProjectionAlias} from 'sequelize/dist/lib/model';
 import {EducationSelectFieldsEnum} from './enums/education-select-fields.enum';
 import {UserDbModel} from '../../db-models/user.db-model';
@@ -19,6 +19,7 @@ import {EducationUpdateRepoRequest} from './repo-request/education-update.repo-r
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {EducationDeleteRepoRequest} from './repo-request/education-delete.repo-request';
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
+import {TeacherDbModel} from '../../db-models/teacher.db-model';
 
 @Injectable()
 export class EducationRepository {
@@ -73,18 +74,18 @@ export class EducationRepository {
             attributes.push('guid');
             break;
 
-          case EducationSelectFieldsEnum.USER_ID:
-            if (!includes.user)
-              includes.user = {model: UserDbModel, attributes: ['id']}
+          case EducationSelectFieldsEnum.TEACHER_ID:
+            if (!includes.teacher)
+              includes.teacher = {model: TeacherDbModel, attributes: ['id']}
             else
-              (includes.user.attributes as Array<string | ProjectionAlias>).push('id');
+              (includes.teacher.attributes as Array<string | ProjectionAlias>).push('id');
             break;
 
-          case EducationSelectFieldsEnum.USER_NAME:
-            if (!includes.user)
-              includes.user = {model: UserDbModel, attributes: ['fullName']}
+          case EducationSelectFieldsEnum.TEACHER_NAME:
+            if (!includes.teacher)
+              includes.teacher = {model: TeacherDbModel, attributes: ['fullName']}
             else
-              (includes.user.attributes as Array<string | ProjectionAlias>).push('fullName');
+              (includes.teacher.attributes as Array<string | ProjectionAlias>).push('fullName');
             break;
 
           case EducationSelectFieldsEnum.EDUCATION_QUALIFICATION_ID:
@@ -130,8 +131,8 @@ export class EducationRepository {
         }
       }
 
-      if (!isNil(repoRequest.userId)) {
-        filters.userId = repoRequest.userId;
+      if (!isNil(repoRequest.teacherId)) {
+        filters.teacherId = repoRequest.teacherId;
       }
 
       if (!isNil(repoRequest.educationQualificationId)) {
@@ -139,7 +140,12 @@ export class EducationRepository {
       }
 
       if (!repoRequest.showDeleted) {
-        filters.isDeleted = false;
+        if(repoRequest.showCascadeDeleted) {
+          filters[Op.or] = {isDeleted: false, isCascadeDelete: true};
+        }
+        else {
+          filters.isDeleted = false;
+        }
       }
 
       if (!isNil(repoRequest.ids)) {
@@ -170,9 +176,9 @@ export class EducationRepository {
             order.push(['yearOfIssue', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
-          case EducationOrderFieldsEnum.USER:
-            includes.user = includes.user ?? {model: UserDbModel, attributes: []};
-            order.push([{model: UserDbModel, as: 'user'}, 'fullName', repoRequest.isDesc ? 'DESC' : 'ASC']);
+          case EducationOrderFieldsEnum.TEACHER:
+            includes.teacher = includes.teacher ?? {model: TeacherDbModel, attributes: []};
+            order.push([{model: TeacherDbModel, as: 'teacher'}, 'fullName', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
           case EducationOrderFieldsEnum.EDUCATION_QUALIFICATION:
@@ -210,7 +216,7 @@ export class EducationRepository {
     try {
       const {id} = await this.educationDbModel.create({
         educationQualificationId: repoRequest.educationQualificationId,
-        userId: repoRequest.userId,
+        teacherId: repoRequest.teacherId,
         institution: repoRequest.institution,
         specialty: repoRequest.specialty,
         description: repoRequest.description,
@@ -238,8 +244,8 @@ export class EducationRepository {
       updateData.specialty = repoRequest.specialty;
     }
 
-    if (!isUndefined(repoRequest.userId)) {
-      updateData.userId = repoRequest.userId;
+    if (!isUndefined(repoRequest.teacherId)) {
+      updateData.teacherId = repoRequest.teacherId;
     }
 
     if (!isUndefined(repoRequest.educationQualificationId)) {

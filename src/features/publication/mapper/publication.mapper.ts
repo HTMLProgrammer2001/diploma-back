@@ -12,13 +12,15 @@ import {PublicationUpdateRepoRequest} from '../../../data-layer/repositories/pub
 import {PublicationDeleteRepoRequest} from '../../../data-layer/repositories/publication/repo-request/publication-delete.repo-request';
 import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-get.repo-request';
 import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
+import {TeacherGetRepoRequest} from '../../../data-layer/repositories/teacher/repo-request/teacher-get.repo-request';
+import {TeacherSelectFieldsEnum} from '../../../data-layer/repositories/teacher/enums/teacher-select-fields.enum';
 
 @Injectable()
 export class PublicationMapper {
   getPublicationListRequestToRepoRequest(source: PublicationGetListRequest): PublicationGetRepoRequest {
     const destination = new PublicationGetRepoRequest();
 
-    destination.userIds = source.userIds;
+    destination.teacherIds = source.teacherIds;
     destination.publisher = source.publisher;
     destination.dateMore = source.dateMore;
     destination.dateLess = source.dateLess;
@@ -52,8 +54,8 @@ export class PublicationMapper {
     destination.isDeleted = source.isDeleted;
     destination.guid = source.guid;
 
-    if (source.users) {
-      destination.users = source.users.map(el => ({
+    if (source.teachers) {
+      destination.teachers = source.teachers.map(el => ({
         id: el.id,
         name: el.fullName
       }));
@@ -95,17 +97,17 @@ export class PublicationMapper {
     destination.description = source.description;
     destination.title = source.title;
     destination.anotherAuthors = source.anotherAuthors;
-    destination.userIds = source.userIds;
+    destination.teacherIds = source.teacherIds;
 
     return destination;
   }
 
-  initializeGetUsersRepoRequest(userIds: Array<number>): UserGetRepoRequest {
-    const destination = new UserGetRepoRequest();
+  initializeGetTeachersRepoRequest(teacherIds: Array<number>): TeacherGetRepoRequest {
+    const destination = new TeacherGetRepoRequest();
 
-    destination.ids = userIds;
-    destination.select = [UserSelectFieldsEnum.ID, UserSelectFieldsEnum.IS_DELETED];
-    destination.size = userIds.length;
+    destination.ids = teacherIds;
+    destination.select = [TeacherSelectFieldsEnum.ID, TeacherSelectFieldsEnum.IS_DELETED];
+    destination.size = teacherIds.length;
     destination.showDeleted = true;
 
     return destination;
@@ -120,7 +122,7 @@ export class PublicationMapper {
     destination.date = source.date;
     destination.description = source.description;
     destination.title = source.title;
-    destination.userIds = source.userIds;
+    destination.teacherIds = source.teacherIds;
     destination.anotherAuthors = source.anotherAuthors;
 
     return destination;

@@ -4,8 +4,8 @@ export class EducationSelectFieldsEnum {
   static SPECIALTY = 'specialty';
   static YEAR_OF_ISSUE = 'yearOfIssue';
   static DESCRIPTION = 'description';
-  static USER_ID = 'user.id';
-  static USER_NAME = 'user.name';
+  static TEACHER_ID = 'teacher.id';
+  static TEACHER_NAME = 'teacher.name';
   static EDUCATION_QUALIFICATION_ID = 'educationQualification.id';
   static EDUCATION_QUALIFICATION_NAME = 'educationQualification.name';
   static IS_DELETED = 'isDeleted';

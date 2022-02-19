@@ -121,8 +121,7 @@ export class CategoryService {
   async deleteCategory(id: number, guid: string): Promise<IdResponse> {
     try {
       const getCurrentCategoryRepoRequest = this.categoryMapper.initializeCategoryGetByIdRepoRequest(
-        id,
-        [CategorySelectFieldsEnum.GUID, CategorySelectFieldsEnum.IS_DELETED]
+        id, [CategorySelectFieldsEnum.GUID, CategorySelectFieldsEnum.IS_DELETED]
       );
 
       const currentCategory = await this.categoryRepository.getCategories(getCurrentCategoryRepoRequest);
@@ -140,6 +139,7 @@ export class CategoryService {
 
       const deleteRepoRequest = this.categoryMapper.deleteCategoryRequestToRepoRequest(id);
       const {deletedID} = await this.categoryRepository.deleteCategory(deleteRepoRequest);
+
       return {id: deletedID};
     } catch (e) {
       if (!(e instanceof CustomError)) {

@@ -4,7 +4,6 @@ import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {IdResponse} from '../../../global/types/response/id.response';
-import {UserRepository} from '../../../data-layer/repositories/user/user.repository';
 import {AttestationGetListRequest} from '../types/request/attestation-get-list.request';
 import {AttestationResponse} from '../types/response/attestation.response';
 import {AttestationGetByIdRequest} from '../types/request/attestation-get-by-id.request';
@@ -14,6 +13,7 @@ import {AttestationMapper} from '../mapper/attestation.mapper';
 import {AttestationRepository} from '../../../data-layer/repositories/attestation/attestation.repository';
 import {CategoryRepository} from '../../../data-layer/repositories/category/category.repository';
 import {AttestationSelectFieldsEnum} from '../../../data-layer/repositories/attestation/enums/attestation-select-fields.enum';
+import {TeacherRepository} from '../../../data-layer/repositories/teacher/teacher.repository';
 
 @Injectable()
 export class AttestationService {
@@ -21,7 +21,7 @@ export class AttestationService {
 
   constructor(
     private attestationRepository: AttestationRepository,
-    private userRepository: UserRepository,
+    private teacherRepository: TeacherRepository,
     private categoryRepository: CategoryRepository,
     private attestationMapper: AttestationMapper,
   ) {
@@ -67,7 +67,7 @@ export class AttestationService {
     try {
       await this.validateRequest(request);
 
-      const createRepoRequest = this.attestationMapper.createRebukeRequestToRepoRequest(request);
+      const createRepoRequest = this.attestationMapper.createAttestationRequestToRepoRequest(request);
       const {createdID} = await this.attestationRepository.createAttestation(createRepoRequest);
 
       const repoRequest = this.attestationMapper.initializeGetAttestationByIdRepoRequest(createdID, request.select);
@@ -154,41 +154,41 @@ export class AttestationService {
 
   async validateRequest(request: AttestationCreateRequest) {
     //validate user
-    if (!isNil(request.userId)) {
-      const getUserRepoRequest = this.attestationMapper.initializeGetUserRepoRequest(request.userId);
-      const {data: userData} = await this.userRepository.getUsers(getUserRepoRequest);
+    if (!isNil(request.teacherId)) {
+      const getTeacherRepoRequest = this.attestationMapper.initializeGetTeacherRepoRequest(request.teacherId);
+      const {data: teacherData} = await this.teacherRepository.getTeachers(getTeacherRepoRequest);
 
-      if (!userData.responseList.length) {
+      if (!teacherData.responseList.length) {
         throw new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
-          message: `User with id ${request.userId} not found`
+          message: `Teacher with id ${request.teacherId} not found`
         });
       }
 
-      if (userData.responseList[0].isDeleted) {
+      if (teacherData.responseList[0].isDeleted) {
         throw new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
-          message: `User with id ${request.userId} is deleted`
+          message: `Teacher with id ${request.teacherId} is deleted`
         });
       }
     }
 
     //validate category
     if (!isNil(request.categoryId)) {
-      const getCategoryRepoRequest = this.attestationMapper.initializeGetCategoryRepoRequest(request.userId);
+      const getCategoryRepoRequest = this.attestationMapper.initializeGetCategoryRepoRequest(request.teacherId);
       const {data: categoryData} = await this.categoryRepository.getCategories(getCategoryRepoRequest);
 
       if (!categoryData.responseList.length) {
         throw new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
-          message: `Category with id ${request.userId} not found`
+          message: `Category with id ${request.teacherId} not found`
         });
       }
 
       if (categoryData.responseList[0].isDeleted) {
         throw new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
-          message: `Category with id ${request.userId} is deleted`
+          message: `Category with id ${request.teacherId} is deleted`
         });
       }
     }

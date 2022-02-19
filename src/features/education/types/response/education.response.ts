@@ -25,7 +25,7 @@ export class EducationResponse {
   guid: string;
 
   @Field(type => IdNameResponse, {nullable: false})
-  user: IdNameResponse;
+  teacher: IdNameResponse;
 
   @Field(type => IdNameResponse, {nullable: false})
   educationQualification: IdNameResponse;

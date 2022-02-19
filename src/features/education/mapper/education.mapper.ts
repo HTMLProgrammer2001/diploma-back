@@ -1,12 +1,7 @@
 import {Injectable} from '@nestjs/common';
-import {RebukeGetRepoRequest} from '../../../data-layer/repositories/rebuke/repo-request/rebuke-get.repo-request';
 import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
-import {RebukeDbModel} from '../../../data-layer/db-models/rebuke.db-model';
-import {RebukeCreateRepoRequest} from '../../../data-layer/repositories/rebuke/repo-request/rebuke-create.repo-request';
 import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-get.repo-request';
 import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
-import {RebukeUpdateRepoRequest} from '../../../data-layer/repositories/rebuke/repo-request/rebuke-update.repo-request';
-import {RebukeDeleteRepoRequest} from '../../../data-layer/repositories/rebuke/repo-request/rebuke-delete.repo-request';
 import {EducationQualificationGetRepoRequest} from '../../../data-layer/repositories/education-qualification/repo-request/education-qualification-get.repo-request';
 import {EducationQualificationSelectFieldsEnum} from '../../../data-layer/repositories/education-qualification/enums/education-qualification-select-fields.enum';
 import {EducationGetListRequest} from '../types/request/education-get-list.request';
@@ -19,6 +14,8 @@ import {EducationCreateRepoRequest} from '../../../data-layer/repositories/educa
 import {EducationUpdateRequest} from '../types/request/education-update.request';
 import {EducationUpdateRepoRequest} from '../../../data-layer/repositories/education/repo-request/education-update.repo-request';
 import {EducationDeleteRepoRequest} from '../../../data-layer/repositories/education/repo-request/education-delete.repo-request';
+import {TeacherGetRepoRequest} from '../../../data-layer/repositories/teacher/repo-request/teacher-get.repo-request';
+import {TeacherSelectFieldsEnum} from '../../../data-layer/repositories/teacher/enums/teacher-select-fields.enum';
 
 @Injectable()
 export class EducationMapper {
@@ -26,12 +23,13 @@ export class EducationMapper {
     const destination = new EducationGetRepoRequest();
 
     destination.educationQualificationId = source.educationQualificationId;
-    destination.userId = source.userId;
+    destination.teacherId = source.teacherId;
     destination.yearOfIssueLess = source.yearOfIssueLess;
     destination.yearOfIssueMore = source.yearOfIssueMore;
     destination.specialty = source.specialty;
     destination.institution = source.institution;
     destination.showDeleted = source.showDeleted;
+    destination.showCascadeDeleted = source.showCascadeDeleted;
     destination.orderField = source.orderField;
     destination.isDesc = !!source.isDesc;
     destination.select = [...source.select];
@@ -59,10 +57,10 @@ export class EducationMapper {
     destination.isDeleted = source.isDeleted;
     destination.guid = source.guid;
 
-    if (source.user) {
-      destination.user = {
-        id: source.user.id,
-        name: source.user.fullName
+    if (source.teacher) {
+      destination.teacher = {
+        id: source.teacher.id,
+        name: source.teacher.fullName
       };
     }
 
@@ -82,6 +80,7 @@ export class EducationMapper {
     destination.id = source.id;
     destination.select = source.select;
     destination.showDeleted = source.showDeleted;
+    destination.showCascadeDeleted = source.showCascadeDeleted;
     destination.page = 1;
     destination.size = 1;
 
@@ -103,7 +102,7 @@ export class EducationMapper {
   createEducationRequestToRepoRequest(source: EducationCreateRequest): EducationCreateRepoRequest {
     const destination = new EducationCreateRepoRequest();
 
-    destination.userId = source.userId;
+    destination.teacherId = source.teacherId;
     destination.educationQualificationId = source.educationQualificationId;
     destination.description = source.description;
     destination.institution = source.institution;
@@ -113,20 +112,20 @@ export class EducationMapper {
     return destination;
   }
 
-  initializeGetUserRepoRequest(userId: number): UserGetRepoRequest {
-    const destination = new UserGetRepoRequest();
+  initializeGetTeacherRepoRequest(userId: number): TeacherGetRepoRequest {
+    const destination = new TeacherGetRepoRequest();
 
     destination.id = userId;
-    destination.select = [UserSelectFieldsEnum.ID, UserSelectFieldsEnum.IS_DELETED];
+    destination.select = [TeacherSelectFieldsEnum.ID, TeacherSelectFieldsEnum.IS_DELETED];
     destination.showDeleted = true;
 
     return destination;
   }
 
-  initializeGetEducationQualificationRepoRequest(userId: number): EducationQualificationGetRepoRequest {
+  initializeGetEducationQualificationRepoRequest(educationQualificationId: number): EducationQualificationGetRepoRequest {
     const destination = new EducationQualificationGetRepoRequest();
 
-    destination.id = userId;
+    destination.id = educationQualificationId;
     destination.select = [EducationQualificationSelectFieldsEnum.ID, EducationQualificationSelectFieldsEnum.IS_DELETED];
     destination.showDeleted = true;
 
@@ -138,7 +137,7 @@ export class EducationMapper {
 
     destination.id = source.id;
     destination.description = source.description;
-    destination.userId = source.userId;
+    destination.teacherId = source.teacherId;
     destination.educationQualificationId = source.educationQualificationId;
     destination.specialty = source.specialty;
     destination.institution = source.institution;

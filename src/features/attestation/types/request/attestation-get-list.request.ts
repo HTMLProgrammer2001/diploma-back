@@ -1,9 +1,8 @@
 import {Field, ID, InputType} from '@nestjs/graphql';
 import {BasePaginatorRequest} from '../../../../global/types/request/base-paginator.request';
-import {IsBoolean, IsEnum, IsNumber, IsOptional, IsString} from 'class-validator';
+import {IsBoolean, IsEnum, IsNumber, IsOptional} from 'class-validator';
 import {ParseNumber} from '../../../../global/pipes/parse-number';
 import {ValidateDate} from '../../../../global/pipes/validate-date';
-import {RebukeOrderFieldsEnum} from '../../../../data-layer/repositories/rebuke/enums/rebuke-order-fields.enum';
 import {AttestationOrderFieldsEnum} from '../../../../data-layer/repositories/attestation/enums/attestation-order-fields.enum';
 
 @InputType()
@@ -24,7 +23,7 @@ export class AttestationGetListRequest extends BasePaginatorRequest {
   @IsOptional()
   @ParseNumber()
   @IsNumber()
-  userId: number;
+  teacherId: number;
 
   @Field(type => ID, {nullable: true})
   @IsOptional()
@@ -36,6 +35,11 @@ export class AttestationGetListRequest extends BasePaginatorRequest {
   @IsOptional()
   @IsBoolean()
   showDeleted: boolean;
+
+  @Field({nullable: true})
+  @IsOptional()
+  @IsBoolean()
+  showCascadeDeleted: boolean;
 
   @Field({nullable: true, defaultValue: AttestationOrderFieldsEnum.ID})
   @IsOptional()

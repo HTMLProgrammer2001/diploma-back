@@ -9,8 +9,6 @@ import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {Model} from 'sequelize-typescript';
-import {UserDbModel} from '../../db-models/user.db-model';
 import {RebukeDbModel, RebukeInterface} from '../../db-models/rebuke.db-model';
 import {RebukeGetRepoRequest} from './repo-request/rebuke-get.repo-request';
 import {RebukeGetRepoResponse} from './repo-response/rebuke-get.repo-response';
@@ -19,6 +17,7 @@ import {RebukeOrderFieldsEnum} from './enums/rebuke-order-fields.enum';
 import {RebukeCreateRepoRequest} from './repo-request/rebuke-create.repo-request';
 import {RebukeUpdateRepoRequest} from './repo-request/rebuke-update.repo-request';
 import {RebukeDeleteRepoRequest} from './repo-request/rebuke-delete.repo-request';
+import {TeacherDbModel} from '../../db-models/teacher.db-model';
 
 @Injectable()
 export class RebukeRepository {
@@ -77,18 +76,18 @@ export class RebukeRepository {
             attributes.push('guid');
             break;
 
-          case RebukeSelectFieldsEnum.USER_ID:
-            if (!includes.user)
-              includes.user = {model: UserDbModel, attributes: ['id']}
+          case RebukeSelectFieldsEnum.TEACHER_ID:
+            if (!includes.teacher)
+              includes.teacher = {model: TeacherDbModel, attributes: ['id']}
             else
-              (includes.user.attributes as Array<string | ProjectionAlias>).push('id');
+              (includes.teacher.attributes as Array<string | ProjectionAlias>).push('id');
             break;
 
-          case RebukeSelectFieldsEnum.USER_NAME:
-            if (!includes.user)
-              includes.user = {model: UserDbModel, attributes: ['fullName']}
+          case RebukeSelectFieldsEnum.TEACHER_NAME:
+            if (!includes.teacher)
+              includes.teacher = {model: TeacherDbModel, attributes: ['fullName']}
             else
-              (includes.user.attributes as Array<string | ProjectionAlias>).push('fullName');
+              (includes.teacher.attributes as Array<string | ProjectionAlias>).push('fullName');
             break;
         }
       });
@@ -124,8 +123,8 @@ export class RebukeRepository {
         }
       }
 
-      if (!isNil(repoRequest.userId)) {
-        filters.userId = repoRequest.userId;
+      if (!isNil(repoRequest.teacherId)) {
+        filters.teacherId = repoRequest.teacherId;
       }
 
       if (!repoRequest.showInActive) {
@@ -133,7 +132,12 @@ export class RebukeRepository {
       }
 
       if (!repoRequest.showDeleted) {
-        filters.isDeleted = false;
+        if(repoRequest.showCascadeDeleted) {
+          filters[Op.or] = {isDeleted: false, isCascadeDelete: true};
+        }
+        else {
+          filters.isDeleted = false;
+        }
       }
 
       if (!isNil(repoRequest.ids)) {
@@ -164,9 +168,9 @@ export class RebukeRepository {
             order.push(['date', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
-          case RebukeOrderFieldsEnum.USER:
-            includes.user = includes.user ?? {model: UserDbModel, attributes: []};
-            order.push([{model: UserDbModel, as: 'user'}, 'fullName', repoRequest.isDesc ? 'DESC' : 'ASC']);
+          case RebukeOrderFieldsEnum.TEACHER:
+            includes.teacher = includes.teacher ?? {model: TeacherDbModel, attributes: []};
+            order.push([{model: TeacherDbModel, as: 'teacher'}, 'fullName', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
         }
       } else {
@@ -202,7 +206,7 @@ export class RebukeRepository {
         date: repoRequest.date,
         description: repoRequest.description,
         orderNumber: repoRequest.orderNumber,
-        userId: repoRequest.userId,
+        teacherId: repoRequest.teacherId,
         isActive: repoRequest.isActive
       });
       return {createdID: id};
@@ -227,8 +231,8 @@ export class RebukeRepository {
       updateData.date = repoRequest.date;
     }
 
-    if (!isUndefined(repoRequest.userId)) {
-      updateData.userId = repoRequest.userId;
+    if (!isUndefined(repoRequest.teacherId)) {
+      updateData.teacherId = repoRequest.teacherId;
     }
 
     if (!isUndefined(repoRequest.orderNumber)) {

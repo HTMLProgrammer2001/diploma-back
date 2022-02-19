@@ -68,5 +68,5 @@ export class PublicationUpdateRequest {
   @IsNumber({}, {each: true})
   @ArrayUnique()
   @ArrayMinSize(1)
-  userIds: Array<number>;
+  teacherIds: Array<number>;
 }

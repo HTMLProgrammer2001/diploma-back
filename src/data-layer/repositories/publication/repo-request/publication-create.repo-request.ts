@@ -5,5 +5,5 @@ export class PublicationCreateRepoRequest {
   url?: string;
   anotherAuthors?: string;
   description?: string;
-  userIds: Array<number>;
+  teacherIds: Array<number>;
 }

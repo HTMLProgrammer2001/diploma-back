@@ -33,7 +33,7 @@ export class HonorGetListRequest extends BasePaginatorRequest {
   @IsOptional()
   @ParseNumber()
   @IsNumber()
-  userId: number;
+  teacherId: number;
 
   @Field({nullable: true})
   @IsOptional()
@@ -44,6 +44,11 @@ export class HonorGetListRequest extends BasePaginatorRequest {
   @IsOptional()
   @IsBoolean()
   showDeleted: boolean;
+
+  @Field({nullable: true})
+  @IsOptional()
+  @IsBoolean()
+  showCascadeDeleted?: boolean;
 
   @Field({nullable: true, defaultValue: HonorOrderFieldsEnum.ID})
   @IsOptional()

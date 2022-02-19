@@ -6,8 +6,8 @@ export class PublicationSelectFieldsEnum {
   static URL = 'url';
   static ANOTHER_AUTHORS = 'anotherAuthors';
   static DESCRIPTION = 'description';
-  static USER_ID = 'users.id';
-  static USER_NAME = 'users.name';
+  static TEACHER_ID = 'teachers.id';
+  static TEACHER_NAME = 'teachers.name';
   static IS_DELETED = 'isDeleted';
   static GUID = 'guid';
 }

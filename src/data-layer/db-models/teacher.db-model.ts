@@ -1,4 +1,13 @@
-import {AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, Table} from 'sequelize-typescript';
+import {
+  AutoIncrement,
+  BelongsTo,
+  BelongsToMany,
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  Table
+} from 'sequelize-typescript';
 import sequelize from 'sequelize';
 import {DepartmentDbModel} from './department.db-model';
 import {CommissionDbModel} from './commission.db-model';
@@ -6,6 +15,7 @@ import {TeachingRankDbModel} from './teaching-rank.db-model';
 import {AcademicDegreeDbModel} from './academic-degree.db-model';
 import {AcademicTitleDbModel} from './academic-title.db-model';
 import {CreateDbModelType} from '../repositories/common/create-db-model.type';
+import {PublicationDbModel} from './publication.db-model';
 
 export interface TeacherInterface {
   id: number;
@@ -22,6 +32,7 @@ export interface TeacherInterface {
   academicTitleId?: number;
   workStartDate?: Date;
   isDeleted: boolean;
+  isCascadeDelete: boolean;
   guid: string;
 }
 
@@ -84,11 +95,17 @@ export class TeacherDbModel extends Model<TeacherInterface, CreateDbModelType<Te
   @BelongsTo(() => AcademicTitleDbModel)
   academicTitle?: AcademicTitleDbModel;
 
+  @BelongsToMany(() => PublicationDbModel, 'PublicationTeacher', 'teacherId', 'publicationId')
+  publications: Array<PublicationDbModel>;
+
   @Column({allowNull: true, type: DataType.DATEONLY})
   workStartDate?: Date;
 
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isDeleted?: boolean;
+
+  @Column({defaultValue: false, type: DataType.BOOLEAN})
+  isCascadeDelete?: boolean;
 
   @Column({defaultValue: sequelize.literal('(UUID())'), unique: true})
   guid?: string;

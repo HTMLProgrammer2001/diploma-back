@@ -1,17 +1,18 @@
 import {AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, Table} from 'sequelize-typescript';
 import sequelize from 'sequelize';
-import {UserDbModel} from './user.db-model';
 import {CreateDbModelType} from '../repositories/common/create-db-model.type';
+import {TeacherDbModel} from './teacher.db-model';
 
 export interface HonorInterface {
   id: number;
-  userId: number;
+  teacherId: number;
   title: string;
   date: Date;
   orderNumber?: string;
   description?: string;
   isActive?: boolean;
   isDeleted: boolean;
+  isCascadeDelete: boolean;
   guid: string;
 }
 
@@ -33,18 +34,21 @@ export class HonorDbModel extends Model<HonorInterface, CreateDbModelType<HonorI
   @Column({allowNull: true})
   description?: string;
 
-  @ForeignKey(() => UserDbModel)
+  @ForeignKey(() => TeacherDbModel)
   @Column({allowNull: false, type: DataType.INTEGER})
-  userId: number;
+  teacherId: number;
 
-  @BelongsTo(() => UserDbModel)
-  user: UserDbModel;
+  @BelongsTo(() => TeacherDbModel)
+  teacher: TeacherDbModel;
 
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isActive?: boolean;
 
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isDeleted?: boolean;
+
+  @Column({defaultValue: false, type: DataType.BOOLEAN})
+  isCascadeDelete?: boolean;
 
   @Column({defaultValue: sequelize.literal('(UUID())'), unique: true})
   guid?: string;

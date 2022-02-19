@@ -32,7 +32,7 @@ export class EducationGetListRequest extends BasePaginatorRequest {
   @IsOptional()
   @ParseNumber()
   @IsNumber()
-  userId: number;
+  teacherId: number;
 
   @Field(type => ID, {nullable: true})
   @IsOptional()
@@ -44,6 +44,11 @@ export class EducationGetListRequest extends BasePaginatorRequest {
   @IsOptional()
   @IsBoolean()
   showDeleted: boolean;
+
+  @Field({nullable: true})
+  @IsOptional()
+  @IsBoolean()
+  showCascadeDeleted?: boolean;
 
   @Field({nullable: true, defaultValue: EducationOrderFieldsEnum.ID})
   @IsOptional()

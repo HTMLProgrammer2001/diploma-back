@@ -19,6 +19,7 @@ import {PublicationOrderFieldsEnum} from './enums/publication-order-fields.enum'
 import {PublicationCreateRepoRequest} from './repo-request/publication-create.repo-request';
 import {PublicationUpdateRepoRequest} from './repo-request/publication-update.repo-request';
 import {PublicationDeleteRepoRequest} from './repo-request/publication-delete.repo-request';
+import {TeacherDbModel} from '../../db-models/teacher.db-model';
 
 @Injectable()
 export class PublicationRepository {
@@ -81,18 +82,18 @@ export class PublicationRepository {
             attributes.push('guid');
             break;
 
-          case PublicationSelectFieldsEnum.USER_ID:
-            if (!includes.user)
-              includes.user = {model: UserDbModel, attributes: ['id']}
+          case PublicationSelectFieldsEnum.TEACHER_ID:
+            if (!includes.teachers)
+              includes.teachers = {model: TeacherDbModel, attributes: ['id']}
             else
-              (includes.user.attributes as Array<string | ProjectionAlias>).push('id');
+              (includes.teachers.attributes as Array<string | ProjectionAlias>).push('id');
             break;
 
-          case PublicationSelectFieldsEnum.USER_NAME:
-            if (!includes.user)
-              includes.user = {model: UserDbModel, attributes: ['fullName']}
+          case PublicationSelectFieldsEnum.TEACHER_NAME:
+            if (!includes.teachers)
+              includes.teachers = {model: TeacherDbModel, attributes: ['fullName']}
             else
-              (includes.user.attributes as Array<string | ProjectionAlias>).push('fullName');
+              (includes.teachers.attributes as Array<string | ProjectionAlias>).push('fullName');
             break;
         }
       });
@@ -124,11 +125,11 @@ export class PublicationRepository {
         }
       }
 
-      if (!isNil(repoRequest.userIds)) {
+      if (!isNil(repoRequest.teacherIds)) {
         filters[<any>Op.and] = Sequelize.literal(`(
-          SELECT COUNT(PublicationUser.userId) FROM PublicationUser WHERE 
-          PublicationUser.publicationId = PublicationDbModel.id AND PublicationUser.userId IN (${repoRequest.userIds.join(',')})
-        ) = ${repoRequest.userIds.length}`);
+          SELECT COUNT(PublicationTeacher.userId) FROM PublicationTeacher WHERE 
+          PublicationTeacher.publicationId = PublicationDbModel.id AND PublicationTeacher.teacherId IN (${repoRequest.teacherIds.join(',')})
+        ) = ${repoRequest.teacherIds.length}`);
       }
 
       if (!repoRequest.showDeleted) {
@@ -199,7 +200,7 @@ export class PublicationRepository {
         url: repoRequest.url,
         anotherAuthors: repoRequest.anotherAuthors,
       }).then(async publication => {
-        await publication.$set('users', repoRequest.userIds);
+        await publication.$set('teachers', repoRequest.teacherIds);
         return publication;
       });
 
@@ -244,9 +245,9 @@ export class PublicationRepository {
     if (!isEmpty(updateData)) {
       updateData.guid = sequelize.literal('UUID()') as any;
       await this.publicationDbModel.update(updateData, {where: {id: repoRequest.id}}).then((async _ => {
-        if (!isNil(repoRequest.userIds)) {
+        if (!isNil(repoRequest.teacherIds)) {
           const publication = await this.publicationDbModel.findByPk(repoRequest.id);
-          await publication.$set('users', repoRequest.userIds);
+          await publication.$set('teachers', repoRequest.teacherIds);
         }
       }));
     }

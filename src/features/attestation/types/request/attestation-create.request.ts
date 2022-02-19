@@ -1,5 +1,5 @@
 import {Field, ID, InputType} from '@nestjs/graphql';
-import {IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength,} from 'class-validator';
+import {IsNumber, IsOptional, IsString,} from 'class-validator';
 import {ParseNumber} from '../../../../global/pipes/parse-number';
 import {ValidateDateRange} from '../../../../global/pipes/validate-date-range';
 
@@ -19,7 +19,7 @@ export class AttestationCreateRequest {
   @Field(type => ID, {nullable: false})
   @ParseNumber()
   @IsNumber()
-  userId: number;
+  teacherId: number;
 
   @Field(type => ID, {nullable: false})
   @ParseNumber()

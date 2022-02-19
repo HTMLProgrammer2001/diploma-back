@@ -25,7 +25,7 @@ export class PublicationResponse {
   description: string;
 
   @Field(type => [IdNameResponse], {nullable: true})
-  users: Array<IdNameResponse>;
+  teachers: Array<IdNameResponse>;
 
   @Field({nullable: false})
   isDeleted: boolean;

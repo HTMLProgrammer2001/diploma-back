@@ -3,6 +3,6 @@ export class HonorCreateRepoRequest {
   date?: Date;
   orderNumber?: string;
   description?: string;
-  userId: number;
+  teacherId: number;
   isActive?: boolean;
 }

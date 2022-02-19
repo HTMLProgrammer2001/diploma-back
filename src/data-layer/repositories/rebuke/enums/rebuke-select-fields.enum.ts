@@ -5,8 +5,8 @@ export class RebukeSelectFieldsEnum {
   static ORDER_NUMBER = 'orderNumber';
   static DESCRIPTION = 'description';
   static IS_ACTIVE = 'isActive';
-  static USER_ID = 'user.id';
-  static USER_NAME = 'user.name';
+  static TEACHER_ID = 'teacher.id';
+  static TEACHER_NAME = 'teacher.name';
   static IS_DELETED = 'isDeleted';
   static GUID = 'guid';
 }

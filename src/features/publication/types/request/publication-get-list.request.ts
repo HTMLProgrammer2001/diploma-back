@@ -26,7 +26,7 @@ export class PublicationGetListRequest extends BasePaginatorRequest {
   @IsNumber({}, {each: true})
   @ArrayUnique()
   @ArrayMinSize(1)
-  userIds: Array<number>;
+  teacherIds: Array<number>;
 
   @Field(type => String, {nullable: true})
   @IsOptional()

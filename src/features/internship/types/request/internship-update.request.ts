@@ -66,5 +66,5 @@ export class InternshipUpdateRequest {
   @IsOptional()
   @ParseNumber()
   @IsNumber()
-  userId: number;
+  teacherId: number;
 }

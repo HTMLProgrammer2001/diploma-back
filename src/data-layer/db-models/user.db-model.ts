@@ -58,9 +58,6 @@ export class UserDbModel extends Model<UserInterface, CreateDbModelType<UserInte
   @HasOne(() => RefreshTokenDbModel)
   token: RefreshTokenDbModel;
 
-  @BelongsToMany(() => PublicationDbModel, 'PublicationUser', 'userId', 'publicationId')
-  publications: Array<PublicationDbModel>;
-
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isDeleted?: boolean;
 

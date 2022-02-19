@@ -31,7 +31,7 @@ export class AttestationUpdateRequest {
   @IsOptional()
   @ParseNumber()
   @IsNumber()
-  userId: number;
+  teacherId: number;
 
   @Field(type => ID, {nullable: true})
   @IsOptional()

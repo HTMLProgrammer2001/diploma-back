@@ -15,4 +15,9 @@ export class AttestationGetByIdRequest {
   @IsOptional()
   @IsBoolean()
   showDeleted?: boolean;
+
+  @Field({nullable: true})
+  @IsOptional()
+  @IsBoolean()
+  showCascadeDeleted: boolean;
 }

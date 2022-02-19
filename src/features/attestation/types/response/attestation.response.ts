@@ -19,7 +19,7 @@ export class AttestationResponse {
   guid: string;
 
   @Field(type => IdNameResponse, {nullable: false})
-  user: IdNameResponse;
+  teacher: IdNameResponse;
 
   @Field(type => IdNameResponse, {nullable: false})
   category: IdNameResponse;

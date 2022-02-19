@@ -14,15 +14,21 @@ import {CommissionDeleteRepoRequest} from './repo-request/commission-delete.repo
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {CommissionUpdateRepoRequest} from './repo-request/commission-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {Model} from 'sequelize-typescript';
+import {Model, Sequelize} from 'sequelize-typescript';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
+import {TeacherRepository} from '../teacher/teacher.repository';
+import {TeacherDbModel} from '../../db-models/teacher.db-model';
 
 @Injectable()
 export class CommissionRepository {
   private logger: Logger;
 
-  constructor(@InjectModel(CommissionDbModel) private commissionModel: typeof CommissionDbModel) {
+  constructor(
+    @InjectModel(CommissionDbModel) private commissionModel: typeof CommissionDbModel,
+    private sequelize: Sequelize,
+    private teacherRepository: TeacherRepository,
+  ) {
     this.logger = new Logger(CommissionRepository.name);
   }
 
@@ -152,7 +158,16 @@ export class CommissionRepository {
 
   async deleteCommission(repoRequest: CommissionDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
     try {
-      await this.commissionModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
+      this.sequelize.transaction({autocommit: true}, t => {
+        return this.commissionModel.update({isDeleted: true}, {where: {id: repoRequest.id}, transaction: t})
+          .then(() => this.commissionModel.findByPk(repoRequest.id, {
+            transaction: t,
+            include: {model: TeacherDbModel, attributes: ['id']}
+          }))
+          .then(commission => Promise.all(commission.teachers
+            .map(teacher => this.teacherRepository.deleteTeacher({id: teacher.id}, t))));
+      });
+
       return {deletedID: repoRequest.id};
     } catch (e) {
       if (!(e instanceof CustomError)) {

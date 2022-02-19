@@ -12,17 +12,23 @@ import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {Model} from 'sequelize-typescript';
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {AcademicDegreeCreateRepoRequest} from './repo-request/academic-degree-create.repo-request';
 import {AcademicDegreeUpdateRepoRequest} from './repo-request/academic-degree-update.repo-request';
 import {AcademicDegreeDeleteRepoRequest} from './repo-request/academic-degree-delete.repo-request';
+import {Sequelize} from 'sequelize-typescript';
+import {TeacherRepository} from '../teacher/teacher.repository';
+import {TeacherDbModel} from '../../db-models/teacher.db-model';
 
 @Injectable()
 export class AcademicDegreeRepository {
   private logger: Logger;
 
-  constructor(@InjectModel(AcademicDegreeDbModel) private academicDegreeDbModel: typeof AcademicDegreeDbModel) {
+  constructor(
+    @InjectModel(AcademicDegreeDbModel) private academicDegreeDbModel: typeof AcademicDegreeDbModel,
+    private teacherRepository: TeacherRepository,
+    private sequelize: Sequelize
+  ) {
     this.logger = new Logger(AcademicDegreeRepository.name);
   }
 
@@ -152,7 +158,16 @@ export class AcademicDegreeRepository {
 
   async deleteAcademicDegree(repoRequest: AcademicDegreeDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
     try {
-      await this.academicDegreeDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
+      this.sequelize.transaction({autocommit: true}, t => {
+        return this.academicDegreeDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}, transaction: t})
+          .then(() => this.academicDegreeDbModel.findByPk(repoRequest.id, {
+            transaction: t,
+            include: {model: TeacherDbModel, attributes: ['id']}
+          }))
+          .then(academicDegree => Promise.all(academicDegree.teachers
+            .map(teacher => this.teacherRepository.deleteTeacher({id: teacher.id}, t))));
+      });
+
       return {deletedID: repoRequest.id};
     } catch (e) {
       if (!(e instanceof CustomError)) {

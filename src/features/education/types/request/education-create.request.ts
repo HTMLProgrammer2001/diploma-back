@@ -31,7 +31,7 @@ export class EducationCreateRequest {
   @Field(type => ID, {nullable: false})
   @ParseNumber()
   @IsNumber()
-  userId: number;
+  teacherId: number;
 
   @Field(type => ID, {nullable: false})
   @ParseNumber()

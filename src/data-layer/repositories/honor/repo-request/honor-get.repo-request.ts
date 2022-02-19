@@ -10,8 +10,9 @@ export class HonorGetRepoRequest extends BaseRepoRequest {
   dateLess: Date;
   orderNumber: string;
   orderNumberEqual: string;
-  userId: number;
+  teacherId: number;
   showDeleted: boolean;
+  showCascadeDeleted: boolean;
   showInActive: boolean;
   select: Array<string>;
   orderField: string;

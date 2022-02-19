@@ -2,6 +2,6 @@ export class AttestationUpdateRepoRequest {
   id: number;
   date?: Date;
   description?: string;
-  userId?: number;
+  teacherId?: number;
   categoryId?: number;
 }

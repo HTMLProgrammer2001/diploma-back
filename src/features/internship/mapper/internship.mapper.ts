@@ -17,6 +17,8 @@ import {AttestationGetRepoRequest} from '../../../data-layer/repositories/attest
 import {AttestationOrderFieldsEnum} from '../../../data-layer/repositories/attestation/enums/attestation-order-fields.enum';
 import {AttestationSelectFieldsEnum} from '../../../data-layer/repositories/attestation/enums/attestation-select-fields.enum';
 import {InternshipGetHoursRepoRequest} from '../../../data-layer/repositories/internship/repo-request/internship-get-hours.repo-request';
+import {TeacherGetRepoRequest} from '../../../data-layer/repositories/teacher/repo-request/teacher-get.repo-request';
+import {TeacherSelectFieldsEnum} from '../../../data-layer/repositories/teacher/enums/teacher-select-fields.enum';
 
 @Injectable()
 export class InternshipMapper {
@@ -28,8 +30,9 @@ export class InternshipMapper {
     destination.place = source.place;
     destination.dateFromMore = source.dateFromMore;
     destination.dateToLess = source.dateToLess;
-    destination.userId = source.userId;
+    destination.teacherId = source.teacherId;
     destination.showDeleted = source.showDeleted;
+    destination.showCascadeDeleted = source.showCascadeDeleted;
     destination.orderField = source.orderField;
     destination.isDesc = !!source.isDesc;
     destination.select = [...source.select];
@@ -61,10 +64,10 @@ export class InternshipMapper {
     destination.isDeleted = source.isDeleted;
     destination.guid = source.guid;
 
-    if (source.user) {
-      destination.user = {
-        id: source.user.id,
-        name: source.user.fullName
+    if (source.teacher) {
+      destination.teacher = {
+        id: source.teacher.id,
+        name: source.teacher.fullName
       };
     }
 
@@ -77,6 +80,7 @@ export class InternshipMapper {
     destination.id = source.id;
     destination.select = source.select;
     destination.showDeleted = source.showDeleted;
+    destination.showCascadeDeleted = source.showCascadeDeleted;
     destination.page = 1;
     destination.size = 1;
 
@@ -86,7 +90,7 @@ export class InternshipMapper {
   initializeGetLastAttestationRepoRequest(userId: number): AttestationGetRepoRequest {
     const destination = new AttestationGetRepoRequest();
 
-    destination.userId = userId;
+    destination.teacherId = userId;
     destination.orderField = AttestationOrderFieldsEnum.DATE;
     destination.isDesc = true;
     destination.showDeleted = false;
@@ -100,7 +104,7 @@ export class InternshipMapper {
   initializeGetInternshipHoursRepoRequest(userId: number, date: Date): InternshipGetHoursRepoRequest {
     const destination = new InternshipGetHoursRepoRequest();
 
-    destination.userId = userId;
+    destination.teacherId = userId;
     destination.from = date;
 
     return destination;
@@ -133,7 +137,7 @@ export class InternshipMapper {
   createInternshipRequestToRepoRequest(source: InternshipCreateRequest): InternshipCreateRepoRequest {
     const destination = new InternshipCreateRepoRequest();
 
-    destination.userId = source.userId;
+    destination.teacherId = source.teacherId;
     destination.description = source.description;
     destination.title = source.title;
     destination.code = source.code;
@@ -146,11 +150,11 @@ export class InternshipMapper {
     return destination;
   }
 
-  initializeGetUserRepoRequest(userId: number): UserGetRepoRequest {
-    const destination = new UserGetRepoRequest();
+  initializeGetTeacherRepoRequest(teacherId: number): TeacherGetRepoRequest {
+    const destination = new TeacherGetRepoRequest();
 
-    destination.id = userId;
-    destination.select = [UserSelectFieldsEnum.ID, UserSelectFieldsEnum.IS_DELETED];
+    destination.id = teacherId;
+    destination.select = [TeacherSelectFieldsEnum.ID, TeacherSelectFieldsEnum.IS_DELETED];
     destination.showDeleted = true;
 
     return destination;
@@ -160,7 +164,7 @@ export class InternshipMapper {
     const destination = new InternshipUpdateRepoRequest();
 
     destination.id = source.id;
-    destination.userId = source.userId;
+    destination.teacherId = source.teacherId;
     destination.description = source.description;
     destination.title = source.title;
     destination.code = source.code;

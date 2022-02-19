@@ -13,6 +13,7 @@ import {HonorUpdateRequest} from '../types/request/honor-update.request';
 import {HonorRepository} from '../../../data-layer/repositories/honor/honor.repository';
 import {UserRepository} from '../../../data-layer/repositories/user/user.repository';
 import {HonorSelectFieldsEnum} from '../../../data-layer/repositories/honor/enums/honor-select-fields.enum';
+import {TeacherRepository} from '../../../data-layer/repositories/teacher/teacher.repository';
 
 @Injectable()
 export class HonorService {
@@ -20,7 +21,7 @@ export class HonorService {
 
   constructor(
     private honorRepository: HonorRepository,
-    private userRepository: UserRepository,
+    private teacherRepository: TeacherRepository,
     private honorMapper: HonorMapper,
   ) {
     this.logger = new Logger(HonorService.name);
@@ -152,21 +153,21 @@ export class HonorService {
 
   async validateRequest(request: HonorCreateRequest) {
     //validate user
-    if (!isNil(request.userId)) {
-      const getUserRepoRequest = this.honorMapper.initializeGetUserRepoRequest(request.userId);
-      const {data: userData} = await this.userRepository.getUsers(getUserRepoRequest);
+    if (!isNil(request.teacherId)) {
+      const getTeacherRepoRequest = this.honorMapper.initializeGetTeacherRepoRequest(request.teacherId);
+      const {data: teacherData} = await this.teacherRepository.getTeachers(getTeacherRepoRequest);
 
-      if (!userData.responseList.length) {
+      if (!teacherData.responseList.length) {
         throw new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
-          message: `User with id ${request.userId} not found`
+          message: `Teacher with id ${request.teacherId} not found`
         });
       }
 
-      if (userData.responseList[0].isDeleted) {
+      if (teacherData.responseList[0].isDeleted) {
         throw new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
-          message: `User with id ${request.userId} is deleted`
+          message: `Teacher with id ${request.teacherId} is deleted`
         });
       }
     }

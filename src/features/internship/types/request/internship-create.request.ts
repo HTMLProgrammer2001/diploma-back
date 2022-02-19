@@ -50,5 +50,5 @@ export class InternshipCreateRequest {
   @Field(type => ID, {nullable: false})
   @ParseNumber()
   @IsNumber()
-  userId: number;
+  teacherId: number;
 }

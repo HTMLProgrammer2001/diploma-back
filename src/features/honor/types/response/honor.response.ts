@@ -28,5 +28,5 @@ export class HonorResponse {
   guid: string;
 
   @Field(type => IdNameResponse, {nullable: false})
-  user: IdNameResponse;
+  teacher: IdNameResponse;
 }

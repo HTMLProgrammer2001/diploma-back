@@ -44,7 +44,7 @@ export class HonorUpdateRequest {
   @IsOptional()
   @ParseNumber()
   @IsNumber()
-  userId: number;
+  teacherId: number;
 
   @Field({nullable: true})
   @IsOptional()

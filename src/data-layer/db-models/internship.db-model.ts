@@ -2,10 +2,11 @@ import {AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, Table} fr
 import sequelize from 'sequelize';
 import {UserDbModel} from './user.db-model';
 import {CreateDbModelType} from '../repositories/common/create-db-model.type';
+import {TeacherDbModel} from './teacher.db-model';
 
 export interface InternshipInterface {
   id: number;
-  userId: number;
+  teacherId: number;
   title: string;
   code: string;
   from: Date;
@@ -15,6 +16,7 @@ export interface InternshipInterface {
   credits?: number;
   description?: string;
   isDeleted: boolean;
+  isCascadeDelete: boolean;
   guid: string;
 }
 
@@ -48,15 +50,18 @@ export class InternshipDbModel extends Model<InternshipInterface, CreateDbModelT
   @Column({allowNull: true})
   description?: string;
 
-  @ForeignKey(() => UserDbModel)
+  @ForeignKey(() => TeacherDbModel)
   @Column({allowNull: false, type: DataType.INTEGER})
-  userId: number;
+  teacherId: number;
 
-  @BelongsTo(() => UserDbModel)
-  user: UserDbModel;
+  @BelongsTo(() => TeacherDbModel)
+  teacher: TeacherDbModel;
 
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isDeleted?: boolean;
+
+  @Column({defaultValue: false, type: DataType.BOOLEAN})
+  isCascadeDelete?: boolean;
 
   @Column({defaultValue: sequelize.literal('(UUID())'), unique: true})
   guid?: string;

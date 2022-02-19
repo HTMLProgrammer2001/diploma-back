@@ -9,9 +9,10 @@ export class EducationGetRepoRequest extends BaseRepoRequest {
   specialty: string;
   yearOfIssueMore: number;
   yearOfIssueLess: number;
-  userId: number;
+  teacherId: number;
   educationQualificationId: number;
   showDeleted: boolean;
+  showCascadeDeleted: boolean;
   select: Array<string>;
   orderField: string;
   isDesc: boolean;

@@ -13,6 +13,7 @@ import {PublicationCreateRequest} from '../types/request/publication-create.requ
 import {PublicationUpdateRequest} from '../types/request/publication-update.request';
 import {PublicationSelectFieldsEnum} from '../../../data-layer/repositories/publication/enums/publication-select-fields.enum';
 import {UserRepository} from '../../../data-layer/repositories/user/user.repository';
+import {TeacherRepository} from '../../../data-layer/repositories/teacher/teacher.repository';
 
 @Injectable()
 export class PublicationService {
@@ -20,7 +21,7 @@ export class PublicationService {
 
   constructor(
     private publicationRepository: PublicationRepository,
-    private userRepository: UserRepository,
+    private teacherRepository: TeacherRepository,
     private publicationMapper: PublicationMapper,
   ) {
     this.logger = new Logger(PublicationService.name);
@@ -152,25 +153,25 @@ export class PublicationService {
 
   async validateRequest(request: PublicationCreateRequest) {
     //validate users
-    if (!isNil(request.userIds)) {
-      const getUsersRepoRequest = this.publicationMapper.initializeGetUsersRepoRequest(request.userIds);
-      const {data: usersData} = await this.userRepository.getUsers(getUsersRepoRequest);
+    if (!isNil(request.teacherIds)) {
+      const getTeachersRepoRequest = this.publicationMapper.initializeGetTeachersRepoRequest(request.teacherIds);
+      const {data: teachersData} = await this.teacherRepository.getTeachers(getTeachersRepoRequest);
 
-      const redundantUsers = difference(request.userIds, usersData.responseList.map(el => el.id));
+      const redundantTeachers = difference(request.teacherIds, teachersData.responseList.map(el => el.id));
 
-      if (redundantUsers.length) {
+      if (redundantTeachers.length) {
         throw new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
-          message: `Users with ids ${redundantUsers} not found`
+          message: `Teachers with ids ${redundantTeachers} not found`
         });
       }
 
-      const deletedUsers = usersData.responseList.filter(el => el.isDeleted).map(el => el.id);
+      const deletedTeachers = teachersData.responseList.filter(el => el.isDeleted).map(el => el.id);
 
-      if (deletedUsers.length) {
+      if (deletedTeachers.length) {
         throw new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
-          message: `Users with ids ${deletedUsers} is deleted`
+          message: `Teachers with ids ${deletedTeachers} is deleted`
         });
       }
     }

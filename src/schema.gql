@@ -86,11 +86,12 @@ input AttestationCreateRequest {
   categoryId: ID!
   date: String!
   description: String
-  userId: ID!
+  teacherId: ID!
 }
 
 input AttestationGetByIdRequest {
   id: ID!
+  showCascadeDeleted: Boolean
   showDeleted: Boolean
 }
 
@@ -101,9 +102,10 @@ input AttestationGetListRequest {
   isDesc: Boolean
   orderField: String = "id"
   page: Int = 1
+  showCascadeDeleted: Boolean
   showDeleted: Boolean
   size: Int = 5
-  userId: ID
+  teacherId: ID
 }
 
 type AttestationListResponse implements PaginatedData {
@@ -122,7 +124,7 @@ type AttestationResponse {
   guid: String!
   id: ID!
   isDeleted: Boolean!
-  user: IdNameResponse!
+  teacher: IdNameResponse!
 }
 
 input AttestationUpdateRequest {
@@ -131,7 +133,7 @@ input AttestationUpdateRequest {
   description: String
   guid: String!
   id: ID!
-  userId: ID
+  teacherId: ID
 }
 
 input CategoryCreateRequest {
@@ -273,12 +275,13 @@ input EducationCreateRequest {
   educationQualificationId: ID!
   institution: String!
   specialty: String!
-  userId: ID!
+  teacherId: ID!
   yearOfIssue: Float!
 }
 
 input EducationGetByIdRequest {
   id: ID!
+  showCascadeDeleted: Boolean
   showDeleted: Boolean
 }
 
@@ -288,10 +291,11 @@ input EducationGetListRequest {
   isDesc: Boolean
   orderField: String = "id"
   page: Int = 1
+  showCascadeDeleted: Boolean
   showDeleted: Boolean
   size: Int = 5
   specialty: String
-  userId: ID
+  teacherId: ID
   yearOfIssueLess: Float
   yearOfIssueMore: Float
 }
@@ -353,7 +357,7 @@ type EducationResponse {
   institution: String!
   isDeleted: Boolean!
   specialty: String!
-  user: IdNameResponse!
+  teacher: IdNameResponse!
   yearOfIssue: Float
 }
 
@@ -364,7 +368,7 @@ input EducationUpdateRequest {
   id: ID!
   institution: String
   specialty: String
-  userId: ID
+  teacherId: ID
   yearOfIssue: Float
 }
 
@@ -373,12 +377,13 @@ input HonorCreateRequest {
   description: String
   isActive: Boolean = true
   orderNumber: String
+  teacherId: ID!
   title: String!
-  userId: ID!
 }
 
 input HonorGetByIdRequest {
   id: ID!
+  showCascadeDeleted: Boolean
   showDeleted: Boolean
 }
 
@@ -389,11 +394,12 @@ input HonorGetListRequest {
   orderField: String = "id"
   orderNumber: String
   page: Int = 1
+  showCascadeDeleted: Boolean
   showDeleted: Boolean
   showInActive: Boolean
   size: Int = 5
+  teacherId: ID
   title: String
-  userId: ID
 }
 
 type HonorListResponse implements PaginatedData {
@@ -413,8 +419,8 @@ type HonorResponse {
   isActive: Boolean!
   isDeleted: Boolean!
   orderNumber: String
+  teacher: IdNameResponse!
   title: String!
-  user: IdNameResponse!
 }
 
 input HonorUpdateRequest {
@@ -424,8 +430,8 @@ input HonorUpdateRequest {
   id: ID!
   isActive: Boolean
   orderNumber: String
+  teacherId: ID
   title: String
-  userId: ID
 }
 
 type IdNameResponse {
@@ -444,18 +450,19 @@ input InternshipCreateRequest {
   from: String!
   hours: Int!
   place: String
+  teacherId: ID!
   title: String!
   to: String!
-  userId: ID!
 }
 
 input InternshipGetByIdRequest {
   id: ID!
+  showCascadeDeleted: Boolean
   showDeleted: Boolean
 }
 
 input InternshipGetHoursFromLastAttestationRequest {
-  userId: ID!
+  teacherId: ID!
 }
 
 type InternshipGetHoursFromLastAttestationResponse {
@@ -470,10 +477,11 @@ input InternshipGetListRequest {
   orderField: String = "id"
   page: Int = 1
   place: String
+  showCascadeDeleted: Boolean
   showDeleted: Boolean
   size: Int = 5
+  teacherId: ID
   title: String
-  userId: ID
 }
 
 type InternshipListResponse implements PaginatedData {
@@ -495,9 +503,9 @@ type InternshipResponse {
   id: ID!
   isDeleted: Boolean!
   place: String
+  teacher: IdNameResponse!
   title: String!
   to: String
-  user: IdNameResponse!
 }
 
 input InternshipUpdateRequest {
@@ -509,9 +517,9 @@ input InternshipUpdateRequest {
   hours: Int
   id: ID!
   place: String
+  teacherId: ID
   title: String
   to: String
-  userId: ID
 }
 
 input LoginRequest {
@@ -607,9 +615,9 @@ input PublicationCreateRequest {
   date: String!
   description: String
   publisher: String
+  teacherIds: [ID!]!
   title: String!
   url: String
-  userIds: [ID!]!
 }
 
 input PublicationGetByIdRequest {
@@ -626,8 +634,8 @@ input PublicationGetListRequest {
   publisher: String
   showDeleted: Boolean
   size: Int = 5
+  teacherIds: [ID!]
   title: String
-  userIds: [ID!]
 }
 
 type PublicationListResponse implements PaginatedData {
@@ -647,9 +655,9 @@ type PublicationResponse {
   id: ID!
   isDeleted: Boolean!
   publisher: String
+  teachers: [IdNameResponse!]
   title: String!
   url: String
-  users: [IdNameResponse!]
 }
 
 input PublicationUpdateRequest {
@@ -659,9 +667,9 @@ input PublicationUpdateRequest {
   guid: String!
   id: ID!
   publisher: String
+  teacherIds: [ID!]
   title: String
   url: String
-  userIds: [ID!]
 }
 
 type Query {
@@ -706,12 +714,13 @@ input RebukeCreateRequest {
   description: String
   isActive: Boolean = true
   orderNumber: String
+  teacherId: ID!
   title: String!
-  userId: ID!
 }
 
 input RebukeGetByIdRequest {
   id: ID!
+  showCascadeDeleted: Boolean
   showDeleted: Boolean
 }
 
@@ -722,11 +731,12 @@ input RebukeGetListRequest {
   orderField: String = "id"
   orderNumber: String
   page: Int = 1
+  showCascadeDeleted: Boolean
   showDeleted: Boolean
   showInActive: Boolean
   size: Int = 5
+  teacherId: ID
   title: String
-  userId: ID
 }
 
 type RebukeListResponse implements PaginatedData {
@@ -746,8 +756,8 @@ type RebukeResponse {
   isActive: Boolean!
   isDeleted: Boolean!
   orderNumber: String
+  teacher: IdNameResponse!
   title: String!
-  user: IdNameResponse!
 }
 
 input RebukeUpdateRequest {
@@ -757,8 +767,8 @@ input RebukeUpdateRequest {
   id: ID!
   isActive: Boolean
   orderNumber: String
+  teacherId: ID
   title: String
-  userId: ID
 }
 
 type RefreshTokenResponse {
@@ -820,6 +830,7 @@ input TeacherCreateRequest {
 
 input TeacherGetByIdRequest {
   id: ID!
+  showCascadeDeleted: Boolean
   showDeleted: Boolean
 }
 
@@ -833,6 +844,7 @@ input TeacherGetListRequest {
   isDesc: Boolean
   orderField: String = "id"
   page: Int = 1
+  showCascadeDeleted: Boolean
   showDeleted: Boolean
   size: Int = 5
   teachingRankId: ID

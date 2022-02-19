@@ -3,16 +3,18 @@ import sequelize from 'sequelize';
 import {UserDbModel} from './user.db-model';
 import {EducationQualificationDbModel} from './education-qualification.db-model';
 import {CreateDbModelType} from '../repositories/common/create-db-model.type';
+import {TeacherDbModel} from './teacher.db-model';
 
 export interface EducationInterface {
   id: number;
-  userId: number;
+  teacherId: number;
   educationQualificationId: number;
   institution: string;
   specialty: string;
   yearOfIssue: number;
   description?: string;
   isDeleted: boolean;
+  isCascadeDelete: boolean;
   guid: string;
 }
 
@@ -34,12 +36,12 @@ export class EducationDbModel extends Model<EducationInterface, CreateDbModelTyp
   @Column({allowNull: true})
   description?: string;
 
-  @ForeignKey(() => UserDbModel)
+  @ForeignKey(() => TeacherDbModel)
   @Column({allowNull: false, type: DataType.INTEGER})
-  userId: number;
+  teacherId: number;
 
-  @BelongsTo(() => UserDbModel)
-  user: UserDbModel;
+  @BelongsTo(() => TeacherDbModel)
+  teacher: TeacherDbModel;
 
   @ForeignKey(() => EducationQualificationDbModel)
   @Column({allowNull: false, type: DataType.INTEGER})
@@ -50,6 +52,10 @@ export class EducationDbModel extends Model<EducationInterface, CreateDbModelTyp
 
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isDeleted?: boolean;
+
+  @Column({defaultValue: false, type: DataType.BOOLEAN})
+  isCascadeDelete?: boolean;
+
 
   @Column({defaultValue: sequelize.literal('(UUID())'), unique: true})
   guid?: string;

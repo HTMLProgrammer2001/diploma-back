@@ -20,6 +20,7 @@ import {InternshipUpdateRepoRequest} from './repo-request/internship-update.repo
 import {InternshipDeleteRepoRequest} from './repo-request/internship-delete.repo-request';
 import {InternshipGetHoursRepoRequest} from './repo-request/internship-get-hours.repo-request';
 import {InternshipGetHoursRepoResponse} from './repo-response/internship-get-hours.repo-response';
+import {TeacherDbModel} from '../../db-models/teacher.db-model';
 
 @Injectable()
 export class InternshipRepository {
@@ -90,18 +91,18 @@ export class InternshipRepository {
             attributes.push('guid');
             break;
 
-          case InternshipSelectFieldsEnum.USER_ID:
-            if (!includes.user)
-              includes.user = {model: UserDbModel, attributes: ['id']}
+          case InternshipSelectFieldsEnum.TEACHER_ID:
+            if (!includes.teacher)
+              includes.teacher = {model: TeacherDbModel, attributes: ['id']}
             else
-              (includes.user.attributes as Array<string | ProjectionAlias>).push('id');
+              (includes.teacher.attributes as Array<string | ProjectionAlias>).push('id');
             break;
 
-          case InternshipSelectFieldsEnum.USER_NAME:
-            if (!includes.user)
-              includes.user = {model: UserDbModel, attributes: ['fullName']}
+          case InternshipSelectFieldsEnum.TEACHER_NAME:
+            if (!includes.teacher)
+              includes.teacher = {model: TeacherDbModel, attributes: ['fullName']}
             else
-              (includes.user.attributes as Array<string | ProjectionAlias>).push('fullName');
+              (includes.teacher.attributes as Array<string | ProjectionAlias>).push('fullName');
             break;
         }
       });
@@ -136,12 +137,17 @@ export class InternshipRepository {
         filters.to = {[Op.lte]: repoRequest.dateToLess};
       }
 
-      if (!isNil(repoRequest.userId)) {
-        filters.userId = repoRequest.userId;
+      if (!isNil(repoRequest.teacherId)) {
+        filters.teacherId = repoRequest.teacherId;
       }
 
       if (!repoRequest.showDeleted) {
-        filters.isDeleted = false;
+        if(repoRequest.showCascadeDeleted) {
+          filters[Op.or] = {isDeleted: false, isCascadeDelete: true};
+        }
+        else {
+          filters.isDeleted = false;
+        }
       }
 
       if (!isNil(repoRequest.ids)) {
@@ -176,9 +182,9 @@ export class InternshipRepository {
             order.push(['from', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
-          case InternshipOrderFieldsEnum.USER:
-            includes.user = includes.user ?? {model: UserDbModel, attributes: []};
-            order.push([{model: UserDbModel, as: 'user'}, 'fullName', repoRequest.isDesc ? 'DESC' : 'ASC']);
+          case InternshipOrderFieldsEnum.TEACHER:
+            includes.teacher = includes.teacher ?? {model: TeacherDbModel, attributes: []};
+            order.push([{model: TeacherDbModel, as: 'teacher'}, 'fullName', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
         }
       } else {
@@ -211,8 +217,8 @@ export class InternshipRepository {
     try {
       const filters: WhereOptions<InternshipInterface> = {};
 
-      if(!isNil(repoRequest.userId)) {
-        filters.userId = repoRequest.userId;
+      if(!isNil(repoRequest.teacherId)) {
+        filters.teacherId = repoRequest.teacherId;
       }
 
       if(!isNil(repoRequest.from)) {
@@ -224,7 +230,7 @@ export class InternshipRepository {
       }
 
       const hours = await this.internshipDbModel.sum('hours', {where: filters});
-      return {data: hours};
+      return {data: hours || 0};
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);
@@ -246,7 +252,7 @@ export class InternshipRepository {
         place: repoRequest.place,
         credits: repoRequest.credits,
         hours: repoRequest.hours,
-        userId: repoRequest.userId,
+        teacherId: repoRequest.teacherId,
       });
       return {createdID: id};
     } catch (e) {
@@ -294,8 +300,8 @@ export class InternshipRepository {
       updateData.place = repoRequest.place;
     }
 
-    if (!isUndefined(repoRequest.userId)) {
-      updateData.userId = repoRequest.userId;
+    if (!isUndefined(repoRequest.teacherId)) {
+      updateData.teacherId = repoRequest.teacherId;
     }
 
     if (!isEmpty(updateData)) {

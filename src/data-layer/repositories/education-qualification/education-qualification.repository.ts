@@ -3,9 +3,7 @@ import {InjectModel} from '@nestjs/sequelize';
 import {isEmpty, isNil, isUndefined} from 'lodash';
 import sequelize, {Op} from 'sequelize';
 import {FindAttributeOptions, WhereOptions} from 'sequelize/dist/lib/model';
-import {Model} from 'sequelize-typescript';
 import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
-import {AcademicDegreeDbModel} from '../../db-models/academic-degree.db-model';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
@@ -21,12 +19,18 @@ import {
 import {EducationQualificationCreateRepoRequest} from './repo-request/education-qualification-create.repo-request';
 import {EducationQualificationUpdateRepoRequest} from './repo-request/education-qualification-update.repo-request';
 import {EducationQualificationDeleteRepoRequest} from './repo-request/education-qualification-delete.repo-request';
+import {Sequelize} from 'sequelize-typescript';
+import {EducationDbModel} from '../../db-models/education.db-model';
 
 @Injectable()
 export class EducationQualificationRepository {
   private logger: Logger;
 
-  constructor(@InjectModel(EducationQualificationDbModel) private educationQualificationDbModel: typeof EducationQualificationDbModel) {
+  constructor(
+    @InjectModel(EducationQualificationDbModel) private educationQualificationDbModel: typeof EducationQualificationDbModel,
+    @InjectModel(EducationDbModel) private educationDbModel: typeof EducationDbModel,
+    private sequelize: Sequelize
+  ) {
     this.logger = new Logger(EducationQualificationRepository.name);
   }
 
@@ -157,7 +161,14 @@ export class EducationQualificationRepository {
 
   async deleteEducationQualification(repoRequest: EducationQualificationDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
     try {
-      await this.educationQualificationDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
+      await this.sequelize.transaction({autocommit: true}, t => {
+        return this.educationQualificationDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}, transaction: t})
+          .then(() => this.educationDbModel.update(
+            {isDeleted: true, isCascadeDelete: true},
+            {where: {educationQualificationId: repoRequest.id, isDeleted: false}, transaction: t}
+          ));
+      });
+
       return {deletedID: repoRequest.id};
     } catch (e) {
       if (!(e instanceof CustomError)) {

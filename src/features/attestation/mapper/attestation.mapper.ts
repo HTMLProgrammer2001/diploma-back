@@ -4,8 +4,6 @@ import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {AttestationResponse} from '../types/response/attestation.response';
 import {AttestationGetByIdRequest} from '../types/request/attestation-get-by-id.request';
 import {AttestationCreateRequest} from '../types/request/attestation-create.request';
-import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-get.repo-request';
-import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
 import {AttestationUpdateRequest} from '../types/request/attestation-update.request';
 import {AttestationGetRepoRequest} from '../../../data-layer/repositories/attestation/repo-request/attestation-get.repo-request';
 import {AttestationDbModel} from '../../../data-layer/db-models/attestation.db-model';
@@ -14,6 +12,8 @@ import {AttestationUpdateRepoRequest} from '../../../data-layer/repositories/att
 import {AttestationDeleteRepoRequest} from '../../../data-layer/repositories/attestation/repo-request/attestation-delete.repo-request';
 import {CategoryGetRepoRequest} from '../../../data-layer/repositories/category/repo-request/category-get.repo-request';
 import {CategorySelectFieldsEnum} from '../../../data-layer/repositories/category/enums/category-select-fields.enum';
+import {TeacherGetRepoRequest} from '../../../data-layer/repositories/teacher/repo-request/teacher-get.repo-request';
+import {TeacherSelectFieldsEnum} from '../../../data-layer/repositories/teacher/enums/teacher-select-fields.enum';
 
 @Injectable()
 export class AttestationMapper {
@@ -22,9 +22,10 @@ export class AttestationMapper {
 
     destination.dateLess = source.dateLess;
     destination.dateMore = source.dateMore;
-    destination.userId = source.userId;
+    destination.teacherId = source.teacherId;
     destination.categoryId = source.categoryId;
     destination.showDeleted = source.showDeleted;
+    destination.showCascadeDeleted = source.showCascadeDeleted;
     destination.orderField = source.orderField;
     destination.isDesc = !!source.isDesc;
     destination.select = [...source.select];
@@ -50,10 +51,10 @@ export class AttestationMapper {
     destination.isDeleted = source.isDeleted;
     destination.guid = source.guid;
 
-    if (source.user) {
-      destination.user = {
-        id: source.user.id,
-        name: source.user.fullName
+    if (source.teacher) {
+      destination.teacher = {
+        id: source.teacher.id,
+        name: source.teacher.fullName
       };
     }
 
@@ -73,6 +74,7 @@ export class AttestationMapper {
     destination.id = source.id;
     destination.select = source.select;
     destination.showDeleted = source.showDeleted;
+    destination.showCascadeDeleted = source.showCascadeDeleted;
     destination.page = 1;
     destination.size = 1;
 
@@ -91,22 +93,22 @@ export class AttestationMapper {
     return destination;
   }
 
-  createRebukeRequestToRepoRequest(source: AttestationCreateRequest): AttestationCreateRepoRequest {
+  createAttestationRequestToRepoRequest(source: AttestationCreateRequest): AttestationCreateRepoRequest {
     const destination = new AttestationCreateRepoRequest();
 
     destination.date = source.date;
-    destination.userId = source.userId;
+    destination.teacherId = source.teacherId;
     destination.description = source.description;
     destination.categoryId = source.categoryId;
 
     return destination;
   }
 
-  initializeGetUserRepoRequest(userId: number): UserGetRepoRequest {
-    const destination = new UserGetRepoRequest();
+  initializeGetTeacherRepoRequest(userId: number): TeacherGetRepoRequest {
+    const destination = new TeacherGetRepoRequest();
 
     destination.id = userId;
-    destination.select = [UserSelectFieldsEnum.ID, UserSelectFieldsEnum.IS_DELETED];
+    destination.select = [TeacherSelectFieldsEnum.ID, TeacherSelectFieldsEnum.IS_DELETED];
     destination.showDeleted = true;
 
     return destination;
@@ -128,7 +130,7 @@ export class AttestationMapper {
     destination.id = source.id;
     destination.date = source.date;
     destination.description = source.description;
-    destination.userId = source.userId;
+    destination.teacherId = source.teacherId;
     destination.categoryId = source.categoryId;
 
     return destination;

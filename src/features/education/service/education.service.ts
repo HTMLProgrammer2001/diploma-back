@@ -14,6 +14,7 @@ import {EducationGetByIdRequest} from '../types/request/education-get-by-id.requ
 import {EducationCreateRequest} from '../types/request/education-create.request';
 import {EducationUpdateRequest} from '../types/request/education-update.request';
 import {EducationSelectFieldsEnum} from '../../../data-layer/repositories/education/enums/education-select-fields.enum';
+import {TeacherRepository} from '../../../data-layer/repositories/teacher/teacher.repository';
 
 @Injectable()
 export class EducationService {
@@ -21,7 +22,7 @@ export class EducationService {
 
   constructor(
     private educationRepository: EducationRepository,
-    private userRepository: UserRepository,
+    private teacherRepository: TeacherRepository,
     private educationQualificationRepository: EducationQualificationRepository,
     private educationMapper: EducationMapper,
   ) {
@@ -154,21 +155,21 @@ export class EducationService {
 
   async validateRequest(request: EducationCreateRequest) {
     //validate user
-    if (!isNil(request.userId)) {
-      const getUserRepoRequest = this.educationMapper.initializeGetUserRepoRequest(request.userId);
-      const {data: userData} = await this.userRepository.getUsers(getUserRepoRequest);
+    if (!isNil(request.teacherId)) {
+      const getTeacherRepoRequest = this.educationMapper.initializeGetTeacherRepoRequest(request.teacherId);
+      const {data: teacherData} = await this.teacherRepository.getTeachers(getTeacherRepoRequest);
 
-      if (!userData.responseList.length) {
+      if (!teacherData.responseList.length) {
         throw new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
-          message: `User with id ${request.userId} not found`
+          message: `Teacher with id ${request.teacherId} not found`
         });
       }
 
-      if (userData.responseList[0].isDeleted) {
+      if (teacherData.responseList[0].isDeleted) {
         throw new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
-          message: `User with id ${request.userId} is deleted`
+          message: `Teacher with id ${request.teacherId} is deleted`
         });
       }
     }
@@ -184,14 +185,14 @@ export class EducationService {
       if (!educationQualificationData.responseList.length) {
         throw new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
-          message: `Education qualification with id ${request.userId} not found`
+          message: `Education qualification with id ${request.teacherId} not found`
         });
       }
 
       if (educationQualificationData.responseList[0].isDeleted) {
         throw new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
-          message: `Education qualification with id ${request.userId} is deleted`
+          message: `Education qualification with id ${request.teacherId} is deleted`
         });
       }
     }

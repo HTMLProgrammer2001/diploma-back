@@ -13,6 +13,7 @@ import {RebukeCreateRequest} from '../types/request/rebuke-create.request';
 import {RebukeUpdateRequest} from '../types/request/rebuke-update.request';
 import {RebukeSelectFieldsEnum} from '../../../data-layer/repositories/rebuke/enums/rebuke-select-fields.enum';
 import {RebukeMapper} from '../mapper/rebuke.mapper';
+import {TeacherRepository} from '../../../data-layer/repositories/teacher/teacher.repository';
 
 @Injectable()
 export class RebukeService {
@@ -20,7 +21,7 @@ export class RebukeService {
 
   constructor(
     private rebukeRepository: RebukeRepository,
-    private userRepository: UserRepository,
+    private teacherRepository: TeacherRepository,
     private rebukeMapper: RebukeMapper,
   ) {
     this.logger = new Logger(RebukeService.name);
@@ -152,21 +153,21 @@ export class RebukeService {
 
   async validateRequest(request: RebukeCreateRequest) {
     //validate user
-    if (!isNil(request.userId)) {
-      const getUserRepoRequest = this.rebukeMapper.initializeGetUserRepoRequest(request.userId);
-      const {data: userData} = await this.userRepository.getUsers(getUserRepoRequest);
+    if (!isNil(request.teacherId)) {
+      const getTeacherRepoRequest = this.rebukeMapper.initializeGetTeacherRepoRequest(request.teacherId);
+      const {data: teacherData} = await this.teacherRepository.getTeachers(getTeacherRepoRequest);
 
-      if (!userData.responseList.length) {
+      if (!teacherData.responseList.length) {
         throw new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
-          message: `User with id ${request.userId} not found`
+          message: `Teacher with id ${request.teacherId} not found`
         });
       }
 
-      if (userData.responseList[0].isDeleted) {
+      if (teacherData.responseList[0].isDeleted) {
         throw new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
-          message: `User with id ${request.userId} is deleted`
+          message: `Teacher with id ${request.teacherId} is deleted`
         });
       }
     }

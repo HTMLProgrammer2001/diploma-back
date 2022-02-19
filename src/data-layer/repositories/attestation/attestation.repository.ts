@@ -9,7 +9,6 @@ import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {Model} from 'sequelize-typescript';
 import {UserDbModel} from '../../db-models/user.db-model';
 import {AttestationGetRepoRequest} from './repo-request/attestation-get.repo-request';
 import {AttestationGetRepoResponse} from './repo-response/attestation-get.repo-response';
@@ -20,6 +19,7 @@ import {AttestationUpdateRepoRequest} from './repo-request/attestation-update.re
 import {AttestationDeleteRepoRequest} from './repo-request/attestation-delete.repo-request';
 import {AttestationDbModel, AttestationInterface} from '../../db-models/attestation.db-model';
 import {CategoryDbModel} from '../../db-models/category.db-model';
+import {TeacherDbModel} from '../../db-models/teacher.db-model';
 
 @Injectable()
 export class AttestationRepository {
@@ -66,18 +66,18 @@ export class AttestationRepository {
             attributes.push('guid');
             break;
 
-          case AttestationSelectFieldsEnum.USER_ID:
-            if (!includes.user)
-              includes.user = {model: UserDbModel, attributes: ['id']}
+          case AttestationSelectFieldsEnum.TEACHER_ID:
+            if (!includes.teacher)
+              includes.teacher = {model: TeacherDbModel, attributes: ['id']}
             else
-              (includes.user.attributes as Array<string | ProjectionAlias>).push('id');
+              (includes.teacher.attributes as Array<string | ProjectionAlias>).push('id');
             break;
 
-          case AttestationSelectFieldsEnum.USER_NAME:
-            if (!includes.user)
-              includes.user = {model: UserDbModel, attributes: ['fullName']}
+          case AttestationSelectFieldsEnum.TEACHER_NAME:
+            if (!includes.teacher)
+              includes.teacher = {model: TeacherDbModel, attributes: ['fullName']}
             else
-              (includes.user.attributes as Array<string | ProjectionAlias>).push('fullName');
+              (includes.teacher.attributes as Array<string | ProjectionAlias>).push('fullName');
             break;
 
           case AttestationSelectFieldsEnum.CATEGORY_ID:
@@ -115,8 +115,8 @@ export class AttestationRepository {
         }
       }
 
-      if (!isNil(repoRequest.userId)) {
-        filters.userId = repoRequest.userId;
+      if (!isNil(repoRequest.teacherId)) {
+        filters.teacherId = repoRequest.teacherId;
       }
 
       if (!isNil(repoRequest.categoryId)) {
@@ -124,7 +124,12 @@ export class AttestationRepository {
       }
 
       if (!repoRequest.showDeleted) {
-        filters.isDeleted = false;
+        if(repoRequest.showCascadeDeleted) {
+          filters[Op.or] = {isDeleted: false, isCascadeDelete: true};
+        }
+        else {
+          filters.isDeleted = false;
+        }
       }
 
       if (!isNil(repoRequest.ids)) {
@@ -151,9 +156,9 @@ export class AttestationRepository {
             order.push(['date', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
-          case AttestationOrderFieldsEnum.USER:
-            includes.user = includes.user ?? {model: UserDbModel, attributes: []};
-            order.push([{model: UserDbModel, as: 'user'}, 'fullName', repoRequest.isDesc ? 'DESC' : 'ASC']);
+          case AttestationOrderFieldsEnum.TEACHER:
+            includes.teacher = includes.teacher ?? {model: TeacherDbModel, attributes: []};
+            order.push([{model: TeacherDbModel, as: 'teacher'}, 'fullName', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
           case AttestationOrderFieldsEnum.CATEGORY:
@@ -192,7 +197,7 @@ export class AttestationRepository {
       const {id} = await this.attestationDbModel.create({
         date: repoRequest.date,
         description: repoRequest.description,
-        userId: repoRequest.userId,
+        teacherId: repoRequest.teacherId,
         categoryId: repoRequest.categoryId,
       });
       return {createdID: id};
@@ -213,8 +218,8 @@ export class AttestationRepository {
       updateData.date = repoRequest.date;
     }
 
-    if (!isUndefined(repoRequest.userId)) {
-      updateData.userId = repoRequest.userId;
+    if (!isUndefined(repoRequest.teacherId)) {
+      updateData.teacherId = repoRequest.teacherId;
     }
 
     if (!isUndefined(repoRequest.categoryId)) {

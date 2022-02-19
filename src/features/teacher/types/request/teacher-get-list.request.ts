@@ -53,6 +53,11 @@ export class TeacherGetListRequest extends BasePaginatorRequest {
   @IsBoolean()
   showDeleted: boolean;
 
+  @Field({nullable: true})
+  @IsOptional()
+  @IsBoolean()
+  showCascadeDeleted?: boolean;
+
   @Field({nullable: true, defaultValue: TeacherOrderFieldsEnum.ID})
   @IsOptional()
   @IsEnum(TeacherOrderFieldsEnum)

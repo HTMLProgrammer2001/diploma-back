@@ -31,7 +31,7 @@ export class HonorCreateRequest {
   @Field(type => ID, {nullable: false})
   @ParseNumber()
   @IsNumber()
-  userId: number;
+  teacherId: number;
 
   @Field(type => Boolean, {nullable: true})
   @IsOptional()

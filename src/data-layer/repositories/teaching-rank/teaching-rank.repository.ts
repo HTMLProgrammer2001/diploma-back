@@ -12,17 +12,23 @@ import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {Model} from 'sequelize-typescript';
+import {Model, Sequelize} from 'sequelize-typescript';
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {TeachingRankDeleteRepoRequest} from './repo-request/teaching-rank-delete.repo-request';
 import {TeachingRankCreateRepoRequest} from './repo-request/teaching-rank-create.repo-request';
 import {TeachingRankUpdateRepoRequest} from './repo-request/teaching-rank-update.repo-request';
+import {TeacherRepository} from '../teacher/teacher.repository';
+import {TeacherDbModel} from '../../db-models/teacher.db-model';
 
 @Injectable()
 export class TeachingRankRepository {
   private logger: Logger;
 
-  constructor(@InjectModel(TeachingRankDbModel) private teachingRankDbModel: typeof TeachingRankDbModel) {
+  constructor(
+    @InjectModel(TeachingRankDbModel) private teachingRankDbModel: typeof TeachingRankDbModel,
+    private sequelize: Sequelize,
+    private teacherRepository: TeacherRepository,
+  ) {
     this.logger = new Logger(TeachingRankRepository.name);
   }
 
@@ -152,7 +158,16 @@ export class TeachingRankRepository {
 
   async deleteTeachingRank(repoRequest: TeachingRankDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
     try {
-      await this.teachingRankDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
+      this.sequelize.transaction({autocommit: true}, t => {
+        return this.teachingRankDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}, transaction: t})
+          .then(() => this.teachingRankDbModel.findByPk(repoRequest.id, {
+            transaction: t,
+            include: {model: TeacherDbModel, attributes: ['id']}
+          }))
+          .then(teachingRank => Promise.all(teachingRank.teachers
+            .map(teacher => this.teacherRepository.deleteTeacher({id: teacher.id}, t))));
+      });
+
       return {deletedID: repoRequest.id};
     } catch (e) {
       if (!(e instanceof CustomError)) {

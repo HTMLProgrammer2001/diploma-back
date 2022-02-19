@@ -16,9 +16,9 @@ import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {HonorUpdateRepoRequest} from './repo-request/honor-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {Model} from 'sequelize-typescript';
 import {HonorDbModel, HonorInterface} from '../../db-models/honor.db-model';
 import {UserDbModel} from '../../db-models/user.db-model';
+import {TeacherDbModel} from '../../db-models/teacher.db-model';
 
 @Injectable()
 export class HonorRepository {
@@ -77,18 +77,18 @@ export class HonorRepository {
             attributes.push('guid');
             break;
 
-          case HonorSelectFieldsEnum.USER_ID:
-            if (!includes.user)
-              includes.user = {model: UserDbModel, attributes: ['id']}
+          case HonorSelectFieldsEnum.TEACHER_ID:
+            if (!includes.teacher)
+              includes.teacher = {model: TeacherDbModel, attributes: ['id']}
             else
-              (includes.user.attributes as Array<string | ProjectionAlias>).push('id');
+              (includes.teacher.attributes as Array<string | ProjectionAlias>).push('id');
             break;
 
-          case HonorSelectFieldsEnum.USER_NAME:
-            if (!includes.user)
-              includes.user = {model: UserDbModel, attributes: ['fullName']}
+          case HonorSelectFieldsEnum.TEACHER_NAME:
+            if (!includes.teacher)
+              includes.teacher = {model: TeacherDbModel, attributes: ['fullName']}
             else
-              (includes.user.attributes as Array<string | ProjectionAlias>).push('fullName');
+              (includes.teacher.attributes as Array<string | ProjectionAlias>).push('fullName');
             break;
         }
       });
@@ -124,8 +124,8 @@ export class HonorRepository {
         }
       }
 
-      if (!isNil(repoRequest.userId)) {
-        filters.userId = repoRequest.userId;
+      if (!isNil(repoRequest.teacherId)) {
+        filters.teacherId = repoRequest.teacherId;
       }
 
       if (!repoRequest.showInActive) {
@@ -133,7 +133,12 @@ export class HonorRepository {
       }
 
       if (!repoRequest.showDeleted) {
-        filters.isDeleted = false;
+        if(repoRequest.showCascadeDeleted) {
+          filters[Op.or] = {isDeleted: false, isCascadeDelete: true};
+        }
+        else {
+          filters.isDeleted = false;
+        }
       }
 
       if (!isNil(repoRequest.ids)) {
@@ -164,9 +169,9 @@ export class HonorRepository {
             order.push(['date', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
-          case HonorOrderFieldsEnum.USER:
-            includes.user = includes.user ?? {model: UserDbModel, attributes: []};
-            order.push([{model: UserDbModel, as: 'user'}, 'fullName', repoRequest.isDesc ? 'DESC' : 'ASC']);
+          case HonorOrderFieldsEnum.TEACHER:
+            includes.teacher = includes.teacher ?? {model: TeacherDbModel, attributes: []};
+            order.push([{model: TeacherDbModel, as: 'teacher'}, 'fullName', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
         }
       } else {
@@ -202,7 +207,7 @@ export class HonorRepository {
         date: repoRequest.date,
         description: repoRequest.description,
         orderNumber: repoRequest.orderNumber,
-        userId: repoRequest.userId,
+        teacherId: repoRequest.teacherId,
         isActive: repoRequest.isActive
       });
       return {createdID: id};
@@ -227,8 +232,8 @@ export class HonorRepository {
       updateData.date = repoRequest.date;
     }
 
-    if (!isUndefined(repoRequest.userId)) {
-      updateData.userId = repoRequest.userId;
+    if (!isUndefined(repoRequest.teacherId)) {
+      updateData.teacherId = repoRequest.teacherId;
     }
 
     if (!isUndefined(repoRequest.orderNumber)) {

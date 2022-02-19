@@ -3,6 +3,6 @@ export class EducationCreateRepoRequest {
   specialty: string;
   yearOfIssue: number;
   description?: string;
-  userId: number;
+  teacherId: number;
   educationQualificationId: number;
 }

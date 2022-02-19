@@ -2,6 +2,7 @@ import {AutoIncrement, BelongsToMany, Column, DataType, Model, Table} from 'sequ
 import sequelize from 'sequelize';
 import {UserDbModel} from './user.db-model';
 import {CreateDbModelType} from '../repositories/common/create-db-model.type';
+import {TeacherDbModel} from './teacher.db-model';
 
 export interface PublicationInterface {
   id: number;
@@ -39,8 +40,8 @@ export class PublicationDbModel extends Model<PublicationInterface, CreateDbMode
   @Column({allowNull: true})
   description?: string;
 
-  @BelongsToMany(() => UserDbModel, 'PublicationUser', 'publicationId', 'userId')
-  users: Array<UserDbModel>;
+  @BelongsToMany(() => TeacherDbModel, 'PublicationTeacher', 'publicationId', 'teacherId')
+  teachers: Array<TeacherDbModel>;
 
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isDeleted?: boolean;

@@ -16,6 +16,7 @@ import {InternshipSelectFieldsEnum} from '../../../data-layer/repositories/inter
 import {InternshipGetHoursFromLastAttestationRequest} from '../types/request/internship-get-hours-from-last-attestation.request';
 import {InternshipGetHoursFromLastAttestationResponse} from '../types/response/internship-get-hours-from-last-attestation.response';
 import {AttestationRepository} from '../../../data-layer/repositories/attestation/attestation.repository';
+import {TeacherRepository} from '../../../data-layer/repositories/teacher/teacher.repository';
 
 @Injectable()
 export class InternshipService {
@@ -23,7 +24,7 @@ export class InternshipService {
 
   constructor(
     private internshipRepository: InternshipRepository,
-    private userRepository: UserRepository,
+    private teacherRepository: TeacherRepository,
     private internshipMapper: InternshipMapper,
     private attestationRepository: AttestationRepository,
   ) {
@@ -68,7 +69,7 @@ export class InternshipService {
   async getInternshipHoursFromLastAttestation(request: InternshipGetHoursFromLastAttestationRequest):
     Promise<InternshipGetHoursFromLastAttestationResponse> {
     try {
-      const attestationRepoRequest = this.internshipMapper.initializeGetLastAttestationRepoRequest(request.userId);
+      const attestationRepoRequest = this.internshipMapper.initializeGetLastAttestationRepoRequest(request.teacherId);
       const {data: lastAttestation} = await this.attestationRepository.getAttestations(attestationRepoRequest);
 
       if(!lastAttestation.responseList.length) {
@@ -76,7 +77,7 @@ export class InternshipService {
       }
       else {
         const getInternshipHoursRepoRequest = this.internshipMapper.initializeGetInternshipHoursRepoRequest(
-          request.userId,
+          request.teacherId,
           lastAttestation.responseList[0].date
         );
 
@@ -215,21 +216,21 @@ export class InternshipService {
 
   async validateRequest(request: InternshipCreateRequest) {
     //validate user
-    if (!isNil(request.userId)) {
-      const getUserRepoRequest = this.internshipMapper.initializeGetUserRepoRequest(request.userId);
-      const {data: userData} = await this.userRepository.getUsers(getUserRepoRequest);
+    if (!isNil(request.teacherId)) {
+      const getTeacherRepoRequest = this.internshipMapper.initializeGetTeacherRepoRequest(request.teacherId);
+      const {data: teacherData} = await this.teacherRepository.getTeachers(getTeacherRepoRequest);
 
-      if (!userData.responseList.length) {
+      if (!teacherData.responseList.length) {
         throw new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
-          message: `User with id ${request.userId} not found`
+          message: `Teacher with id ${request.teacherId} not found`
         });
       }
 
-      if (userData.responseList[0].isDeleted) {
+      if (teacherData.responseList[0].isDeleted) {
         throw new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
-          message: `User with id ${request.userId} is deleted`
+          message: `Teacher with id ${request.teacherId} is deleted`
         });
       }
     }

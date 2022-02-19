@@ -1,6 +1,6 @@
 export class AttestationCreateRepoRequest {
   date?: Date;
   description?: string;
-  userId: number;
+  teacherId: number;
   categoryId: number;
 }

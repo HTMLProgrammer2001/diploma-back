@@ -1,16 +1,17 @@
 import {AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, Table} from 'sequelize-typescript';
 import sequelize from 'sequelize';
-import {UserDbModel} from './user.db-model';
 import {CategoryDbModel} from './category.db-model';
 import {CreateDbModelType} from '../repositories/common/create-db-model.type';
+import {TeacherDbModel} from './teacher.db-model';
 
 export interface AttestationInterface {
   id: number;
   categoryId: number;
-  userId: number;
+  teacherId: number;
   date: Date;
   description?: string;
   isDeleted: boolean;
+  isCascadeDelete: boolean;
   guid: string;
 }
 
@@ -26,12 +27,12 @@ export class AttestationDbModel extends Model<AttestationInterface, CreateDbMode
   @Column({allowNull: true})
   description?: string;
 
-  @ForeignKey(() => UserDbModel)
+  @ForeignKey(() => TeacherDbModel)
   @Column({allowNull: false, type: DataType.INTEGER})
-  userId: number;
+  teacherId: number;
 
-  @BelongsTo(() => UserDbModel)
-  user: UserDbModel;
+  @BelongsTo(() => TeacherDbModel)
+  teacher: TeacherDbModel;
 
   @ForeignKey(() => CategoryDbModel)
   @Column({allowNull: false, type: DataType.INTEGER})
@@ -42,6 +43,9 @@ export class AttestationDbModel extends Model<AttestationInterface, CreateDbMode
 
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isDeleted?: boolean;
+
+  @Column({defaultValue: false, type: DataType.BOOLEAN})
+  isCascadeDelete?: boolean;
 
   @Column({defaultValue: sequelize.literal('(UUID())'), unique: true})
   guid?: string;

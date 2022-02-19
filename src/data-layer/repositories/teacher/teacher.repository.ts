@@ -5,7 +5,7 @@ import {TeacherGetRepoRequest} from './repo-request/teacher-get.repo-request';
 import {TeacherGetRepoResponse} from './repo-response/teacher-get.repo-response';
 import {FindAttributeOptions, IncludeOptions, ProjectionAlias} from 'sequelize/dist/lib/model';
 import {TeacherSelectFieldsEnum} from './enums/teacher-select-fields.enum';
-import sequelize, {Op, WhereOptions} from 'sequelize';
+import sequelize, {Op, Transaction, WhereOptions} from 'sequelize';
 import {isEmpty, isNil, isUndefined} from 'lodash';
 import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
 import {TeacherOrderFieldsEnum} from './enums/teacher-order-fields.enum';
@@ -16,19 +16,32 @@ import {AcademicDegreeDbModel} from '../../db-models/academic-degree.db-model';
 import {AcademicTitleDbModel} from '../../db-models/academic-title.db-model';
 import {TeacherCreateRepoRequest} from './repo-request/teacher-create.repo-request';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
-import {TeacherDeleteRepoRequest} from './repo-request/teacher-delete.repo-request';
-import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {TeacherUpdateRepoRequest} from './repo-request/teacher-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {Model} from 'sequelize-typescript';
+import {AttestationDbModel} from '../../db-models/attestation.db-model';
+import {EducationDbModel} from '../../db-models/education.db-model';
+import {HonorDbModel} from '../../db-models/honor.db-model';
+import {InternshipDbModel} from '../../db-models/internship.db-model';
+import {RebukeDbModel} from '../../db-models/rebuke.db-model';
+import {Sequelize} from 'sequelize-typescript';
+import {TeacherDeleteRepoRequest} from './repo-request/teacher-delete.repo-request';
+import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 
 @Injectable()
 export class TeacherRepository {
   private logger: Logger;
 
-  constructor(@InjectModel(TeacherDbModel) private teacherDbModel: typeof TeacherDbModel) {
+  constructor(
+    @InjectModel(TeacherDbModel) private teacherDbModel: typeof TeacherDbModel,
+    @InjectModel(AttestationDbModel) private attestationDbModel: typeof AttestationDbModel,
+    @InjectModel(EducationDbModel) private educationDbModel: typeof EducationDbModel,
+    @InjectModel(HonorDbModel) private honorDbModel: typeof HonorDbModel,
+    @InjectModel(InternshipDbModel) private internshipDbModel: typeof InternshipDbModel,
+    @InjectModel(RebukeDbModel) private rebukeDbModel: typeof RebukeDbModel,
+    private sequelize: Sequelize
+  ) {
     this.logger = new Logger(TeacherRepository.name);
   }
 
@@ -196,7 +209,12 @@ export class TeacherRepository {
       }
 
       if (!repoRequest.showDeleted) {
-        filters.isDeleted = false;
+        if(repoRequest.showCascadeDeleted) {
+          filters[Op.or] = {isDeleted: false, isCascadeDelete: true};
+        }
+        else {
+          filters.isDeleted = false;
+        }
       }
 
       if (!isNil(repoRequest.ids)) {
@@ -354,9 +372,32 @@ export class TeacherRepository {
     return {updatedID: repoRequest.id};
   }
 
-  async deleteTeacher(repoRequest: TeacherDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
+  async deleteTeacher(repoRequest: TeacherDeleteRepoRequest, transaction?: Transaction): Promise<CommonDeleteRepoResponse> {
     try {
-      await this.teacherDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
+      await this.sequelize.transaction({autocommit: true, transaction: transaction}, t => {
+        return this.teacherDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}, transaction: t})
+          .then(() => this.attestationDbModel.update(
+            {isDeleted: true, isCascadeDelete: true},
+            {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
+          ))
+          .then(() => this.educationDbModel.update(
+            {isDeleted: true, isCascadeDelete: true},
+            {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
+          ))
+          .then(() => this.honorDbModel.update(
+            {isDeleted: true, isCascadeDelete: true},
+            {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
+          ))
+          .then(() => this.internshipDbModel.update(
+            {isDeleted: true, isCascadeDelete: true},
+            {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
+          ))
+          .then(() => this.rebukeDbModel.update(
+            {isDeleted: true, isCascadeDelete: true},
+            {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
+          ));
+      });
+
       return {deletedID: repoRequest.id};
     } catch (e) {
       if (!(e instanceof CustomError)) {

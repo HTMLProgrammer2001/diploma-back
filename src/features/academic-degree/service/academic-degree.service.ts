@@ -11,6 +11,7 @@ import {AcademicDegreeCreateRequest} from '../types/request/academic-degree-crea
 import {AcademicDegreeUpdateRequest} from '../types/request/academic-degree-update.request';
 import {AcademicDegreeSelectFieldsEnum} from '../../../data-layer/repositories/academic-degree/enums/academic-degree-select-fields.enum';
 import {IdResponse} from '../../../global/types/response/id.response';
+import {UserService} from '../../user/service/user.service';
 
 @Injectable()
 export class AcademicDegreeService {
@@ -19,6 +20,7 @@ export class AcademicDegreeService {
   constructor(
     private academicDegreeRepository: AcademicDegreeRepository,
     private academicDegreeMapper: AcademicDegreeMapper,
+    private userService: UserService,
   ) {
     this.logger = new Logger(AcademicDegreeService.name);
   }

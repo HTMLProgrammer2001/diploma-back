@@ -3,7 +3,6 @@ import {InjectModel} from '@nestjs/sequelize';
 import {FindAttributeOptions, IncludeOptions, ProjectionAlias} from 'sequelize/dist/lib/model';
 import sequelize, {Op, WhereOptions} from 'sequelize';
 import {isEmpty, isNil, isUndefined} from 'lodash';
-import {Model} from 'sequelize-typescript';
 import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {CustomError} from '../../../global/class/custom-error';
@@ -19,6 +18,12 @@ import {UserCreateRepoRequest} from './repo-request/user-create.repo-request';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
 import {UserUpdateRepoRequest} from './repo-request/user-update.repo-request';
 import {UserDeleteRepoRequest} from './repo-request/user-delete.repo-request';
+import {Sequelize} from 'sequelize-typescript';
+import {AttestationDbModel} from '../../db-models/attestation.db-model';
+import {EducationDbModel} from '../../db-models/education.db-model';
+import {HonorDbModel} from '../../db-models/honor.db-model';
+import {InternshipDbModel} from '../../db-models/internship.db-model';
+import {RebukeDbModel} from '../../db-models/rebuke.db-model';
 
 @Injectable()
 export class UserRepository {

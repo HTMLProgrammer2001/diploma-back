@@ -2,14 +2,12 @@ import {Injectable, Logger} from '@nestjs/common';
 import {InjectModel} from '@nestjs/sequelize';
 import {isEmpty, isNil, isUndefined} from 'lodash';
 import sequelize, {Op} from 'sequelize';
-import {FindAttributeOptions, WhereOptions} from 'sequelize/dist/lib/model';
+import {FindAttributeOptions, IncludeOptions, ProjectionAlias, WhereOptions} from 'sequelize/dist/lib/model';
 import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
-import {AcademicDegreeDbModel} from '../../db-models/academic-degree.db-model';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {Model} from 'sequelize-typescript';
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {CategoryDbModel, CategoryInterface} from '../../db-models/category.db-model';
 import {CategoryGetRepoRequest} from './repo-request/category-get.repo-request';
@@ -18,12 +16,18 @@ import {CategorySelectFieldsEnum} from './enums/category-select-fields.enum';
 import {CategoryCreateRepoRequest} from './repo-request/category-create.repo-request';
 import {CategoryUpdateRepoRequest} from './repo-request/category-update.repo-request';
 import {CategoryDeleteRepoRequest} from './repo-request/category-delete.repo-request';
+import {AttestationDbModel} from '../../db-models/attestation.db-model';
+import {Sequelize} from 'sequelize-typescript';
 
 @Injectable()
 export class CategoryRepository {
   private logger: Logger;
 
-  constructor(@InjectModel(CategoryDbModel) private categoryDbModel: typeof CategoryDbModel) {
+  constructor(
+    @InjectModel(CategoryDbModel) private categoryDbModel: typeof CategoryDbModel,
+    @InjectModel(AttestationDbModel) private attestationDbModel: typeof AttestationDbModel,
+    private sequelize: Sequelize
+  ) {
     this.logger = new Logger(CategoryRepository.name);
   }
 
@@ -35,6 +39,7 @@ export class CategoryRepository {
       //region Select
 
       const attributes: FindAttributeOptions = [];
+      const includes: Record<string, IncludeOptions> = {};
 
       if (!repoRequest) {
         repoRequest.select = [CategorySelectFieldsEnum.ID, CategorySelectFieldsEnum.NAME];
@@ -56,6 +61,20 @@ export class CategoryRepository {
 
           case CategorySelectFieldsEnum.GUID:
             attributes.push('guid');
+            break;
+
+          case CategorySelectFieldsEnum.ATTESTATIONS_ID:
+            if (!includes.attestations)
+              includes.attestations = {model: AttestationDbModel, attributes: ['id']}
+            else
+              (includes.attestations.attributes as Array<string | ProjectionAlias>).push('id');
+            break;
+
+          case CategorySelectFieldsEnum.ATTESTATIONS_GUID:
+            if (!includes.attestations)
+              includes.attestations = {model: AttestationDbModel, attributes: ['guid']}
+            else
+              (includes.attestations.attributes as Array<string | ProjectionAlias>).push('guid');
             break;
         }
       });
@@ -98,6 +117,7 @@ export class CategoryRepository {
         where: filters,
         order,
         attributes,
+        include: Object.values(includes),
         offset: (repoRequest.page - 1) * repoRequest.size,
         limit: repoRequest.size
       });
@@ -153,7 +173,13 @@ export class CategoryRepository {
 
   async deleteCategory(repoRequest: CategoryDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
     try {
-      await this.categoryDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
+      await this.sequelize.transaction({autocommit: true}, t => {
+        return this.categoryDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}, transaction: t})
+          .then(() => this.attestationDbModel.update(
+            {isDeleted: true, isCascadeDelete: true},
+            {where: {categoryId: repoRequest.id, isDeleted: false}, transaction: t}
+          ));
+      });
       return {deletedID: repoRequest.id};
     } catch (e) {
       if (!(e instanceof CustomError)) {

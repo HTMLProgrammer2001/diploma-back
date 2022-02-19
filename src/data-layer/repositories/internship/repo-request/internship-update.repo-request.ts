@@ -8,5 +8,5 @@ export class InternshipUpdateRepoRequest {
   hours?: number;
   credits?: number;
   description?: string;
-  userId?: number;
+  teacherId?: number;
 }

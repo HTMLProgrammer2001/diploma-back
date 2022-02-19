@@ -45,7 +45,7 @@ export class EducationUpdateRequest {
   @IsOptional()
   @ParseNumber()
   @IsNumber()
-  userId: number;
+  teacherId: number;
 
   @Field(type => ID, {nullable: true})
   @IsOptional()

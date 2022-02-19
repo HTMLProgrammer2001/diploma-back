@@ -13,6 +13,8 @@ import {HonorDeleteRepoRequest} from '../../../data-layer/repositories/honor/rep
 import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-get.repo-request';
 import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
 import {HonorSelectFieldsEnum} from '../../../data-layer/repositories/honor/enums/honor-select-fields.enum';
+import {TeacherGetRepoRequest} from '../../../data-layer/repositories/teacher/repo-request/teacher-get.repo-request';
+import {TeacherSelectFieldsEnum} from '../../../data-layer/repositories/teacher/enums/teacher-select-fields.enum';
 
 @Injectable()
 export class HonorMapper {
@@ -22,10 +24,11 @@ export class HonorMapper {
     destination.title = source.title;
     destination.dateLess = source.dateLess;
     destination.dateMore = source.dateMore;
-    destination.userId = source.userId;
+    destination.teacherId = source.teacherId;
     destination.orderNumber = source.orderNumber;
     destination.showInActive = source.showInActive;
     destination.showDeleted = source.showDeleted;
+    destination.showCascadeDeleted = source.showCascadeDeleted;
     destination.orderField = source.orderField;
     destination.isDesc = !!source.isDesc;
     destination.select = [...source.select];
@@ -54,10 +57,10 @@ export class HonorMapper {
     destination.isDeleted = source.isDeleted;
     destination.guid = source.guid;
 
-    if (source.user) {
-      destination.user = {
-        id: source.user.id,
-        name: source.user.fullName
+    if (source.teacher) {
+      destination.teacher = {
+        id: source.teacher.id,
+        name: source.teacher.fullName
       };
     }
 
@@ -70,6 +73,7 @@ export class HonorMapper {
     destination.id = source.id;
     destination.select = source.select;
     destination.showDeleted = source.showDeleted;
+    destination.showCascadeDeleted = source.showCascadeDeleted;
     destination.page = 1;
     destination.size = 1;
 
@@ -104,7 +108,7 @@ export class HonorMapper {
     const destination = new HonorCreateRepoRequest();
 
     destination.date = source.date;
-    destination.userId = source.userId;
+    destination.teacherId = source.teacherId;
     destination.description = source.description;
     destination.title = source.title;
     destination.isActive = source.isActive;
@@ -113,11 +117,11 @@ export class HonorMapper {
     return destination;
   }
 
-  initializeGetUserRepoRequest(userId: number): UserGetRepoRequest {
-    const destination = new UserGetRepoRequest();
+  initializeGetTeacherRepoRequest(userId: number): TeacherGetRepoRequest {
+    const destination = new TeacherGetRepoRequest();
 
     destination.id = userId;
-    destination.select = [UserSelectFieldsEnum.ID, UserSelectFieldsEnum.IS_DELETED];
+    destination.select = [TeacherSelectFieldsEnum.ID, TeacherSelectFieldsEnum.IS_DELETED];
     destination.showDeleted = true;
 
     return destination;
@@ -130,7 +134,7 @@ export class HonorMapper {
     destination.title = source.title;
     destination.date = source.date;
     destination.description = source.description;
-    destination.userId = source.userId;
+    destination.teacherId = source.teacherId;
     destination.orderNumber = source.orderNumber;
 
     return destination;
