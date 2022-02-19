@@ -9,7 +9,6 @@ import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {UserDbModel} from '../../db-models/user.db-model';
 import {AttestationGetRepoRequest} from './repo-request/attestation-get.repo-request';
 import {AttestationGetRepoResponse} from './repo-response/attestation-get.repo-response';
 import {AttestationSelectFieldsEnum} from './enums/attestation-select-fields.enum';
@@ -107,10 +106,9 @@ export class AttestationRepository {
       }
 
       if (!isNil(repoRequest.dateLess)) {
-        if(filters.date) {
+        if (filters.date) {
           filters.date[Op.lte] = repoRequest.dateLess;
-        }
-        else {
+        } else {
           filters.date = {[Op.lte]: repoRequest.dateLess};
         }
       }
@@ -124,10 +122,9 @@ export class AttestationRepository {
       }
 
       if (!repoRequest.showDeleted) {
-        if(repoRequest.showCascadeDeleted) {
-          filters[Op.or] = {isDeleted: false, isCascadeDelete: true};
-        }
-        else {
+        if (repoRequest.showCascadeDeletedBy) {
+          filters[Op.or] = {isDeleted: false, cascadeDeletedBy: repoRequest.showCascadeDeletedBy};
+        } else {
           filters.isDeleted = false;
         }
       }

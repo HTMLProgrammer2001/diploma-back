@@ -3,13 +3,8 @@ import {CategoryGetListRequest} from '../types/request/category-get-list.request
 import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {CategoryResponse} from '../types/response/category.response';
 import {CategoryGetByIdRequest} from '../types/request/category-get-by-id.request';
-import {AcademicDegreeGetRepoRequest} from '../../../data-layer/repositories/academic-degree/repo-request/academic-degree-get.repo-request';
-import {AcademicDegreeDbModel} from '../../../data-layer/db-models/academic-degree.db-model';
 import {CategoryCreateRequest} from '../types/request/category-create.request';
-import {AcademicDegreeCreateRepoRequest} from '../../../data-layer/repositories/academic-degree/repo-request/academic-degree-create.repo-request';
 import {CategoryUpdateRequest} from '../types/request/category-update.request';
-import {AcademicDegreeUpdateRepoRequest} from '../../../data-layer/repositories/academic-degree/repo-request/academic-degree-update.repo-request';
-import {AcademicDegreeDeleteRepoRequest} from '../../../data-layer/repositories/academic-degree/repo-request/academic-degree-delete.repo-request';
 import {CategoryGetRepoRequest} from '../../../data-layer/repositories/category/repo-request/category-get.repo-request';
 import {CategoryDbModel} from '../../../data-layer/db-models/category.db-model';
 import {CategoryCreateRepoRequest} from '../../../data-layer/repositories/category/repo-request/category-create.repo-request';

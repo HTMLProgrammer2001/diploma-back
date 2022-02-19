@@ -4,7 +4,6 @@ import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {IdResponse} from '../../../global/types/response/id.response';
-import {UserRepository} from '../../../data-layer/repositories/user/user.repository';
 import {EducationRepository} from '../../../data-layer/repositories/education/education.repository';
 import {EducationQualificationRepository} from '../../../data-layer/repositories/education-qualification/education-qualification.repository';
 import {EducationMapper} from '../mapper/education.mapper';

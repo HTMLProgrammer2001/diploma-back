@@ -1,8 +1,11 @@
 import {AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, Table} from 'sequelize-typescript';
 import sequelize from 'sequelize';
-import {UserDbModel} from './user.db-model';
 import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 import {TeacherDbModel} from './teacher.db-model';
+
+export class InternshipCascadeDeletedByEnum {
+  static TEACHER = 'teacher';
+}
 
 export interface InternshipInterface {
   id: number;
@@ -16,7 +19,7 @@ export interface InternshipInterface {
   credits?: number;
   description?: string;
   isDeleted: boolean;
-  isCascadeDelete: boolean;
+  cascadeDeletedBy: string;
   guid: string;
 }
 
@@ -60,8 +63,8 @@ export class InternshipDbModel extends Model<InternshipInterface, CreateDbModelT
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isDeleted?: boolean;
 
-  @Column({defaultValue: false, type: DataType.BOOLEAN})
-  isCascadeDelete?: boolean;
+  @Column({allowNull: true, type: DataType.STRING})
+  cascadeDeletedBy?: string;
 
   @Column({defaultValue: sequelize.literal('(UUID())'), unique: true})
   guid?: string;

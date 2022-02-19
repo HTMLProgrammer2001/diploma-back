@@ -1,18 +1,7 @@
-import {
-  AutoIncrement,
-  BelongsTo,
-  BelongsToMany,
-  Column,
-  DataType,
-  ForeignKey,
-  HasOne,
-  Model,
-  Table
-} from 'sequelize-typescript';
+import {AutoIncrement, BelongsTo, Column, DataType, ForeignKey, HasOne, Model, Table} from 'sequelize-typescript';
 import sequelize from 'sequelize';
 import {RoleDbModel} from './role.db-model';
 import {RefreshTokenDbModel} from './refresh-token-db.model';
-import {PublicationDbModel} from './publication.db-model';
 import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 
 export interface UserInterface {

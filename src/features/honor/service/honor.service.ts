@@ -11,7 +11,6 @@ import {HonorCreateRequest} from '../types/request/honor-create.request';
 import {IdResponse} from '../../../global/types/response/id.response';
 import {HonorUpdateRequest} from '../types/request/honor-update.request';
 import {HonorRepository} from '../../../data-layer/repositories/honor/honor.repository';
-import {UserRepository} from '../../../data-layer/repositories/user/user.repository';
 import {HonorSelectFieldsEnum} from '../../../data-layer/repositories/honor/enums/honor-select-fields.enum';
 import {TeacherRepository} from '../../../data-layer/repositories/teacher/teacher.repository';
 

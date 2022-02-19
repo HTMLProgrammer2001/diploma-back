@@ -18,7 +18,7 @@ import {AcademicTitleUpdateRepoRequest} from './repo-request/academic-title-upda
 import {AcademicTitleDeleteRepoRequest} from './repo-request/academic-title-delete.repo-request';
 import {Sequelize} from 'sequelize-typescript';
 import {TeacherRepository} from '../teacher/teacher.repository';
-import {TeacherDbModel} from '../../db-models/teacher.db-model';
+import {TeacherCascadeDeletedByEnum, TeacherDbModel} from '../../db-models/teacher.db-model';
 
 @Injectable()
 export class AcademicTitleRepository {
@@ -158,14 +158,17 @@ export class AcademicTitleRepository {
 
   async deleteAcademicTitle(repoRequest: AcademicTitleDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
     try {
-      this.sequelize.transaction({autocommit: true}, t => {
+      await this.sequelize.transaction({autocommit: true}, t => {
         return this.academicTitleDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}, transaction: t})
           .then(() => this.academicTitleDbModel.findByPk(repoRequest.id, {
             transaction: t,
             include: {model: TeacherDbModel, attributes: ['id']}
           }))
           .then(academicTitle => Promise.all(academicTitle.teachers
-            .map(teacher => this.teacherRepository.deleteTeacher({id: teacher.id}, t))));
+            .map(teacher => this.teacherRepository.deleteTeacher(
+              {id: teacher.id},
+              {transaction: t, cascadeBy: TeacherCascadeDeletedByEnum.ACADEMIC_TITLE}
+            ))));
       });
 
       return {deletedID: repoRequest.id};

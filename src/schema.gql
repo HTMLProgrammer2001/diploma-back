@@ -91,7 +91,7 @@ input AttestationCreateRequest {
 
 input AttestationGetByIdRequest {
   id: ID!
-  showCascadeDeleted: Boolean
+  showCascadeDeletedBy: String
   showDeleted: Boolean
 }
 
@@ -102,7 +102,7 @@ input AttestationGetListRequest {
   isDesc: Boolean
   orderField: String = "id"
   page: Int = 1
-  showCascadeDeleted: Boolean
+  showCascadeDeletedBy: String
   showDeleted: Boolean
   size: Int = 5
   teacherId: ID
@@ -281,7 +281,7 @@ input EducationCreateRequest {
 
 input EducationGetByIdRequest {
   id: ID!
-  showCascadeDeleted: Boolean
+  showCascadeDeletedBy: String
   showDeleted: Boolean
 }
 
@@ -291,7 +291,7 @@ input EducationGetListRequest {
   isDesc: Boolean
   orderField: String = "id"
   page: Int = 1
-  showCascadeDeleted: Boolean
+  showCascadeDeletedBy: String
   showDeleted: Boolean
   size: Int = 5
   specialty: String
@@ -383,7 +383,7 @@ input HonorCreateRequest {
 
 input HonorGetByIdRequest {
   id: ID!
-  showCascadeDeleted: Boolean
+  showCascadeDeletedBy: String
   showDeleted: Boolean
 }
 
@@ -394,7 +394,7 @@ input HonorGetListRequest {
   orderField: String = "id"
   orderNumber: String
   page: Int = 1
-  showCascadeDeleted: Boolean
+  showCascadeDeletedBy: String
   showDeleted: Boolean
   showInActive: Boolean
   size: Int = 5
@@ -457,7 +457,7 @@ input InternshipCreateRequest {
 
 input InternshipGetByIdRequest {
   id: ID!
-  showCascadeDeleted: Boolean
+  showCascadeDeletedBy: String
   showDeleted: Boolean
 }
 
@@ -477,7 +477,7 @@ input InternshipGetListRequest {
   orderField: String = "id"
   page: Int = 1
   place: String
-  showCascadeDeleted: Boolean
+  showCascadeDeletedBy: String
   showDeleted: Boolean
   size: Int = 5
   teacherId: ID
@@ -720,7 +720,7 @@ input RebukeCreateRequest {
 
 input RebukeGetByIdRequest {
   id: ID!
-  showCascadeDeleted: Boolean
+  showCascadeDeletedBy: String
   showDeleted: Boolean
 }
 
@@ -731,7 +731,7 @@ input RebukeGetListRequest {
   orderField: String = "id"
   orderNumber: String
   page: Int = 1
-  showCascadeDeleted: Boolean
+  showCascadeDeletedBy: String
   showDeleted: Boolean
   showInActive: Boolean
   size: Int = 5
@@ -830,7 +830,7 @@ input TeacherCreateRequest {
 
 input TeacherGetByIdRequest {
   id: ID!
-  showCascadeDeleted: Boolean
+  showCascadeDeletedBy: String
   showDeleted: Boolean
 }
 
@@ -844,7 +844,7 @@ input TeacherGetListRequest {
   isDesc: Boolean
   orderField: String = "id"
   page: Int = 1
-  showCascadeDeleted: Boolean
+  showCascadeDeletedBy: String
   showDeleted: Boolean
   size: Int = 5
   teachingRankId: ID

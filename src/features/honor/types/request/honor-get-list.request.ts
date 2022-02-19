@@ -4,6 +4,7 @@ import {IsBoolean, IsEnum, IsNumber, IsOptional, IsString} from 'class-validator
 import {ParseNumber} from '../../../../global/pipes/parse-number';
 import {ValidateDate} from '../../../../global/pipes/validate-date';
 import {HonorOrderFieldsEnum} from '../../../../data-layer/repositories/honor/enums/honor-order-fields.enum';
+import {HonorCascadeDeletedByEnum} from '../../../../data-layer/db-models/honor.db-model';
 
 @InputType()
 export class HonorGetListRequest extends BasePaginatorRequest {
@@ -47,8 +48,8 @@ export class HonorGetListRequest extends BasePaginatorRequest {
 
   @Field({nullable: true})
   @IsOptional()
-  @IsBoolean()
-  showCascadeDeleted?: boolean;
+  @IsEnum(HonorCascadeDeletedByEnum)
+  showCascadeDeletedBy?: string;
 
   @Field({nullable: true, defaultValue: HonorOrderFieldsEnum.ID})
   @IsOptional()

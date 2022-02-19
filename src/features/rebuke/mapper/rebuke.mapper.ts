@@ -7,8 +7,6 @@ import {RebukeResponse} from '../types/response/rebuke.response';
 import {RebukeGetByIdRequest} from '../types/request/rebuke-get-by-id.request';
 import {RebukeCreateRequest} from '../types/request/rebuke-create.request';
 import {RebukeCreateRepoRequest} from '../../../data-layer/repositories/rebuke/repo-request/rebuke-create.repo-request';
-import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-get.repo-request';
-import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
 import {RebukeUpdateRequest} from '../types/request/rebuke-update.request';
 import {RebukeUpdateRepoRequest} from '../../../data-layer/repositories/rebuke/repo-request/rebuke-update.repo-request';
 import {RebukeDeleteRepoRequest} from '../../../data-layer/repositories/rebuke/repo-request/rebuke-delete.repo-request';
@@ -28,7 +26,7 @@ export class RebukeMapper {
     destination.orderNumber = source.orderNumber;
     destination.showInActive = source.showInActive;
     destination.showDeleted = source.showDeleted;
-    destination.showCascadeDeleted = source.showCascadeDeleted;
+    destination.showCascadeDeletedBy = source.showCascadeDeletedBy;
     destination.orderField = source.orderField;
     destination.isDesc = !!source.isDesc;
     destination.select = [...source.select];
@@ -73,7 +71,7 @@ export class RebukeMapper {
     destination.id = source.id;
     destination.select = source.select;
     destination.showDeleted = source.showDeleted;
-    destination.showCascadeDeleted = source.showCascadeDeleted;
+    destination.showCascadeDeletedBy = source.showCascadeDeletedBy;
     destination.page = 1;
     destination.size = 1;
 

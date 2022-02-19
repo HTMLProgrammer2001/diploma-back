@@ -16,7 +16,7 @@ import {CategorySelectFieldsEnum} from './enums/category-select-fields.enum';
 import {CategoryCreateRepoRequest} from './repo-request/category-create.repo-request';
 import {CategoryUpdateRepoRequest} from './repo-request/category-update.repo-request';
 import {CategoryDeleteRepoRequest} from './repo-request/category-delete.repo-request';
-import {AttestationDbModel} from '../../db-models/attestation.db-model';
+import {AttestationCascadeDeleteByEnum, AttestationDbModel} from '../../db-models/attestation.db-model';
 import {Sequelize} from 'sequelize-typescript';
 
 @Injectable()
@@ -176,7 +176,7 @@ export class CategoryRepository {
       await this.sequelize.transaction({autocommit: true}, t => {
         return this.categoryDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}, transaction: t})
           .then(() => this.attestationDbModel.update(
-            {isDeleted: true, isCascadeDelete: true},
+            {isDeleted: true, cascadeDeletedBy: AttestationCascadeDeleteByEnum.CATEGORY},
             {where: {categoryId: repoRequest.id, isDeleted: false}, transaction: t}
           ));
       });

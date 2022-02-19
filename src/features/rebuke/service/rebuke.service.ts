@@ -4,7 +4,6 @@ import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {IdResponse} from '../../../global/types/response/id.response';
-import {UserRepository} from '../../../data-layer/repositories/user/user.repository';
 import {RebukeRepository} from '../../../data-layer/repositories/rebuke/rebuke.repository';
 import {RebukeGetListRequest} from '../types/request/rebuke-get-list.request';
 import {RebukeResponse} from '../types/response/rebuke.response';

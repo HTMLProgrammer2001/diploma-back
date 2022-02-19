@@ -17,7 +17,6 @@ import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {HonorUpdateRepoRequest} from './repo-request/honor-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {HonorDbModel, HonorInterface} from '../../db-models/honor.db-model';
-import {UserDbModel} from '../../db-models/user.db-model';
 import {TeacherDbModel} from '../../db-models/teacher.db-model';
 
 @Injectable()
@@ -116,10 +115,9 @@ export class HonorRepository {
       }
 
       if (!isNil(repoRequest.dateLess)) {
-        if(!filters.date) {
+        if (!filters.date) {
           filters.date = {[Op.lte]: repoRequest.dateLess};
-        }
-        else {
+        } else {
           filters.date[Op.lte] = repoRequest.dateLess;
         }
       }
@@ -133,10 +131,9 @@ export class HonorRepository {
       }
 
       if (!repoRequest.showDeleted) {
-        if(repoRequest.showCascadeDeleted) {
+        if (repoRequest.showCascadeDeletedBy) {
           filters[Op.or] = {isDeleted: false, isCascadeDelete: true};
-        }
-        else {
+        } else {
           filters.isDeleted = false;
         }
       }

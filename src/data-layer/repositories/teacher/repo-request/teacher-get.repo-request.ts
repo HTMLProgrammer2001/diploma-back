@@ -15,7 +15,7 @@ export class TeacherGetRepoRequest extends BaseRepoRequest {
   academicDegreeId: number;
   academicTitleId: number;
   showDeleted: boolean;
-  showCascadeDeleted: boolean;
+  showCascadeDeletedBy: string;
   select: Array<string>;
   orderField: string;
   isDesc: boolean;

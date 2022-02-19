@@ -9,8 +9,7 @@ import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {Model, Sequelize} from 'sequelize-typescript';
-import {UserDbModel} from '../../db-models/user.db-model';
+import {Sequelize} from 'sequelize-typescript';
 import {PublicationDbModel, PublicationInterface} from '../../db-models/publication.db-model';
 import {PublicationGetRepoRequest} from './repo-request/publication-get.repo-request';
 import {PublicationGetRepoResponse} from './repo-response/publication-get.repo-response';
@@ -117,10 +116,9 @@ export class PublicationRepository {
       }
 
       if (!isNil(repoRequest.dateLess)) {
-        if(!filters.date) {
+        if (!filters.date) {
           filters.date = {[Op.lte]: repoRequest.dateLess};
-        }
-        else {
+        } else {
           filters.date[Op.lte] = repoRequest.dateLess;
         }
       }

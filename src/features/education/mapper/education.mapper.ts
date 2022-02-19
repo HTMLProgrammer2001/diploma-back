@@ -1,7 +1,5 @@
 import {Injectable} from '@nestjs/common';
 import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
-import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-get.repo-request';
-import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
 import {EducationQualificationGetRepoRequest} from '../../../data-layer/repositories/education-qualification/repo-request/education-qualification-get.repo-request';
 import {EducationQualificationSelectFieldsEnum} from '../../../data-layer/repositories/education-qualification/enums/education-qualification-select-fields.enum';
 import {EducationGetListRequest} from '../types/request/education-get-list.request';
@@ -29,7 +27,7 @@ export class EducationMapper {
     destination.specialty = source.specialty;
     destination.institution = source.institution;
     destination.showDeleted = source.showDeleted;
-    destination.showCascadeDeleted = source.showCascadeDeleted;
+    destination.showCascadeDeletedBy = source.showCascadeDeletedBy;
     destination.orderField = source.orderField;
     destination.isDesc = !!source.isDesc;
     destination.select = [...source.select];
@@ -80,7 +78,7 @@ export class EducationMapper {
     destination.id = source.id;
     destination.select = source.select;
     destination.showDeleted = source.showDeleted;
-    destination.showCascadeDeleted = source.showCascadeDeleted;
+    destination.showCascadeDeletedBy = source.showCascadeDeletedBy;
     destination.page = 1;
     destination.size = 1;
 

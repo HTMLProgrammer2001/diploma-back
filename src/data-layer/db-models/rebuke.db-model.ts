@@ -1,8 +1,11 @@
 import {AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, Table} from 'sequelize-typescript';
 import sequelize from 'sequelize';
-import {UserDbModel} from './user.db-model';
 import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 import {TeacherDbModel} from './teacher.db-model';
+
+export class RebukeCascadeDeletedByEnum {
+  static TEACHER = 'teacher';
+}
 
 export interface RebukeInterface {
   id: number;
@@ -13,7 +16,7 @@ export interface RebukeInterface {
   description?: string;
   isActive?: boolean;
   isDeleted: boolean;
-  isCascadeDelete: boolean;
+  cascadeDeletedBy: string;
   guid: string;
 }
 
@@ -48,8 +51,8 @@ export class RebukeDbModel extends Model<RebukeInterface, CreateDbModelType<Rebu
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isDeleted?: boolean;
 
-  @Column({defaultValue: false, type: DataType.BOOLEAN})
-  isCascadeDelete?: boolean;
+  @Column({allowNull: true, type: DataType.STRING})
+  cascadeDeletedBy?: string;
 
   @Column({defaultValue: sequelize.literal('(UUID())'), unique: true})
   guid?: string;

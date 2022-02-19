@@ -1,6 +1,5 @@
 import {AutoIncrement, BelongsToMany, Column, DataType, Model, Table} from 'sequelize-typescript';
 import sequelize from 'sequelize';
-import {UserDbModel} from './user.db-model';
 import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 import {TeacherDbModel} from './teacher.db-model';
 

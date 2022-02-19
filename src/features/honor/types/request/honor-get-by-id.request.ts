@@ -1,6 +1,7 @@
 import {Field, ID, InputType} from '@nestjs/graphql';
-import {IsBoolean, IsNumber, IsOptional} from 'class-validator';
+import {IsBoolean, IsEnum, IsNumber, IsOptional} from 'class-validator';
 import {ParseNumber} from '../../../../global/pipes/parse-number';
+import {HonorCascadeDeletedByEnum} from '../../../../data-layer/db-models/honor.db-model';
 
 @InputType()
 export class HonorGetByIdRequest {
@@ -18,6 +19,6 @@ export class HonorGetByIdRequest {
 
   @Field({nullable: true})
   @IsOptional()
-  @IsBoolean()
-  showCascadeDeleted?: boolean;
+  @IsEnum(HonorCascadeDeletedByEnum)
+  showCascadeDeletedBy?: string;
 }

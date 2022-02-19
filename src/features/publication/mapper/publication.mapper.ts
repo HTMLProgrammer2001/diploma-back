@@ -10,8 +10,6 @@ import {PublicationCreateRepoRequest} from '../../../data-layer/repositories/pub
 import {PublicationUpdateRequest} from '../types/request/publication-update.request';
 import {PublicationUpdateRepoRequest} from '../../../data-layer/repositories/publication/repo-request/publication-update.repo-request';
 import {PublicationDeleteRepoRequest} from '../../../data-layer/repositories/publication/repo-request/publication-delete.repo-request';
-import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-get.repo-request';
-import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
 import {TeacherGetRepoRequest} from '../../../data-layer/repositories/teacher/repo-request/teacher-get.repo-request';
 import {TeacherSelectFieldsEnum} from '../../../data-layer/repositories/teacher/enums/teacher-select-fields.enum';
 

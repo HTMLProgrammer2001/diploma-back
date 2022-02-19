@@ -115,10 +115,9 @@ export class RebukeRepository {
       }
 
       if (!isNil(repoRequest.dateLess)) {
-        if(!filters.date) {
+        if (!filters.date) {
           filters.date = {[Op.lte]: repoRequest.dateLess};
-        }
-        else {
+        } else {
           filters.date[Op.lte] = repoRequest.dateLess;
         }
       }
@@ -132,10 +131,9 @@ export class RebukeRepository {
       }
 
       if (!repoRequest.showDeleted) {
-        if(repoRequest.showCascadeDeleted) {
+        if (repoRequest.showCascadeDeletedBy) {
           filters[Op.or] = {isDeleted: false, isCascadeDelete: true};
-        }
-        else {
+        } else {
           filters.isDeleted = false;
         }
       }

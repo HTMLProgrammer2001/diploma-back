@@ -1,6 +1,7 @@
 import {Field, ID, InputType} from '@nestjs/graphql';
-import {IsBoolean, IsNumber, IsOptional} from 'class-validator';
+import {IsBoolean, IsEnum, IsNumber, IsOptional} from 'class-validator';
 import {ParseNumber} from '../../../../global/pipes/parse-number';
+import {RebukeCascadeDeletedByEnum} from '../../../../data-layer/db-models/rebuke.db-model';
 
 @InputType()
 export class RebukeGetByIdRequest {
@@ -18,6 +19,6 @@ export class RebukeGetByIdRequest {
 
   @Field({nullable: true})
   @IsOptional()
-  @IsBoolean()
-  showCascadeDeleted?: boolean;
+  @IsEnum(RebukeCascadeDeletedByEnum)
+  showCascadeDeletedBy?: string;
 }

@@ -3,6 +3,7 @@ import {BasePaginatorRequest} from '../../../../global/types/request/base-pagina
 import {IsBoolean, IsEnum, IsNumber, IsOptional, IsString} from 'class-validator';
 import {ParseNumber} from '../../../../global/pipes/parse-number';
 import {EducationOrderFieldsEnum} from '../../../../data-layer/repositories/education/enums/education-order-fields.enum';
+import {EducationCascadeDeletedByEnum} from '../../../../data-layer/db-models/education.db-model';
 
 @InputType()
 export class EducationGetListRequest extends BasePaginatorRequest {
@@ -47,8 +48,8 @@ export class EducationGetListRequest extends BasePaginatorRequest {
 
   @Field({nullable: true})
   @IsOptional()
-  @IsBoolean()
-  showCascadeDeleted?: boolean;
+  @IsEnum(EducationCascadeDeletedByEnum)
+  showCascadeDeletedBy?: string;
 
   @Field({nullable: true, defaultValue: EducationOrderFieldsEnum.ID})
   @IsOptional()

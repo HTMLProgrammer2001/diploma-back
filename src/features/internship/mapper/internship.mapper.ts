@@ -7,8 +7,6 @@ import {InternshipResponse} from '../types/response/internship.response';
 import {InternshipGetByIdRequest} from '../types/request/internship-get-by-id.request';
 import {InternshipCreateRequest} from '../types/request/internship-create.request';
 import {InternshipCreateRepoRequest} from '../../../data-layer/repositories/internship/repo-request/internship-create.repo-request';
-import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-get.repo-request';
-import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
 import {InternshipDeleteRepoRequest} from '../../../data-layer/repositories/internship/repo-request/internship-delete.repo-request';
 import {InternshipUpdateRequest} from '../types/request/internship-update.request';
 import {InternshipUpdateRepoRequest} from '../../../data-layer/repositories/internship/repo-request/internship-update.repo-request';
@@ -32,7 +30,7 @@ export class InternshipMapper {
     destination.dateToLess = source.dateToLess;
     destination.teacherId = source.teacherId;
     destination.showDeleted = source.showDeleted;
-    destination.showCascadeDeleted = source.showCascadeDeleted;
+    destination.showCascadeDeletedBy = source.showCascadeDeletedBy;
     destination.orderField = source.orderField;
     destination.isDesc = !!source.isDesc;
     destination.select = [...source.select];
@@ -80,7 +78,7 @@ export class InternshipMapper {
     destination.id = source.id;
     destination.select = source.select;
     destination.showDeleted = source.showDeleted;
-    destination.showCascadeDeleted = source.showCascadeDeleted;
+    destination.showCascadeDeletedBy = source.showCascadeDeletedBy;
     destination.page = 1;
     destination.size = 1;
 

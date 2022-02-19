@@ -4,6 +4,11 @@ import {CategoryDbModel} from './category.db-model';
 import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 import {TeacherDbModel} from './teacher.db-model';
 
+export class AttestationCascadeDeleteByEnum {
+  static TEACHER = 'teacher';
+  static CATEGORY = 'category';
+}
+
 export interface AttestationInterface {
   id: number;
   categoryId: number;
@@ -11,7 +16,7 @@ export interface AttestationInterface {
   date: Date;
   description?: string;
   isDeleted: boolean;
-  isCascadeDelete: boolean;
+  cascadeDeletedBy: string;
   guid: string;
 }
 
@@ -44,8 +49,8 @@ export class AttestationDbModel extends Model<AttestationInterface, CreateDbMode
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isDeleted?: boolean;
 
-  @Column({defaultValue: false, type: DataType.BOOLEAN})
-  isCascadeDelete?: boolean;
+  @Column({allowNull: true, type: DataType.STRING})
+  cascadeDeleteBy?: string;
 
   @Column({defaultValue: sequelize.literal('(UUID())'), unique: true})
   guid?: string;

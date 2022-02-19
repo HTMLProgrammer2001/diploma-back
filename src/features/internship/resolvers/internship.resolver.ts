@@ -18,7 +18,8 @@ import {InternshipGetHoursFromLastAttestationRequest} from '../types/request/int
 
 @Resolver(of => InternshipResponse)
 export class InternshipResolver {
-  constructor(private internshipService: InternshipService) {}
+  constructor(private internshipService: InternshipService) {
+  }
 
   @Query(returns => InternshipListResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)

@@ -12,7 +12,6 @@ import {PublicationGetByIdRequest} from '../types/request/publication-get-by-id.
 import {PublicationCreateRequest} from '../types/request/publication-create.request';
 import {PublicationUpdateRequest} from '../types/request/publication-update.request';
 import {PublicationSelectFieldsEnum} from '../../../data-layer/repositories/publication/enums/publication-select-fields.enum';
-import {UserRepository} from '../../../data-layer/repositories/user/user.repository';
 import {TeacherRepository} from '../../../data-layer/repositories/teacher/teacher.repository';
 
 @Injectable()

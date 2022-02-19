@@ -18,12 +18,6 @@ import {UserCreateRepoRequest} from './repo-request/user-create.repo-request';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
 import {UserUpdateRepoRequest} from './repo-request/user-update.repo-request';
 import {UserDeleteRepoRequest} from './repo-request/user-delete.repo-request';
-import {Sequelize} from 'sequelize-typescript';
-import {AttestationDbModel} from '../../db-models/attestation.db-model';
-import {EducationDbModel} from '../../db-models/education.db-model';
-import {HonorDbModel} from '../../db-models/honor.db-model';
-import {InternshipDbModel} from '../../db-models/internship.db-model';
-import {RebukeDbModel} from '../../db-models/rebuke.db-model';
 
 @Injectable()
 export class UserRepository {

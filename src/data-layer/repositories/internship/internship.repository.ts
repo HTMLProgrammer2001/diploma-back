@@ -9,7 +9,6 @@ import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {UserDbModel} from '../../db-models/user.db-model';
 import {InternshipDbModel, InternshipInterface} from '../../db-models/internship.db-model';
 import {InternshipGetRepoRequest} from './repo-request/internship-get.repo-request';
 import {InternshipGetRepoResponse} from './repo-response/internship-get.repo-response';
@@ -142,10 +141,9 @@ export class InternshipRepository {
       }
 
       if (!repoRequest.showDeleted) {
-        if(repoRequest.showCascadeDeleted) {
-          filters[Op.or] = {isDeleted: false, isCascadeDelete: true};
-        }
-        else {
+        if (repoRequest.showCascadeDeletedBy) {
+          filters[Op.or] = {isDeleted: false, cascadeDeletedBy: repoRequest.showCascadeDeletedBy};
+        } else {
           filters.isDeleted = false;
         }
       }
@@ -217,15 +215,15 @@ export class InternshipRepository {
     try {
       const filters: WhereOptions<InternshipInterface> = {};
 
-      if(!isNil(repoRequest.teacherId)) {
+      if (!isNil(repoRequest.teacherId)) {
         filters.teacherId = repoRequest.teacherId;
       }
 
-      if(!isNil(repoRequest.from)) {
+      if (!isNil(repoRequest.from)) {
         filters.from = {[Op.gte]: repoRequest.from};
       }
 
-      if(!isNil(repoRequest.to)) {
+      if (!isNil(repoRequest.to)) {
         filters.to = {[Op.lte]: repoRequest.to};
       }
 

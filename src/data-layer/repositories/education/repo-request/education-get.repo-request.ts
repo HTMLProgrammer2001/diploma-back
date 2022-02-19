@@ -12,7 +12,7 @@ export class EducationGetRepoRequest extends BaseRepoRequest {
   teacherId: number;
   educationQualificationId: number;
   showDeleted: boolean;
-  showCascadeDeleted: boolean;
+  showCascadeDeletedBy: string;
   select: Array<string>;
   orderField: string;
   isDesc: boolean;

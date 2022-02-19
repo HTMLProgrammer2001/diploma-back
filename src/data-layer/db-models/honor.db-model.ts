@@ -3,6 +3,10 @@ import sequelize from 'sequelize';
 import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 import {TeacherDbModel} from './teacher.db-model';
 
+export class HonorCascadeDeletedByEnum {
+  static TEACHER = 'teacher';
+}
+
 export interface HonorInterface {
   id: number;
   teacherId: number;
@@ -12,7 +16,7 @@ export interface HonorInterface {
   description?: string;
   isActive?: boolean;
   isDeleted: boolean;
-  isCascadeDelete: boolean;
+  cascadeDeletedBy: string;
   guid: string;
 }
 
@@ -47,8 +51,8 @@ export class HonorDbModel extends Model<HonorInterface, CreateDbModelType<HonorI
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isDeleted?: boolean;
 
-  @Column({defaultValue: false, type: DataType.BOOLEAN})
-  isCascadeDelete?: boolean;
+  @Column({allowNull: true, type: DataType.STRING})
+  cascadeDeletedBy?: string;
 
   @Column({defaultValue: sequelize.literal('(UUID())'), unique: true})
   guid?: string;

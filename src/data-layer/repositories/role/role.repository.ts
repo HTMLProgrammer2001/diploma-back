@@ -10,7 +10,6 @@ import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
 import {RoleDbModel, RoleInterface} from '../../db-models/role.db-model';
 import {RoleUpdateRepoRequest} from './repo-request/role-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {Model} from 'sequelize-typescript';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 

@@ -4,7 +4,6 @@ import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {IdResponse} from '../../../global/types/response/id.response';
-import {UserRepository} from '../../../data-layer/repositories/user/user.repository';
 import {InternshipRepository} from '../../../data-layer/repositories/internship/internship.repository';
 import {InternshipMapper} from '../mapper/internship.mapper';
 import {InternshipGetListRequest} from '../types/request/internship-get-list.request';
@@ -72,10 +71,9 @@ export class InternshipService {
       const attestationRepoRequest = this.internshipMapper.initializeGetLastAttestationRepoRequest(request.teacherId);
       const {data: lastAttestation} = await this.attestationRepository.getAttestations(attestationRepoRequest);
 
-      if(!lastAttestation.responseList.length) {
+      if (!lastAttestation.responseList.length) {
         return {hours: 0};
-      }
-      else {
+      } else {
         const getInternshipHoursRepoRequest = this.internshipMapper.initializeGetInternshipHoursRepoRequest(
           request.teacherId,
           lastAttestation.responseList[0].date

@@ -12,7 +12,7 @@ export class RebukeGetRepoRequest extends BaseRepoRequest {
   orderNumberEqual: string;
   teacherId: number;
   showDeleted: boolean;
-  showCascadeDeleted: boolean;
+  showCascadeDeletedBy: string;
   showInActive: boolean;
   select: Array<string>;
   orderField: string;

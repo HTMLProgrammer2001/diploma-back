@@ -6,7 +6,6 @@ import {EducationGetRepoResponse} from './repo-response/education-get.repo-respo
 import sequelize, {IncludeOptions, Op, WhereOptions} from 'sequelize';
 import {FindAttributeOptions, ProjectionAlias} from 'sequelize/dist/lib/model';
 import {EducationSelectFieldsEnum} from './enums/education-select-fields.enum';
-import {UserDbModel} from '../../db-models/user.db-model';
 import {EducationQualificationDbModel} from '../../db-models/education-qualification.db-model';
 import {isEmpty, isNil, isUndefined} from 'lodash';
 import {EducationOrderFieldsEnum} from './enums/education-order-fields.enum';
@@ -123,10 +122,9 @@ export class EducationRepository {
       }
 
       if (!isNil(repoRequest.yearOfIssueLess)) {
-        if(!filters.yearOfIssue) {
+        if (!filters.yearOfIssue) {
           filters.yearOfIssue = {[Op.lte]: repoRequest.yearOfIssueLess};
-        }
-        else {
+        } else {
           filters.yearOfIssue[Op.lte] = repoRequest.yearOfIssueLess;
         }
       }
@@ -140,10 +138,9 @@ export class EducationRepository {
       }
 
       if (!repoRequest.showDeleted) {
-        if(repoRequest.showCascadeDeleted) {
-          filters[Op.or] = {isDeleted: false, isCascadeDelete: true};
-        }
-        else {
+        if (repoRequest.showCascadeDeletedBy) {
+          filters[Op.or] = {isDeleted: false, cascadeDeletedBy: repoRequest.showCascadeDeletedBy};
+        } else {
           filters.isDeleted = false;
         }
       }
@@ -182,8 +179,14 @@ export class EducationRepository {
             break;
 
           case EducationOrderFieldsEnum.EDUCATION_QUALIFICATION:
-            includes.educationQualification = includes.educationQualification ?? {model: EducationQualificationDbModel, attributes: []};
-            order.push([{model: EducationQualificationDbModel, as: 'educationQualification'}, 'name', repoRequest.isDesc ? 'DESC' : 'ASC']);
+            includes.educationQualification = includes.educationQualification ?? {
+              model: EducationQualificationDbModel,
+              attributes: []
+            };
+            order.push([{
+              model: EducationQualificationDbModel,
+              as: 'educationQualification'
+            }, 'name', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
         }
       } else {

@@ -20,7 +20,7 @@ import {EducationQualificationCreateRepoRequest} from './repo-request/education-
 import {EducationQualificationUpdateRepoRequest} from './repo-request/education-qualification-update.repo-request';
 import {EducationQualificationDeleteRepoRequest} from './repo-request/education-qualification-delete.repo-request';
 import {Sequelize} from 'sequelize-typescript';
-import {EducationDbModel} from '../../db-models/education.db-model';
+import {EducationCascadeDeletedByEnum, EducationDbModel} from '../../db-models/education.db-model';
 
 @Injectable()
 export class EducationQualificationRepository {
@@ -162,9 +162,12 @@ export class EducationQualificationRepository {
   async deleteEducationQualification(repoRequest: EducationQualificationDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
     try {
       await this.sequelize.transaction({autocommit: true}, t => {
-        return this.educationQualificationDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}, transaction: t})
+        return this.educationQualificationDbModel.update({isDeleted: true}, {
+          where: {id: repoRequest.id},
+          transaction: t
+        })
           .then(() => this.educationDbModel.update(
-            {isDeleted: true, isCascadeDelete: true},
+            {isDeleted: true, cascadeDeletedBy: EducationCascadeDeletedByEnum.EDUCATION_QUALIFICATION},
             {where: {educationQualificationId: repoRequest.id, isDeleted: false}, transaction: t}
           ));
       });

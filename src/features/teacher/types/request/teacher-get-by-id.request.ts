@@ -1,6 +1,7 @@
 import {Field, ID, InputType} from '@nestjs/graphql';
-import {IsBoolean, IsNumber, IsOptional} from 'class-validator';
+import {IsBoolean, IsEnum, IsNumber, IsOptional} from 'class-validator';
 import {ParseNumber} from '../../../../global/pipes/parse-number';
+import {TeacherCascadeDeletedByEnum} from '../../../../data-layer/db-models/teacher.db-model';
 
 @InputType()
 export class TeacherGetByIdRequest {
@@ -18,6 +19,6 @@ export class TeacherGetByIdRequest {
 
   @Field({nullable: true})
   @IsOptional()
-  @IsBoolean()
-  showCascadeDeleted?: boolean;
+  @IsEnum(TeacherCascadeDeletedByEnum)
+  showCascadeDeletedBy?: string;
 }

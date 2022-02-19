@@ -13,7 +13,7 @@ export class InternshipGetRepoRequest extends BaseRepoRequest {
   place: string;
   teacherId: number;
   showDeleted: boolean;
-  showCascadeDeleted: boolean;
+  showCascadeDeletedBy: string;
   select: Array<string>;
   orderField: string;
   isDesc: boolean;

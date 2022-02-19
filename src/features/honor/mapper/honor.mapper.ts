@@ -10,8 +10,6 @@ import {HonorDbModel} from '../../../data-layer/db-models/honor.db-model';
 import {HonorCreateRepoRequest} from '../../../data-layer/repositories/honor/repo-request/honor-create.repo-request';
 import {HonorUpdateRepoRequest} from '../../../data-layer/repositories/honor/repo-request/honor-update.repo-request';
 import {HonorDeleteRepoRequest} from '../../../data-layer/repositories/honor/repo-request/honor-delete.repo-request';
-import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-get.repo-request';
-import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
 import {HonorSelectFieldsEnum} from '../../../data-layer/repositories/honor/enums/honor-select-fields.enum';
 import {TeacherGetRepoRequest} from '../../../data-layer/repositories/teacher/repo-request/teacher-get.repo-request';
 import {TeacherSelectFieldsEnum} from '../../../data-layer/repositories/teacher/enums/teacher-select-fields.enum';
@@ -28,7 +26,7 @@ export class HonorMapper {
     destination.orderNumber = source.orderNumber;
     destination.showInActive = source.showInActive;
     destination.showDeleted = source.showDeleted;
-    destination.showCascadeDeleted = source.showCascadeDeleted;
+    destination.showCascadeDeletedBy = source.showCascadeDeletedBy;
     destination.orderField = source.orderField;
     destination.isDesc = !!source.isDesc;
     destination.select = [...source.select];
@@ -73,7 +71,7 @@ export class HonorMapper {
     destination.id = source.id;
     destination.select = source.select;
     destination.showDeleted = source.showDeleted;
-    destination.showCascadeDeleted = source.showCascadeDeleted;
+    destination.showCascadeDeletedBy = source.showCascadeDeletedBy;
     destination.page = 1;
     destination.size = 1;
 

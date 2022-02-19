@@ -1,9 +1,13 @@
 import {AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, Table} from 'sequelize-typescript';
 import sequelize from 'sequelize';
-import {UserDbModel} from './user.db-model';
 import {EducationQualificationDbModel} from './education-qualification.db-model';
 import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 import {TeacherDbModel} from './teacher.db-model';
+
+export class EducationCascadeDeletedByEnum {
+  static TEACHER = 'teacher';
+  static EDUCATION_QUALIFICATION = 'educationQualification';
+}
 
 export interface EducationInterface {
   id: number;
@@ -14,7 +18,7 @@ export interface EducationInterface {
   yearOfIssue: number;
   description?: string;
   isDeleted: boolean;
-  isCascadeDelete: boolean;
+  cascadeDeletedBy: string;
   guid: string;
 }
 
@@ -53,9 +57,8 @@ export class EducationDbModel extends Model<EducationInterface, CreateDbModelTyp
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isDeleted?: boolean;
 
-  @Column({defaultValue: false, type: DataType.BOOLEAN})
-  isCascadeDelete?: boolean;
-
+  @Column({allowNull: true, type: DataType.STRING})
+  cascadeDeletedBy?: string;
 
   @Column({defaultValue: sequelize.literal('(UUID())'), unique: true})
   guid?: string;

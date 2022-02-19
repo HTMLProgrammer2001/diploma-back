@@ -4,6 +4,7 @@ import {IsBoolean, IsEnum, IsNumber, IsOptional} from 'class-validator';
 import {ParseNumber} from '../../../../global/pipes/parse-number';
 import {ValidateDate} from '../../../../global/pipes/validate-date';
 import {AttestationOrderFieldsEnum} from '../../../../data-layer/repositories/attestation/enums/attestation-order-fields.enum';
+import {AttestationCascadeDeleteByEnum} from '../../../../data-layer/db-models/attestation.db-model';
 
 @InputType()
 export class AttestationGetListRequest extends BasePaginatorRequest {
@@ -38,8 +39,8 @@ export class AttestationGetListRequest extends BasePaginatorRequest {
 
   @Field({nullable: true})
   @IsOptional()
-  @IsBoolean()
-  showCascadeDeleted: boolean;
+  @IsEnum(AttestationCascadeDeleteByEnum)
+  showCascadeDeletedBy: string;
 
   @Field({nullable: true, defaultValue: AttestationOrderFieldsEnum.ID})
   @IsOptional()

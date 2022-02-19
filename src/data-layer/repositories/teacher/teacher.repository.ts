@@ -20,11 +20,11 @@ import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {TeacherUpdateRepoRequest} from './repo-request/teacher-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {AttestationDbModel} from '../../db-models/attestation.db-model';
-import {EducationDbModel} from '../../db-models/education.db-model';
-import {HonorDbModel} from '../../db-models/honor.db-model';
-import {InternshipDbModel} from '../../db-models/internship.db-model';
-import {RebukeDbModel} from '../../db-models/rebuke.db-model';
+import {AttestationCascadeDeleteByEnum, AttestationDbModel} from '../../db-models/attestation.db-model';
+import {EducationCascadeDeletedByEnum, EducationDbModel} from '../../db-models/education.db-model';
+import {HonorCascadeDeletedByEnum, HonorDbModel} from '../../db-models/honor.db-model';
+import {InternshipCascadeDeletedByEnum, InternshipDbModel} from '../../db-models/internship.db-model';
+import {RebukeCascadeDeletedByEnum, RebukeDbModel} from '../../db-models/rebuke.db-model';
 import {Sequelize} from 'sequelize-typescript';
 import {TeacherDeleteRepoRequest} from './repo-request/teacher-delete.repo-request';
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
@@ -209,10 +209,9 @@ export class TeacherRepository {
       }
 
       if (!repoRequest.showDeleted) {
-        if(repoRequest.showCascadeDeleted) {
-          filters[Op.or] = {isDeleted: false, isCascadeDelete: true};
-        }
-        else {
+        if (repoRequest.showCascadeDeletedBy) {
+          filters[Op.or] = {isDeleted: false, cascadeDeletedBy: repoRequest.showCascadeDeletedBy};
+        } else {
           filters.isDeleted = false;
         }
       }
@@ -372,28 +371,32 @@ export class TeacherRepository {
     return {updatedID: repoRequest.id};
   }
 
-  async deleteTeacher(repoRequest: TeacherDeleteRepoRequest, transaction?: Transaction): Promise<CommonDeleteRepoResponse> {
+  async deleteTeacher(repoRequest: TeacherDeleteRepoRequest, options?: { transaction: Transaction, cascadeBy: string }):
+    Promise<CommonDeleteRepoResponse> {
     try {
-      await this.sequelize.transaction({autocommit: true, transaction: transaction}, t => {
-        return this.teacherDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}, transaction: t})
+      await this.sequelize.transaction({autocommit: true, transaction: options?.transaction}, t => {
+        return this.teacherDbModel.update({
+          isDeleted: true,
+          cascadeDeletedBy: options?.cascadeBy ?? null
+        }, {where: {id: repoRequest.id}, transaction: t})
           .then(() => this.attestationDbModel.update(
-            {isDeleted: true, isCascadeDelete: true},
+            {isDeleted: true, cascadeDeletedBy: AttestationCascadeDeleteByEnum.TEACHER},
             {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
           ))
           .then(() => this.educationDbModel.update(
-            {isDeleted: true, isCascadeDelete: true},
+            {isDeleted: true, cascadeDeletedBy: EducationCascadeDeletedByEnum.TEACHER},
             {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
           ))
           .then(() => this.honorDbModel.update(
-            {isDeleted: true, isCascadeDelete: true},
+            {isDeleted: true, cascadeDeletedBy: HonorCascadeDeletedByEnum.TEACHER},
             {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
           ))
           .then(() => this.internshipDbModel.update(
-            {isDeleted: true, isCascadeDelete: true},
+            {isDeleted: true, cascadeDeletedBy: InternshipCascadeDeletedByEnum.TEACHER},
             {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
           ))
           .then(() => this.rebukeDbModel.update(
-            {isDeleted: true, isCascadeDelete: true},
+            {isDeleted: true, cascadeDeletedBy: RebukeCascadeDeletedByEnum.TEACHER},
             {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
           ));
       });

@@ -1,1 +1,1 @@
-export type CreateDbModelType<T> = Omit<T, 'id' | 'guid' | 'isDeleted' | 'isCascadeDelete'>;
+export type CreateDbModelType<T> = Omit<T, 'id' | 'guid' | 'isDeleted' | 'isCascadeDelete' | 'cascadeDeletedBy'>;

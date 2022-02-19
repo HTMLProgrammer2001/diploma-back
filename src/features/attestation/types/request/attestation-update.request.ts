@@ -1,5 +1,5 @@
 import {Field, ID, InputType} from '@nestjs/graphql';
-import {IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength} from 'class-validator';
+import {IsNotEmpty, IsNumber, IsOptional, IsString} from 'class-validator';
 import {ParseNumber} from '../../../../global/pipes/parse-number';
 import {ValidateDateRange} from '../../../../global/pipes/validate-date-range';
 

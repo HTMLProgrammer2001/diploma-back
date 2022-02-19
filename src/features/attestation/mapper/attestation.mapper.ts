@@ -25,7 +25,7 @@ export class AttestationMapper {
     destination.teacherId = source.teacherId;
     destination.categoryId = source.categoryId;
     destination.showDeleted = source.showDeleted;
-    destination.showCascadeDeleted = source.showCascadeDeleted;
+    destination.showCascadeDeletedBy = source.showCascadeDeletedBy;
     destination.orderField = source.orderField;
     destination.isDesc = !!source.isDesc;
     destination.select = [...source.select];
@@ -74,7 +74,7 @@ export class AttestationMapper {
     destination.id = source.id;
     destination.select = source.select;
     destination.showDeleted = source.showDeleted;
-    destination.showCascadeDeleted = source.showCascadeDeleted;
+    destination.showCascadeDeletedBy = source.showCascadeDeletedBy;
     destination.page = 1;
     destination.size = 1;
 

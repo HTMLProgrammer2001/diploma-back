@@ -13,12 +13,12 @@ import {DepartmentDeleteRepoRequest} from './repo-request/department-delete.repo
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {DepartmentUpdateRepoRequest} from './repo-request/department-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
-import {Model, Sequelize} from 'sequelize-typescript';
+import {Sequelize} from 'sequelize-typescript';
 import {DepartmentDbModel, DepartmentInterface} from '../../db-models/department.db-model';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 import {TeacherRepository} from '../teacher/teacher.repository';
-import {TeacherDbModel} from '../../db-models/teacher.db-model';
+import {TeacherCascadeDeletedByEnum, TeacherDbModel} from '../../db-models/teacher.db-model';
 
 @Injectable()
 export class DepartmentRepository {
@@ -158,14 +158,17 @@ export class DepartmentRepository {
 
   async deleteDepartment(repoRequest: DepartmentDeleteRepoRequest): Promise<CommonDeleteRepoResponse> {
     try {
-      this.sequelize.transaction({autocommit: true}, t => {
+      await this.sequelize.transaction({autocommit: true}, t => {
         return this.departmentDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}, transaction: t})
           .then(() => this.departmentDbModel.findByPk(repoRequest.id, {
             transaction: t,
             include: {model: TeacherDbModel, attributes: ['id']}
           }))
           .then(department => Promise.all(department.teachers
-            .map(teacher => this.teacherRepository.deleteTeacher({id: teacher.id}, t))));
+            .map(teacher => this.teacherRepository.deleteTeacher(
+              {id: teacher.id},
+              {transaction: t, cascadeBy: TeacherCascadeDeletedByEnum.DEPARTMENT}
+            ))));
       });
 
       return {deletedID: repoRequest.id};

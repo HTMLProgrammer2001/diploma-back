@@ -17,6 +17,14 @@ import {AcademicTitleDbModel} from './academic-title.db-model';
 import {CreateDbModelType} from '../repositories/common/create-db-model.type';
 import {PublicationDbModel} from './publication.db-model';
 
+export class TeacherCascadeDeletedByEnum {
+  static ACADEMIC_DEGREE = 'academicDegree';
+  static ACADEMIC_TITLE = 'academicTitle';
+  static COMMISSION = 'commission';
+  static DEPARTMENT = 'department';
+  static TEACHING_RANK = 'teachingRank';
+}
+
 export interface TeacherInterface {
   id: number;
   fullName: string;
@@ -32,7 +40,7 @@ export interface TeacherInterface {
   academicTitleId?: number;
   workStartDate?: Date;
   isDeleted: boolean;
-  isCascadeDelete: boolean;
+  cascadeDeletedBy: string;
   guid: string;
 }
 
@@ -104,8 +112,8 @@ export class TeacherDbModel extends Model<TeacherInterface, CreateDbModelType<Te
   @Column({defaultValue: false, type: DataType.BOOLEAN})
   isDeleted?: boolean;
 
-  @Column({defaultValue: false, type: DataType.BOOLEAN})
-  isCascadeDelete?: boolean;
+  @Column({allowNull: true, type: DataType.STRING})
+  cascadeDeletedBy?: string;
 
   @Column({defaultValue: sequelize.literal('(UUID())'), unique: true})
   guid?: string;

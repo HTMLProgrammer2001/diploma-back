@@ -4,6 +4,7 @@ import {IsBoolean, IsEnum, IsNumber, IsOptional, IsString} from 'class-validator
 import {ParseNumber} from '../../../../global/pipes/parse-number';
 import {ValidateDate} from '../../../../global/pipes/validate-date';
 import {RebukeOrderFieldsEnum} from '../../../../data-layer/repositories/rebuke/enums/rebuke-order-fields.enum';
+import {RebukeCascadeDeletedByEnum} from '../../../../data-layer/db-models/rebuke.db-model';
 
 @InputType()
 export class RebukeGetListRequest extends BasePaginatorRequest {
@@ -47,8 +48,8 @@ export class RebukeGetListRequest extends BasePaginatorRequest {
 
   @Field({nullable: true})
   @IsOptional()
-  @IsBoolean()
-  showCascadeDeleted?: boolean;
+  @IsEnum(RebukeCascadeDeletedByEnum)
+  showCascadeDeletedBy?: string;
 
   @Field({nullable: true, defaultValue: RebukeOrderFieldsEnum.ID})
   @IsOptional()
