@@ -11,7 +11,6 @@ import {AcademicDegreeCreateRequest} from '../types/request/academic-degree-crea
 import {AcademicDegreeUpdateRequest} from '../types/request/academic-degree-update.request';
 import {AcademicDegreeSelectFieldsEnum} from '../../../data-layer/repositories/academic-degree/enums/academic-degree-select-fields.enum';
 import {IdResponse} from '../../../global/types/response/id.response';
-import {UserService} from '../../user/service/user.service';
 
 @Injectable()
 export class AcademicDegreeService {
@@ -20,7 +19,6 @@ export class AcademicDegreeService {
   constructor(
     private academicDegreeRepository: AcademicDegreeRepository,
     private academicDegreeMapper: AcademicDegreeMapper,
-    private userService: UserService,
   ) {
     this.logger = new Logger(AcademicDegreeService.name);
   }
@@ -48,10 +46,13 @@ export class AcademicDegreeService {
       if (data.responseList?.length) {
         return this.academicDegreeMapper.academicDegreeDbModelToResponse(data.responseList[0]);
       } else {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Academic degree with id ${request.id} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -91,17 +92,26 @@ export class AcademicDegreeService {
       const currentAcademicDegree = await this.academicDegreeRepository.getAcademicDegree(getCurrentAcademicDegreeRepoRequest);
 
       if (!currentAcademicDegree.data.responseList?.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Academic degree with id ${request.id} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentAcademicDegree.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Academic degree with id ${request.id} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentAcademicDegree.data.responseList[0].guid !== request.guid) {
-        throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Academic degree guid was changed'});
+        const error = new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Academic degree guid was changed'});
+
+        this.logger.error(error);
+        throw error;
       }
 
       const updateRepoRequest = this.academicDegreeMapper.updateAcademicDegreeRequestToRepoRequest(request);
@@ -130,14 +140,23 @@ export class AcademicDegreeService {
       const currentAcademicDegree = await this.academicDegreeRepository.getAcademicDegree(getCurrentAcademicDegreeRepoRequest);
 
       if (!currentAcademicDegree.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Academic degree with id ${id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Academic degree with id ${id} not exist`});
+
+        this.logger.error(error);
+        throw error;
       } else if (currentAcademicDegree.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Academic degree with id ${id} already deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentAcademicDegree.data.responseList[0].guid !== guid) {
-        throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Academic degree guid was changed`});
+        const error = new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Academic degree guid was changed`});
+
+        this.logger.error(error);
+        throw error;
       }
 
       const deleteRepoRequest = this.academicDegreeMapper.deleteAcademicDegreeRequestToRepoRequest(id);

@@ -45,10 +45,13 @@ export class AcademicTitleService {
     if (data.responseList?.length) {
       return this.academicTitleMapper.academicTitleDbModelToResponse(data.responseList[0]);
     } else {
-      throw new CustomError({
+      const error = new CustomError({
         code: ErrorCodesEnum.NOT_FOUND,
         message: `Academic title with id ${request.id} not exist`
       });
+
+      this.logger.error(error);
+      throw error;
     }
   }
 
@@ -80,17 +83,26 @@ export class AcademicTitleService {
       const currentAcademicTitle = await this.academicTitleRepository.getAcademicTitle(getCurrentAcademicTitleRepoRequest);
 
       if (!currentAcademicTitle.data.responseList?.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Academic title with id ${request.id} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentAcademicTitle.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Academic title with id ${request.id} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentAcademicTitle.data.responseList[0].guid !== request.guid) {
-        throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Academic title guid was changed'});
+        const error = new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Academic title guid was changed'});
+
+        this.logger.error(error);
+        throw error;
       }
 
       const updateRepoRequest = this.academicTitleMapper.updateAcademicTitleRequestToRepoRequest(request);
@@ -119,14 +131,23 @@ export class AcademicTitleService {
       const currentAcademicTitle = await this.academicTitleRepository.getAcademicTitle(getCurrentAcademicTitleRepoRequest);
 
       if (!currentAcademicTitle.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Academic title with id ${id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Academic title with id ${id} not exist`});
+
+        this.logger.error(error);
+        throw error;
       } else if (currentAcademicTitle.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Academic title with id ${id} already deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentAcademicTitle.data.responseList[0].guid !== guid) {
-        throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Academic title guid was changed`});
+        const error = new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Academic title guid was changed`});
+
+        this.logger.error(error);
+        throw error;
       }
 
       const deleteRepoRequest = this.academicTitleMapper.deleteAcademicTitleRequestToRepoRequest(id);

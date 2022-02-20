@@ -59,7 +59,9 @@ export class TeacherService {
       if (data.responseList?.length) {
         return this.teacherMapper.teacherDbModelToResponse(data.responseList[0]);
       } else {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Teacher with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Teacher with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       }
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -106,12 +108,17 @@ export class TeacherService {
       const currentTeacher = await this.teacherRepository.getTeachers(getCurrentTeacherRepoRequest);
 
       if (!currentTeacher.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Teacher with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Teacher with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentTeacher.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Teacher with id ${request.id} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentTeacher.data.responseList[0].guid !== request.guid) {
         throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Teacher guid was changed'});
       }
@@ -149,14 +156,21 @@ export class TeacherService {
       const currentTeacher = await this.teacherRepository.getTeachers(getCurrentTeacherRepoRequest);
 
       if (!currentTeacher.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Teacher with id ${id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Teacher with id ${id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentTeacher.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Teacher with id ${id} already deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentTeacher.data.responseList[0].guid !== guid) {
-        throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Teacher guid was changed`});
+        const error = new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Teacher guid was changed`});
+        this.logger.error(error);
+        throw error;
       }
 
       const deleteRepoRequest = this.teacherMapper.deleteTeacherRequestToRepoRequest(id);
@@ -178,10 +192,13 @@ export class TeacherService {
       const {mimetype} = await request.avatar;
 
       if (!mimetype.includes('image')) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.VALIDATION,
           message: 'Avatar must be image'
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
 
@@ -191,10 +208,13 @@ export class TeacherService {
       const {data: teacherByEmailData} = await this.teacherRepository.getTeachers(getTeacherByEmailRepoRequest);
 
       if (teacherByEmailData.responseList.length && teacherByEmailData.responseList[0].id !== (request as any).id) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.VALIDATION,
           message: `Teacher with email ${request.email} already exist`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
 
@@ -204,10 +224,13 @@ export class TeacherService {
       const {data: teacherByPhoneData} = await this.teacherRepository.getTeachers(getTeacherByPhoneRepoRequest);
 
       if (teacherByPhoneData.responseList.length && teacherByPhoneData.responseList[0].id !== (request as any).id) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.VALIDATION,
           message: `Teacher with phone ${request.phone} already exist`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
 
@@ -217,17 +240,23 @@ export class TeacherService {
       const {data: commissionData} = await this.commissionRepository.getCommissions(getCommissionRepoRequest);
 
       if (!commissionData.responseList.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Commission with id ${request.commissionId} not found`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       if (commissionData.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Commission with id ${request.commissionId} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
 
@@ -237,17 +266,23 @@ export class TeacherService {
       const {data: departmentData} = await this.departmentRepository.getDepartments(getDepartmentRepoRequest);
 
       if (!departmentData.responseList.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Department with id ${request.departmentId} not found`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       if (departmentData.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Department with id ${request.departmentId} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
 
@@ -257,17 +292,23 @@ export class TeacherService {
       const {data: teacherRankData} = await this.teacherRankRepository.getTeachingRanks(getTeacherRankRepoRequest);
 
       if (!teacherRankData.responseList.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Teacher rank with id ${request.teacherRankId} not found`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       if (teacherRankData.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Teacher rank with id ${request.teacherRankId} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
 
@@ -277,17 +318,23 @@ export class TeacherService {
       const {data: academicDegreeData} = await this.academicDegreeRepository.getAcademicDegree(getAcademicDegreeRepoRequest);
 
       if (!academicDegreeData.responseList.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Academic degree with id ${request.academicDegreeId} not found`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       if (academicDegreeData.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Academic degree with id ${request.academicDegreeId} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
 
@@ -297,17 +344,23 @@ export class TeacherService {
       const {data: academicTitleData} = await this.academicTitleRepository.getAcademicTitle(getAcademicTitleRepoRequest);
 
       if (!academicTitleData.responseList.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Academic title with id ${request.academicDegreeId} not found`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       if (academicTitleData.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Academic title with id ${request.academicDegreeId} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
   }

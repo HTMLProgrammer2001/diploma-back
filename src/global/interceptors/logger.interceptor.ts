@@ -12,9 +12,9 @@ export class LoggerInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> | Promise<Observable<any>> {
     const gqlContext = GqlExecutionContext.create(context);
-    this.logger.log({body: gqlContext.getContext().req.body, headers: gqlContext.getContext().req.headers});
+    this.logger.debug({body: gqlContext.getContext().req.body, headers: gqlContext.getContext().req.headers});
 
     return next.handle()
-      .pipe(tap(resp => this.logger.log(JSON.stringify(resp))));
+      .pipe(tap(resp => this.logger.debug(JSON.stringify(resp))));
   }
 }

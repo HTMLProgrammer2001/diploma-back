@@ -106,7 +106,6 @@ export class AcademicDegreeRepository {
         offset: (repoRequest.page - 1) * repoRequest.size,
         limit: repoRequest.size
       });
-
       return {data: convertFindAndCountToPaginator(data, repoRequest.page, repoRequest.size)};
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -164,12 +163,18 @@ export class AcademicDegreeRepository {
             transaction: t,
             include: {model: TeacherDbModel, attributes: ['id']}
           }))
-          .then(academicDegree => Promise.all(academicDegree.teachers
-            .map(teacher => this.teacherRepository.deleteTeacher(
-              {id: teacher.id},
-              {transaction: t, cascadeBy: TeacherCascadeDeletedByEnum.ACADEMIC_DEGREE}
-            ))
-          ));
+          .then(async academicDegree => {
+            const teacherIds = academicDegree.teachers.map(teacher => teacher.id);
+            console.debug(`Start delete teachers with ids ${teacherIds} that belongs to academic degree with id ${academicDegree.id}`);
+
+            await Promise.all(teacherIds.map(teacherId => this.teacherRepository.deleteTeacher(
+                {id: teacherId},
+                {transaction: t, cascadeBy: TeacherCascadeDeletedByEnum.ACADEMIC_DEGREE}
+              ))
+            );
+
+            console.debug(`Finish delete teachers with ids ${teacherIds} that belongs to academic degree with id ${academicDegree.id}`);
+          });
       });
 
       return {deletedID: repoRequest.id};

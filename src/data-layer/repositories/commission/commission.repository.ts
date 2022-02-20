@@ -164,11 +164,17 @@ export class CommissionRepository {
             transaction: t,
             include: {model: TeacherDbModel, attributes: ['id']}
           }))
-          .then(commission => Promise.all(commission.teachers
-            .map(teacher => this.teacherRepository.deleteTeacher(
-              {id: teacher.id},
+          .then(async commission => {
+            const teacherIds = commission.teachers.map(teacher => teacher.id);
+            console.debug(`Start delete teachers with ids ${teacherIds} that belongs to commission with id ${commission.id}`);
+
+            await Promise.all(teacherIds.map(teacherId => this.teacherRepository.deleteTeacher(
+              {id: teacherId},
               {transaction: t, cascadeBy: TeacherCascadeDeletedByEnum.COMMISSION}
-            ))));
+            )));
+
+            console.debug(`Finish delete teachers with ids ${teacherIds} that belongs to commission with id ${commission.id}`);
+          });
       });
 
       return {deletedID: repoRequest.id};

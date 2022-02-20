@@ -22,9 +22,7 @@ export class RefreshTokenRepository {
 
   async getRefreshToken(repoRequest: RefreshTokenGetRepoRequest): Promise<RefreshTokenGetRepoResponse> {
     try {
-      const token = await this.refreshTokenDbModel.findOne({
-        where: {sessionCode: repoRequest.sessionCode},
-      });
+      const token = await this.refreshTokenDbModel.findOne({where: {sessionCode: repoRequest.sessionCode},});
       return {data: token};
     } catch (e) {
       if (!(e instanceof CustomError)) {

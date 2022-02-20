@@ -46,10 +46,13 @@ export class CategoryService {
       if (data.responseList?.length) {
         return this.categoryMapper.categoryDbModelToResponse(data.responseList[0]);
       } else {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Category with id ${request.id} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -89,17 +92,25 @@ export class CategoryService {
       const currentCategory = await this.categoryRepository.getCategories(getCurrentCategoryRepoRequest);
 
       if (!currentCategory.data.responseList?.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Category with id ${request.id} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentCategory.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Category with id ${request.id} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentCategory.data.responseList[0].guid !== request.guid) {
-        throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Category guid was changed'});
+        const error = new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Category guid was changed'});
+        this.logger.error(error);
+        throw error;
       }
 
       const updateRepoRequest = this.categoryMapper.updateCategoryRequestToRepoRequest(request);
@@ -127,14 +138,21 @@ export class CategoryService {
       const currentCategory = await this.categoryRepository.getCategories(getCurrentCategoryRepoRequest);
 
       if (!currentCategory.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Category with id ${id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Category with id ${id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentCategory.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Category with id ${id} already deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentCategory.data.responseList[0].guid !== guid) {
-        throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Category guid was changed`});
+        const error = new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Category guid was changed`});
+        this.logger.error(error);
+        throw error;
       }
 
       const deleteRepoRequest = this.categoryMapper.deleteCategoryRequestToRepoRequest(id);

@@ -34,10 +34,13 @@ export class RoleGuard implements CanActivate {
         if (roles.includes(payload.role)) {
           return true;
         } else {
-          throw new CustomError({
+          const error = new CustomError({
             code: ErrorCodesEnum.FORBID,
             message: 'You have not access to do this'
           });
+
+          this.logger.error(error);
+          throw error;
         }
       } catch (e) {
         if (!(e instanceof CustomError)) {

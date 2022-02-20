@@ -46,7 +46,9 @@ export class CommissionService {
       if (data.responseList?.length) {
         return this.commissionMapper.commissionDbModelToResponse(data.responseList[0]);
       } else {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       }
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -85,14 +87,21 @@ export class CommissionService {
       const currentCommission = await this.commissionRepository.getCommissions(getCurrentCommissionRepoRequest);
 
       if (!currentCommission.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentCommission.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Commission with id ${request.id} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentCommission.data.responseList[0].guid !== request.guid) {
-        throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Commission guid was changed'});
+        const error = new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Commission guid was changed'});
+        this.logger.error(error);
+        throw error;
       }
 
       const updateRepoRequest = this.commissionMapper.updateCommissionRequestToRepoRequest(request);
@@ -120,14 +129,21 @@ export class CommissionService {
       const currentCommission = await this.commissionRepository.getCommissions(getCurrentCommissionRepoRequest);
 
       if (!currentCommission.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Commission with id ${id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentCommission.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Commission with id ${id} already deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentCommission.data.responseList[0].guid !== guid) {
-        throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Commission guid was changed`});
+        const error = new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Commission guid was changed`});
+        this.logger.error(error);
+        throw error;
       }
 
       const deleteRepoRequest = this.commissionMapper.deleteCommissionRequestToRepoRequest(id);

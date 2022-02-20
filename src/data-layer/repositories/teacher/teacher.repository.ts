@@ -379,26 +379,56 @@ export class TeacherRepository {
           isDeleted: true,
           cascadeDeletedBy: options?.cascadeBy ?? null
         }, {where: {id: repoRequest.id}, transaction: t})
-          .then(() => this.attestationDbModel.update(
-            {isDeleted: true, cascadeDeletedBy: AttestationCascadeDeleteByEnum.TEACHER},
-            {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
-          ))
-          .then(() => this.educationDbModel.update(
-            {isDeleted: true, cascadeDeletedBy: EducationCascadeDeletedByEnum.TEACHER},
-            {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
-          ))
-          .then(() => this.honorDbModel.update(
-            {isDeleted: true, cascadeDeletedBy: HonorCascadeDeletedByEnum.TEACHER},
-            {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
-          ))
-          .then(() => this.internshipDbModel.update(
-            {isDeleted: true, cascadeDeletedBy: InternshipCascadeDeletedByEnum.TEACHER},
-            {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
-          ))
-          .then(() => this.rebukeDbModel.update(
-            {isDeleted: true, cascadeDeletedBy: RebukeCascadeDeletedByEnum.TEACHER},
-            {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
-          ));
+          .then(async () => {
+            console.debug(`Start delete attestations that belongs to teacher with id ${repoRequest.id}`);
+
+            await this.attestationDbModel.update(
+              {isDeleted: true, cascadeDeletedBy: AttestationCascadeDeleteByEnum.TEACHER},
+              {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
+            );
+
+            console.debug(`Finish delete attestations that belongs to teacher with id ${repoRequest.id}`);
+          })
+          .then(async () => {
+            console.debug(`Start delete education that belongs to teacher with id ${repoRequest.id}`);
+
+            await this.educationDbModel.update(
+              {isDeleted: true, cascadeDeletedBy: EducationCascadeDeletedByEnum.TEACHER},
+              {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
+            );
+
+            console.debug(`Finish delete education that belongs to teacher with id ${repoRequest.id}`);
+          })
+          .then(async () => {
+            console.debug(`Start delete honors that belongs to teacher with id ${repoRequest.id}`);
+
+            await this.honorDbModel.update(
+              {isDeleted: true, cascadeDeletedBy: HonorCascadeDeletedByEnum.TEACHER},
+              {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
+            );
+
+            console.debug(`Finish delete honors that belongs to teacher with id ${repoRequest.id}`);
+          })
+          .then(async () => {
+            console.debug(`Start delete internships that belongs to teacher with id ${repoRequest.id}`);
+
+            await this.internshipDbModel.update(
+              {isDeleted: true, cascadeDeletedBy: InternshipCascadeDeletedByEnum.TEACHER},
+              {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
+            );
+
+            console.debug(`Finish delete internship that belongs to teacher with id ${repoRequest.id}`);
+          })
+          .then(async () => {
+            console.debug(`Start delete rebukes that belongs to teacher with id ${repoRequest.id}`);
+
+            await this.rebukeDbModel.update(
+              {isDeleted: true, cascadeDeletedBy: RebukeCascadeDeletedByEnum.TEACHER},
+              {where: {teacherId: repoRequest.id, isDeleted: false}, transaction: t}
+            );
+
+            console.debug(`Finish delete rebukes that belongs to teacher with id ${repoRequest.id}`);
+          });
       });
 
       return {deletedID: repoRequest.id};

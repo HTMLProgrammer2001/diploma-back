@@ -47,10 +47,13 @@ export class EducationQualificationService {
       if (data.responseList?.length) {
         return this.educationQualificationMapper.educationQualificationDbModelToResponse(data.responseList[0]);
       } else {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Education qualification with id ${request.id} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -92,17 +95,25 @@ export class EducationQualificationService {
         .getEducationQualification(getCurrentEducationQualificationRepoRequest);
 
       if (!currentEducationQualification.data.responseList?.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Education qualification with id ${request.id} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentEducationQualification.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Education qualification with id ${request.id} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentEducationQualification.data.responseList[0].guid !== request.guid) {
-        throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Education qualification guid was changed'});
+        const error = new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Education qualification guid was changed'});
+        this.logger.error(error);
+        throw error;
       }
 
       const updateRepoRequest = this.educationQualificationMapper.updateEducationQualificationRequestToRepoRequest(request);
@@ -135,20 +146,29 @@ export class EducationQualificationService {
         .getEducationQualification(getCurrentEducationQualificationRepoRequest);
 
       if (!currentEducationQualification.data.responseList?.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Education qualification with id ${id} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentEducationQualification.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Education qualification with id ${id} already deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentEducationQualification.data.responseList[0].guid !== guid) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Education qualification guid was changed`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       const deleteRepoRequest = this.educationQualificationMapper.deleteEducationQualificationRequestToRepoRequest(id);

@@ -164,11 +164,16 @@ export class TeachingRankRepository {
             transaction: t,
             include: {model: TeacherDbModel, attributes: ['id']}
           }))
-          .then(teachingRank => Promise.all(teachingRank.teachers
-            .map(teacher => this.teacherRepository.deleteTeacher(
+          .then(async teachingRank => {
+            console.debug(`Start delete teachers that belongs to teaching rank with id ${repoRequest.id}`);
+
+            await Promise.all(teachingRank.teachers.map(teacher => this.teacherRepository.deleteTeacher(
               {id: teacher.id},
               {transaction: t, cascadeBy: TeacherCascadeDeletedByEnum.TEACHING_RANK}
-            ))));
+            )));
+
+            console.debug(`Finish delete teachers that belongs to teaching rank with id ${repoRequest.id}`);
+          });
       });
 
       return {deletedID: repoRequest.id};

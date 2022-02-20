@@ -42,17 +42,23 @@ export class AuthService {
       const userModel = getUserByEmailResponse.responseList[0];
 
       if (!userModel) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `User with email ${request.email} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       if (!bcrypt.compareSync(request.password, userModel.passwordHash)) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.VALIDATION,
           message: 'Incorrect password'
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       const userSessionCode = crypto.randomBytes(20).toString('hex');
@@ -60,7 +66,7 @@ export class AuthService {
         .loginRequestToCreateRefreshTokenRepoRequest(userModel.id, userSessionCode);
 
       await this.refreshTokenRepository.createRefreshToken(createRefreshTokenRepoRequest);
-      const refreshTokenPayload: IRefreshTokenInfoInterface = {sessionCode: userSessionCode};
+      const refreshTokenPayload: IRefreshTokenInfoInterface = {sessionCode: userSessionCode, userId: userModel.id};
       const refreshToken = this.jwtService.sign(refreshTokenPayload, {
         secret: process.env.JWT_REFRESH_TOKEN_SECRET,
         expiresIn: Number(process.env.JWT_REFRESH_TOKEN_TTL_SECONDS)
@@ -77,6 +83,7 @@ export class AuthService {
         expiresIn: Number(process.env.JWT_ACCESS_TOKEN_TTL_SECONDS)
       });
 
+      this.logger.debug(`User with id ${userModel.id} logged in`);
       return {refreshToken, accessToken};
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -90,7 +97,7 @@ export class AuthService {
 
   async logout(refreshToken: string): Promise<ResultResponse> {
     try {
-      const {sessionCode} = await this.jwtService.verify<IRefreshTokenInfoInterface>(
+      const {sessionCode, userId} = await this.jwtService.verify<IRefreshTokenInfoInterface>(
         refreshToken,
         {secret: process.env.JWT_REFRESH_TOKEN_SECRET}
       );
@@ -99,15 +106,19 @@ export class AuthService {
       const {data: getRefreshTokenResponse} = await this.refreshTokenRepository.getRefreshToken(getRefreshTokenRepoRequest);
 
       if (!getRefreshTokenResponse) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Session code ${sessionCode} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       const deleteRefreshTokenRepoRequest = this.authMapper.logoutRequestToDeleteRefreshTokenRepoRequest(sessionCode);
       await this.refreshTokenRepository.deleteRefreshToken(deleteRefreshTokenRepoRequest);
 
+      this.logger.debug(`User with id ${userId} logged out`);
       return {result: true};
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -131,10 +142,13 @@ export class AuthService {
       const {data: getRefreshTokenResponse} = await this.refreshTokenRepository.getRefreshToken(getRefreshTokenRepoRequest);
 
       if (!getRefreshTokenResponse) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Session code ${sessionCode} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       //check user state
@@ -144,15 +158,21 @@ export class AuthService {
       const userModel = getUserByIdResponse.responseList[0];
 
       if (!userModel) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `User with id ${getRefreshTokenResponse.userId} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (userModel.isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.VALIDATION,
           message: `User with id ${getRefreshTokenResponse.userId} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       const newUserSessionCode = crypto.randomBytes(20).toString('hex');
@@ -160,7 +180,7 @@ export class AuthService {
         .refreshTokenRequestToUpdateRefreshTokenRepoRequest(sessionCode, newUserSessionCode);
 
       await this.refreshTokenRepository.updateRefreshToken(updateRefreshTokenRepoRequest);
-      const newRefreshTokenPayload: IRefreshTokenInfoInterface = {sessionCode: newUserSessionCode};
+      const newRefreshTokenPayload: IRefreshTokenInfoInterface = {sessionCode: newUserSessionCode, userId: userModel.id};
       const newRefreshToken = this.jwtService.sign(newRefreshTokenPayload, {
         secret: process.env.JWT_REFRESH_TOKEN_SECRET,
         expiresIn: Number(process.env.JWT_REFRESH_TOKEN_TTL_SECONDS)
@@ -177,6 +197,7 @@ export class AuthService {
         expiresIn: Number(process.env.JWT_ACCESS_TOKEN_TTL_SECONDS)
       });
 
+      this.logger.debug(`User with id ${userModel.id} refreshed token`);
       return {refreshToken: newRefreshToken, accessToken: newAccessToken};
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -194,10 +215,13 @@ export class AuthService {
       const {data: getTeacherResponse} = await this.teacherRepository.getTeachers(getTeacherByEmailRepoRequest);
 
       if (!getTeacherResponse.responseList.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Teacher with email ${email} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       const accessTokenPayload: IAccessTokenInfoInterface = {
@@ -211,6 +235,7 @@ export class AuthService {
         expiresIn: Number(process.env.JWT_ACCESS_TOKEN_TTL_SECONDS)
       });
 
+      this.logger.debug(`Send teacher access link to email ${email}`);
       await this.mailService.sendTeacherLoginMail(email, accessToken);
       return {result: true};
     } catch (e) {

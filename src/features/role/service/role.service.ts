@@ -44,7 +44,9 @@ export class RoleService {
       if (data.responseList?.length) {
         return this.roleMapper.roleDbModelToResponse(data.responseList[0]);
       } else {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Role with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Role with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       }
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -62,9 +64,13 @@ export class RoleService {
       const currentRole = await this.roleRepository.getRoles(getCurrentRepoRequest);
 
       if (!currentRole.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Role with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Role with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentRole.data.responseList[0].guid !== request.guid) {
-        throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Role guid was changed'});
+        const error = new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Role guid was changed'});
+        this.logger.error(error);
+        throw error;
       }
 
       const updateRepoRequest = this.roleMapper.updateRoleRequestToRepoRequest(request);

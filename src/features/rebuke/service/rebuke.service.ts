@@ -49,7 +49,9 @@ export class RebukeService {
       if (data.responseList?.length) {
         return this.rebukeMapper.rebukeDbModelToResponse(data.responseList[0]);
       } else {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Rebuke with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Rebuke with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       }
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -90,14 +92,21 @@ export class RebukeService {
       const currentHonor = await this.rebukeRepository.getRebukes(getCurrentHonorRepoRequest);
 
       if (!currentHonor.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Rebuke with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Rebuke with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentHonor.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Rebuke with id ${request.id} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentHonor.data.responseList[0].guid !== request.guid) {
-        throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Rebuke guid was changed'});
+        const error = new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Rebuke guid was changed'});
+        this.logger.error(error);
+        throw error;
       }
 
       await this.validateRequest(request);
@@ -127,14 +136,21 @@ export class RebukeService {
       const currentHonor = await this.rebukeRepository.getRebukes(getCurrentHonorRepoRequest);
 
       if (!currentHonor.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Rebuke with id ${id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Rebuke with id ${id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentHonor.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Rebuke with id ${id} already deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentHonor.data.responseList[0].guid !== guid) {
-        throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Rebuke guid was changed`});
+        const error = new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Rebuke guid was changed`});
+        this.logger.error(error);
+        throw error;
       }
 
       const deleteRepoRequest = this.rebukeMapper.deleteRebukeRequestToRepoRequest(id);
@@ -157,17 +173,23 @@ export class RebukeService {
       const {data: teacherData} = await this.teacherRepository.getTeachers(getTeacherRepoRequest);
 
       if (!teacherData.responseList.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Teacher with id ${request.teacherId} not found`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       if (teacherData.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Teacher with id ${request.teacherId} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
 
@@ -177,10 +199,13 @@ export class RebukeService {
       const {data: rebukeByOrderNumberData} = await this.rebukeRepository.getRebukes(getRebukeByOrderNumberRepoRequest);
 
       if (rebukeByOrderNumberData.responseList.length && rebukeByOrderNumberData.responseList[0].id !== (request as any).id) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.VALIDATION,
           message: `Rebuke with order number ${request.orderNumber} already exist`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
   }

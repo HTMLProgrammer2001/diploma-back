@@ -32,10 +32,13 @@ export class ProfileService {
       if (data.responseList?.length) {
         return this.profileMapper.profileDbModelToResponse(data.responseList[0]);
       } else {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `User with id ${this.requestContext.getUserId()} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -57,17 +60,25 @@ export class ProfileService {
       const currentUser = await this.userRepository.getUsers(getCurrentUserRepoRequest);
 
       if (!currentUser.data.responseList?.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `User with id ${this.requestContext.getUserId()} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentUser.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `User with id ${this.requestContext.getUserId()} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentUser.data.responseList[0].guid !== request.guid) {
-        throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'User guid was changed'});
+        const error = new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'User guid was changed'});
+        this.logger.error(error);
+        throw error;
       }
 
       let avatarUrl: string = null;
@@ -107,17 +118,25 @@ export class ProfileService {
       const currentProfile = await this.userRepository.getUsers(getCurrentProfileRepoRequest);
 
       if (!currentProfile.data.responseList?.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `User with id ${this.requestContext.getUserId()} not exist`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentProfile.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `User with id ${this.requestContext.getUserId()} already deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentProfile.data.responseList[0].guid !== guid) {
-        throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `User guid was changed`});
+        const error = new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `User guid was changed`});
+        this.logger.error(error);
+        throw error;
       }
 
       const deleteRepoRequest = this.profileMapper.deleteProfileRequestToRepoRequest(this.requestContext.getUserId());

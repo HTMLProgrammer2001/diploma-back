@@ -1,6 +1,6 @@
 import {GqlExecutionContext} from '@nestjs/graphql';
 import {Reflector} from '@nestjs/core';
-import {CanActivate, ExecutionContext, Injectable} from '@nestjs/common';
+import {CanActivate, ExecutionContext, Injectable, Logger} from '@nestjs/common';
 import {Observable} from 'rxjs';
 import {JwtService} from '@nestjs/jwt';
 import {isNil} from 'lodash';
@@ -12,7 +12,10 @@ import {AccessTokenTypeEnum} from '../constants/access-token-type.enum';
 
 @Injectable()
 export class IsAuthorisedGuard implements CanActivate {
+  private logger: Logger;
+
   constructor(private jwtService: JwtService, private reflector: Reflector) {
+    this.logger = new Logger();
   }
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
@@ -28,7 +31,13 @@ export class IsAuthorisedGuard implements CanActivate {
           {secret: process.env.JWT_ACCESS_TOKEN_SECRET}
         );
 
-        return !!payload.userId && (isTeacherHasAccess || payload.type === AccessTokenTypeEnum.user);
+        const canActivate = !!payload.userId && (isTeacherHasAccess || payload.type === AccessTokenTypeEnum.user);
+
+        if(!canActivate) {
+          this.logger.debug(`Not authorized access to ${gqlContext.getHandler().name}`);
+        }
+
+        return canActivate;
       } catch (e) {
         throw new CustomError({
           code: ErrorCodesEnum.UNAUTHORIZED,

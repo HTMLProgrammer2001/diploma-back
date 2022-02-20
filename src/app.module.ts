@@ -1,9 +1,13 @@
-import {MiddlewareConsumer, Module} from '@nestjs/common';
+import {Logger, MiddlewareConsumer, Module, OnApplicationBootstrap} from '@nestjs/common';
 import {join} from 'path';
 import {SequelizeModule} from '@nestjs/sequelize';
 import {AppController} from './app.controller';
 import {GraphQLModule} from '@nestjs/graphql';
 import {GraphQLError} from 'graphql';
+import {WinstonModule} from 'nest-winston';
+import * as winston from 'winston';
+import 'winston-daily-rotate-file';
+import * as fs from 'fs';
 import {CommissionModule} from './features/commission/commission.module';
 import {APP_FILTER, APP_GUARD, APP_INTERCEPTOR} from '@nestjs/core';
 import {DepartmentModule} from './features/department/department.module';
@@ -36,6 +40,8 @@ import {EducationQualificationModule} from './features/education-qualification/e
 import {EducationModule} from './features/education/education.module';
 import {CategoryModule} from './features/category/category.module';
 import {AttestationModule} from './features/attestation/attestation.module';
+import {storage} from './global/utils/storage';
+import {SetupRequestStorageMiddleware} from './global/middlewares/setup-request-storage.middleware';
 
 @Module({
   imports: [
@@ -65,26 +71,77 @@ import {AttestationModule} from './features/attestation/attestation.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       formatError: (error: GraphQLError) => {
+        const logger = new Logger();
         const originalError = error.originalError;
+        let formattedError;
 
         if (originalError instanceof CustomArrayError) {
-          return {
+          formattedError = {
             message: originalError.message,
             code: originalError.code,
             errors: originalError.errors
           };
         } else if (originalError instanceof CustomError) {
-          return {
+          formattedError = {
             message: originalError.message,
-            code: originalError.code,
+            code: originalError.code
           };
         } else {
-          return {
+          formattedError = {
             message: error.message,
-            code: ErrorCodesEnum.GENERAL,
+            code: ErrorCodesEnum.GENERAL
           }
         }
+
+        logger.error({...formattedError, stack: (originalError || error).stack});
+        return formattedError;
       }
+    }),
+    WinstonModule.forRoot({
+      levels: winston.config.syslog.levels,
+      transports: [
+        // console output
+        new winston.transports.Console({
+          level: process.env.LOGS_LEVEL,
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.ms(),
+            winston.format.colorize(),
+            winston.format.simple(),
+            winston.format.printf((info) => {
+              const store = storage.getStore();
+              const logData = JSON.stringify({...info, level: undefined, message: undefined, context: undefined, timestamp: undefined});
+              return `[App] ${info.timestamp} ${info.level}: ${store?.reqId ? `[Request id: ${store.reqId}] ` : ''}` +
+                `${store?.ip ? `[IP: ${store.ip}]` : ''} ${info.context ? `[${info.context}] ` : ''}${info.message} ${logData}`;
+            }),
+          )
+        }),
+
+        // file output
+        new winston.transports.DailyRotateFile({
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.ms(),
+            winston.format.simple(),
+            winston.format.printf((info) => {
+              const store = storage.getStore();
+              const logData = JSON.stringify({...info, level: undefined, message: undefined, context: undefined, timestamp: undefined});
+              return `${info.timestamp} ${info.level}: ${store?.reqId ? `[Request id: ${store.reqId}] ` : ''}` +
+                `${store?.ip ? `[IP: ${store.ip}]` : ''} ${info.context ? `[${info.context}] ` : ''}${info.message} ${logData}`;
+            }),
+          ),
+          dirname: process.env.LOGS_DIR,
+          filename: '%DATE%.log',
+          options: {
+            encoding: 'utf-8',
+            flags: 'a'
+          },
+          maxFiles: '14d',
+          maxSize: '10m',
+          datePattern: 'YYYY-MM-DD-HH',
+          level: process.env.LOGS_LEVEL
+        })
+      ]
     }),
 
     DataLayerModule,
@@ -132,8 +189,19 @@ import {AttestationModule} from './features/attestation/attestation.module';
     }
   ]
 })
-export class AppModule {
+export class AppModule implements OnApplicationBootstrap {
+  private logger: Logger;
+
+  constructor() {
+    this.logger = new Logger();
+  }
+
+  onApplicationBootstrap() {
+    const config = fs.readFileSync(process.env.NODE_ENV === 'development' ? '.env.development' : '.env.production');
+    this.logger.log(`App started with config: ${config}`);
+  }
+
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthorizationHeaderMiddleware).forRoutes('');
+    consumer.apply(SetupRequestStorageMiddleware, AuthorizationHeaderMiddleware).forRoutes('');
   }
 }

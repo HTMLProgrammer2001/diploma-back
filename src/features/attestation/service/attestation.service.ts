@@ -51,7 +51,9 @@ export class AttestationService {
       if (data.responseList?.length) {
         return this.attestationMapper.attestationDbModelToResponse(data.responseList[0]);
       } else {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Attestation with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Attestation with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       }
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -92,14 +94,21 @@ export class AttestationService {
       const currentAttestation = await this.attestationRepository.getAttestations(getCurrentAttestationRepoRequest);
 
       if (!currentAttestation.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Attestation with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Attestation with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentAttestation.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Attestation with id ${request.id} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentAttestation.data.responseList[0].guid !== request.guid) {
-        throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Attestation guid was changed'});
+        const error = new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Attestation guid was changed'});
+        this.logger.error(error);
+        throw error;
       }
 
       await this.validateRequest(request);
@@ -129,14 +138,21 @@ export class AttestationService {
       const currentAttestation = await this.attestationRepository.getAttestations(getCurrentAttestationRepoRequest);
 
       if (!currentAttestation.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Attestation with id ${id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Attestation with id ${id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentAttestation.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Attestation with id ${id} already deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentAttestation.data.responseList[0].guid !== guid) {
-        throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Attestation guid was changed`});
+        const error = new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Attestation guid was changed`});
+        this.logger.error(error);
+        throw error;
       }
 
       const deleteRepoRequest = this.attestationMapper.deleteAttestationRequestToRepoRequest(id);
@@ -159,17 +175,23 @@ export class AttestationService {
       const {data: teacherData} = await this.teacherRepository.getTeachers(getTeacherRepoRequest);
 
       if (!teacherData.responseList.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Teacher with id ${request.teacherId} not found`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       if (teacherData.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Teacher with id ${request.teacherId} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
 
@@ -179,17 +201,23 @@ export class AttestationService {
       const {data: categoryData} = await this.categoryRepository.getCategories(getCategoryRepoRequest);
 
       if (!categoryData.responseList.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Category with id ${request.teacherId} not found`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       if (categoryData.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Category with id ${request.teacherId} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
   }

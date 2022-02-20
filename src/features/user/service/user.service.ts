@@ -51,7 +51,9 @@ export class UserService {
       if (data.responseList?.length) {
         return this.userMapper.userDbModelToResponse(data.responseList[0]);
       } else {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Teacher with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Teacher with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       }
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -98,14 +100,21 @@ export class UserService {
       const currentUser = await this.userRepository.getUsers(getCurrentUserRepoRequest);
 
       if (!currentUser.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `User with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `User with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentUser.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `User with id ${request.id} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentUser.data.responseList[0].guid !== request.guid) {
-        throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'User guid was changed'});
+        const error = new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'User guid was changed'});
+        this.logger.error(error);
+        throw error;
       }
 
       await this.validateRequest(request);
@@ -141,14 +150,21 @@ export class UserService {
       const currentUser = await this.userRepository.getUsers(getCurrentUserRepoRequest);
 
       if (!currentUser.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `User with id ${id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `User with id ${id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentUser.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `User with id ${id} already deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentUser.data.responseList[0].guid !== guid) {
-        throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `User guid was changed`});
+        const error = new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `User guid was changed`});
+        this.logger.error(error);
+        throw error;
       }
 
       const deleteRepoRequest = this.userMapper.deleteUserRequestToRepoRequest(id);
@@ -170,10 +186,13 @@ export class UserService {
       const {mimetype} = await request.avatar;
 
       if (!mimetype.includes('image')) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.VALIDATION,
           message: 'Avatar must be image'
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
 
@@ -183,10 +202,13 @@ export class UserService {
       const {data: teacherByEmailData} = await this.userRepository.getUsers(getTeacherByEmailRepoRequest);
 
       if (teacherByEmailData.responseList.length && teacherByEmailData.responseList[0].id !== (request as any).id) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.VALIDATION,
           message: `User with email ${request.email} already exist`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
 
@@ -196,10 +218,13 @@ export class UserService {
       const {data: teacherByPhoneData} = await this.userRepository.getUsers(getTeacherByPhoneRepoRequest);
 
       if (teacherByPhoneData.responseList.length && teacherByPhoneData.responseList[0].id !== (request as any).id) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.VALIDATION,
           message: `User with phone ${request.phone} already exist`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
 
@@ -209,10 +234,13 @@ export class UserService {
       const {data: roleData} = await this.roleRepository.getRoles(getRoleRepoRequest);
 
       if (!roleData.responseList.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Role with id ${request.roleId} not found`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
   }

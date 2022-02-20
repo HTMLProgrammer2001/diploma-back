@@ -49,7 +49,9 @@ export class PublicationService {
       if (data.responseList?.length) {
         return this.publicationMapper.publicationDbModelToResponse(data.responseList[0]);
       } else {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Publication with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Publication with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       }
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -90,14 +92,21 @@ export class PublicationService {
       const currentPublication = await this.publicationRepository.getPublications(getCurrentPublicationRepoRequest);
 
       if (!currentPublication.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Publication with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Publication with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentPublication.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Publication with id ${request.id} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentPublication.data.responseList[0].guid !== request.guid) {
-        throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Publication guid was changed'});
+        const error = new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Publication guid was changed'});
+        this.logger.error(error);
+        throw error;
       }
 
       await this.validateRequest(request);
@@ -127,14 +136,21 @@ export class PublicationService {
       const currentPublication = await this.publicationRepository.getPublications(getCurrentPublicationRepoRequest);
 
       if (!currentPublication.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Publication with id ${id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Publication with id ${id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentPublication.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Publication with id ${id} already deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentPublication.data.responseList[0].guid !== guid) {
-        throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Publication guid was changed`});
+        const error = new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Publication guid was changed`});
+        this.logger.error(error);
+        throw error;
       }
 
       const deleteRepoRequest = this.publicationMapper.deletePublicationRequestToRepoRequest(id);
@@ -159,19 +175,25 @@ export class PublicationService {
       const redundantTeachers = difference(request.teacherIds, teachersData.responseList.map(el => el.id));
 
       if (redundantTeachers.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Teachers with ids ${redundantTeachers} not found`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       const deletedTeachers = teachersData.responseList.filter(el => el.isDeleted).map(el => el.id);
 
       if (deletedTeachers.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Teachers with ids ${deletedTeachers} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
   }

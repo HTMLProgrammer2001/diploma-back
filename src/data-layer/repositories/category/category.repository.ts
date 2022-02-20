@@ -175,10 +175,16 @@ export class CategoryRepository {
     try {
       await this.sequelize.transaction({autocommit: true}, t => {
         return this.categoryDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}, transaction: t})
-          .then(() => this.attestationDbModel.update(
-            {isDeleted: true, cascadeDeletedBy: AttestationCascadeDeleteByEnum.CATEGORY},
-            {where: {categoryId: repoRequest.id, isDeleted: false}, transaction: t}
-          ));
+          .then(async () => {
+            console.debug(`Start delete attestations that belongs to category with id ${repoRequest.id}`);
+
+            await this.attestationDbModel.update(
+              {isDeleted: true, cascadeDeletedBy: AttestationCascadeDeleteByEnum.CATEGORY},
+              {where: {categoryId: repoRequest.id, isDeleted: false}, transaction: t}
+            );
+
+            console.debug(`Finish delete attestations that belongs to category with id ${repoRequest.id}`);
+          });
       });
       return {deletedID: repoRequest.id};
     } catch (e) {

@@ -51,7 +51,9 @@ export class EducationService {
       if (data.responseList?.length) {
         return this.educationMapper.educationDbModelToResponse(data.responseList[0]);
       } else {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Education with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Education with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       }
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -92,14 +94,21 @@ export class EducationService {
       const currentEducation = await this.educationRepository.getEducation(getCurrentEducationRepoRequest);
 
       if (!currentEducation.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Education with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Education with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentEducation.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Education with id ${request.id} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentEducation.data.responseList[0].guid !== request.guid) {
-        throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Education guid was changed'});
+        const error = new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Education guid was changed'});
+        this.logger.error(error);
+        throw error;
       }
 
       await this.validateRequest(request);
@@ -129,14 +138,21 @@ export class EducationService {
       const currentEducation = await this.educationRepository.getEducation(getCurrentEducationRepoRequest);
 
       if (!currentEducation.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Education with id ${id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Education with id ${id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentEducation.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Education with id ${id} already deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentEducation.data.responseList[0].guid !== guid) {
-        throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Education guid was changed`});
+        const error = new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Education guid was changed`});
+        this.logger.error(error);
+        throw error;
       }
 
       const deleteRepoRequest = this.educationMapper.deleteEducationRequestToRepoRequest(id);
@@ -159,17 +175,23 @@ export class EducationService {
       const {data: teacherData} = await this.teacherRepository.getTeachers(getTeacherRepoRequest);
 
       if (!teacherData.responseList.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Teacher with id ${request.teacherId} not found`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       if (teacherData.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Teacher with id ${request.teacherId} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
 
@@ -182,17 +204,23 @@ export class EducationService {
         .getEducationQualification(getEducationQualificationRepoRequest);
 
       if (!educationQualificationData.responseList.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Education qualification with id ${request.teacherId} not found`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       if (educationQualificationData.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Education qualification with id ${request.teacherId} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
   }

@@ -53,7 +53,9 @@ export class InternshipService {
       if (data.responseList?.length) {
         return this.internshipMapper.internshipDbModelToResponse(data.responseList[0]);
       } else {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Internship with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Internship with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       }
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -95,10 +97,13 @@ export class InternshipService {
   async createInternship(request: InternshipCreateRequest): Promise<InternshipResponse> {
     try {
       if (request.from > request.to) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: 'Internship to must be more than from'
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       await this.validateRequest(request);
@@ -131,35 +136,51 @@ export class InternshipService {
       const currentInternship = await this.internshipRepository.getInternships(getCurrentInternshipRepoRequest);
 
       if (!currentInternship.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Internship with id ${request.id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Internship with id ${request.id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentInternship.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Internship with id ${request.id} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentInternship.data.responseList[0].guid !== request.guid) {
-        throw new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Internship guid was changed'});
+        const error = new CustomError({code: ErrorCodesEnum.GUID_CHANGED, message: 'Internship guid was changed'});
+        this.logger.error(error);
+        throw error;
       }
 
       if (!isNil(request.from) && !isNil(request.to) && request.from > request.to) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: 'Internship to must be more than from'
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       if (!isNil(request.from) && request.from > currentInternship.data.responseList[0].to) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: 'Internship to must be more than from'
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       if (!isNil(request.to) && currentInternship.data.responseList[0].from > request.to) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: 'Internship to must be more than from'
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       await this.validateRequest(request);
@@ -189,14 +210,21 @@ export class InternshipService {
       const currentInternship = await this.internshipRepository.getInternships(getCurrentInternshipRepoRequest);
 
       if (!currentInternship.data.responseList?.length) {
-        throw new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Internship with id ${id} not exist`});
+        const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: `Internship with id ${id} not exist`});
+        this.logger.error(error);
+        throw error;
       } else if (currentInternship.data.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Internship with id ${id} already deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       } else if (currentInternship.data.responseList[0].guid !== guid) {
-        throw new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Internship guid was changed`});
+        const error = new CustomError({code: ErrorCodesEnum.ALREADY_DELETED, message: `Internship guid was changed`});
+        this.logger.error(error);
+        throw error;
       }
 
       const deleteRepoRequest = this.internshipMapper.deleteInternshipRequestToRepoRequest(id);
@@ -219,17 +247,23 @@ export class InternshipService {
       const {data: teacherData} = await this.teacherRepository.getTeachers(getTeacherRepoRequest);
 
       if (!teacherData.responseList.length) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
           message: `Teacher with id ${request.teacherId} not found`
         });
+
+        this.logger.error(error);
+        throw error;
       }
 
       if (teacherData.responseList[0].isDeleted) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.ALREADY_DELETED,
           message: `Teacher with id ${request.teacherId} is deleted`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
 
@@ -239,10 +273,13 @@ export class InternshipService {
       const {data: internshipByCodeData} = await this.internshipRepository.getInternships(getInternshipByCodeRepoRequest);
 
       if (internshipByCodeData.responseList.length && internshipByCodeData.responseList[0].id !== (request as any).id) {
-        throw new CustomError({
+        const error = new CustomError({
           code: ErrorCodesEnum.VALIDATION,
           message: `Internship with code ${request.code} already exist`
         });
+
+        this.logger.error(error);
+        throw error;
       }
     }
   }

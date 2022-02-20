@@ -165,11 +165,16 @@ export class EducationQualificationRepository {
         return this.educationQualificationDbModel.update({isDeleted: true}, {
           where: {id: repoRequest.id},
           transaction: t
-        })
-          .then(() => this.educationDbModel.update(
+        }).then(() => {
+          console.debug(`Start delete educations that belongs to education qualification with id ${repoRequest.id}`);
+
+          this.educationDbModel.update(
             {isDeleted: true, cascadeDeletedBy: EducationCascadeDeletedByEnum.EDUCATION_QUALIFICATION},
             {where: {educationQualificationId: repoRequest.id, isDeleted: false}, transaction: t}
-          ));
+          );
+
+          console.debug(`Finish delete educations that belongs to education qualification with id ${repoRequest.id}`);
+        });
       });
 
       return {deletedID: repoRequest.id};
