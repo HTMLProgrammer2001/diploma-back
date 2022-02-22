@@ -39,7 +39,7 @@ export class ExportMapper {
     ];
 
     destination.ids = teacherIds;
-    destination.select = [...(isSelectPersonal ? personalSelect: []), ...(isSelectProfessional ? professionalSelect : [])];
+    destination.select = [TeacherSelectFieldsEnum.ID, ...(isSelectPersonal ? personalSelect: []), ...(isSelectProfessional ? professionalSelect : [])];
     destination.orderField = TeacherOrderFieldsEnum.FULL_NAME;
     destination.isDesc = false;
     destination.showDeleted = false;

@@ -21,9 +21,11 @@ import {AttestationRepository} from '../../../data-layer/repositories/attestatio
 import {ExportDataInterface} from '../types/common/export-data.interface';
 import {DepartmentRepository} from '../../../data-layer/repositories/department/department.repository';
 import {CommissionRepository} from '../../../data-layer/repositories/commission/commission.repository';
-import {ExportTypeEnum} from '../types/common/export-type.enum';
 import {CommissionDbModel} from '../../../data-layer/db-models/commission.db-model';
 import {DepartmentDbModel} from '../../../data-layer/db-models/department.db-model';
+import {FileServiceInterface} from '../../../global/services/file-service/file-service.interface';
+import {FillerFactory} from '../fillers/filler-factory';
+import {WorksheetEnum} from '../types/common/worksheet.enum';
 
 @Injectable()
 export class ExportService {
@@ -39,6 +41,8 @@ export class ExportService {
     private attestationRepository: AttestationRepository,
     private departmentRepository: DepartmentRepository,
     private commissionRepository: CommissionRepository,
+    private fileService: FileServiceInterface,
+    private fillerFactory: FillerFactory,
   ) {
     this.logger = new Logger(ExportService.name);
   }
@@ -202,6 +206,14 @@ export class ExportService {
 
   private async createFile(teacherList: Array<TeacherDbModel>, data: ExportDataInterface, request: ExportRequest):
     Promise<string> {
+    let workbook = await this.createWorkbookTemplate(teacherList, data, request);
+    workbook = await this.fillWorkbookData(workbook, teacherList, data, request);
+
+    return await this.fileService.saveReport(workbook, request.type);
+  }
+
+  async createWorkbookTemplate(teacherList: Array<TeacherDbModel>, data: ExportDataInterface, request: ExportRequest):
+    Promise<Workbook> {
     const workbook = new Workbook();
 
     let headerText = 'Report for teachers ';
@@ -225,65 +237,89 @@ export class ExportService {
 
     if(request.select.includes(ExportSelectEnum.TEACHER_PERSONAL_INFO)
       && request.select.includes(ExportSelectEnum.TEACHER_PROFESSIONAL_INFO)) {
-      template.getWorksheet(1).getRow(1).getCell(1).value = headerText;
-      template.removeWorksheet(2);
-      template.removeWorksheet(3);
+      template.getWorksheet(WorksheetEnum.TEACHER_PERSONAL_AND_PROFESSIONAL).getRow(1).getCell(1).value = headerText;
+      template.removeWorksheet(WorksheetEnum.TEACHER_PERSONAL);
+      template.removeWorksheet(WorksheetEnum.TEACHER_PROFESSIONAL);
     }
     else if (request.select.includes(ExportSelectEnum.TEACHER_PROFESSIONAL_INFO)) {
-      template.getWorksheet(2).getRow(1).getCell(1).value = headerText;
-      template.removeWorksheet(1);
-      template.removeWorksheet(3);
+      template.getWorksheet(WorksheetEnum.TEACHER_PROFESSIONAL).getRow(1).getCell(1).value = headerText;
+      template.removeWorksheet(WorksheetEnum.TEACHER_PERSONAL_AND_PROFESSIONAL);
+      template.removeWorksheet(WorksheetEnum.TEACHER_PERSONAL);
     }
     else if (request.select.includes(ExportSelectEnum.TEACHER_PERSONAL_INFO)) {
-      template.getWorksheet(3).getRow(1).getCell(1).value = headerText;
-      template.removeWorksheet(1);
-      template.removeWorksheet(2);
+      template.getWorksheet(WorksheetEnum.TEACHER_PERSONAL).getRow(1).getCell(1).value = headerText;
+      template.removeWorksheet(WorksheetEnum.TEACHER_PERSONAL_AND_PROFESSIONAL);
+      template.removeWorksheet(WorksheetEnum.TEACHER_PROFESSIONAL);
     }
 
     if(request.select.includes(ExportSelectEnum.INTERNSHIPS)) {
-      template.getWorksheet(4).getRow(1).getCell(1).value = headerText;
+      template.getWorksheet(WorksheetEnum.INTERNSHIP).getRow(1).getCell(1).value = headerText;
     }
     else {
-      template.removeWorksheet(4);
+      template.removeWorksheet(WorksheetEnum.INTERNSHIP);
     }
 
     if(request.select.includes(ExportSelectEnum.ATTESTATIONS)) {
-      template.getWorksheet(5).getRow(1).getCell(1).value = headerText;
+      template.getWorksheet(WorksheetEnum.ATTESTATION).getRow(1).getCell(1).value = headerText;
     }
     else {
-      template.removeWorksheet(5);
+      template.removeWorksheet(WorksheetEnum.ATTESTATION);
     }
 
     if(request.select.includes(ExportSelectEnum.PUBLICATIONS)) {
-      template.getWorksheet(6).getRow(1).getCell(1).value = headerText;
+      template.getWorksheet(WorksheetEnum.PUBLICATION).getRow(1).getCell(1).value = headerText;
     }
     else {
-      template.removeWorksheet(6);
+      template.removeWorksheet(WorksheetEnum.PUBLICATION);
     }
 
     if(request.select.includes(ExportSelectEnum.HONORS)) {
-      template.getWorksheet(7).getRow(1).getCell(1).value = headerText;
+      template.getWorksheet(WorksheetEnum.HONOR).getRow(1).getCell(1).value = headerText;
     }
     else {
-      template.removeWorksheet(7);
+      template.removeWorksheet(WorksheetEnum.HONOR);
     }
 
     if(request.select.includes(ExportSelectEnum.REBUKES)) {
-      template.getWorksheet(8).getRow(1).getCell(1).value = headerText;
+      template.getWorksheet(WorksheetEnum.REBUKE).getRow(1).getCell(1).value = headerText;
     }
     else {
-      template.removeWorksheet(8);
+      template.removeWorksheet(WorksheetEnum.REBUKE);
     }
 
-    const date = new Date();
-    const hash = `${date.toLocaleDateString()}_${date.getHours()}.${date.getMinutes()}.${date.getSeconds()}`;
-    if(request.type === ExportTypeEnum.EXCEL) {
-      await workbook.xlsx.writeFile(`./static/reports/Report-teacher-${hash}.xlsx`);
-    }
-    else {
-      await workbook.csv.writeFile(`./static/reports/Report-teacher-${hash}.csv`);
+    return workbook;
+  }
+
+  async fillWorkbookData(workbook: Workbook, teacherList: Array<TeacherDbModel>, data: ExportDataInterface, request: ExportRequest):
+    Promise<Workbook> {
+    if(request.select.includes(ExportSelectEnum.TEACHER_PERSONAL_INFO)
+        || request.select.includes(ExportSelectEnum.TEACHER_PROFESSIONAL_INFO)) {
+      await this.fillerFactory.getTeacherInfoFiller(
+        request.select.includes(ExportSelectEnum.TEACHER_PERSONAL_INFO),
+        request.select.includes(ExportSelectEnum.TEACHER_PROFESSIONAL_INFO)
+      ).fill(workbook, teacherList, data);
     }
 
-    return '';
+    if(request.select.includes(ExportSelectEnum.INTERNSHIPS)) {
+      await this.fillerFactory.getInternshipFiller().fill(workbook, teacherList, data);
+    }
+
+    if(request.select.includes(ExportSelectEnum.ATTESTATIONS)) {
+      await this.fillerFactory.getAttestationFiller().fill(workbook, teacherList, data);
+    }
+
+    if(request.select.includes(ExportSelectEnum.REBUKES)) {
+      await this.fillerFactory.getRebukeFiller().fill(workbook, teacherList, data);
+    }
+
+    if(request.select.includes(ExportSelectEnum.HONORS)) {
+      await this.fillerFactory.getHonorFiller().fill(workbook, teacherList, data);
+    }
+
+    if(request.select.includes(ExportSelectEnum.PUBLICATIONS)) {
+      await this.fillerFactory.getPublicationFiller().fill(workbook, teacherList, data);
+    }
+
+    return workbook;
   }
 }
