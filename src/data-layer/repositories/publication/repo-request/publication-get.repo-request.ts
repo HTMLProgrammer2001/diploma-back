@@ -9,7 +9,8 @@ export class PublicationGetRepoRequest extends BaseRepoRequest {
   dateMore: Date;
   dateLess: Date;
   publisher: string;
-  teacherIds: Array<number>;
+  teacherAll: Array<number>;
+  teacherOneOf: Array<number>;
   showDeleted: boolean;
   select: Array<string>;
   orderField: string;

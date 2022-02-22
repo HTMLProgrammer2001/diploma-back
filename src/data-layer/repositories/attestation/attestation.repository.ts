@@ -113,6 +113,10 @@ export class AttestationRepository {
         }
       }
 
+      if (!isNil(repoRequest.teacherIds)) {
+        filters.teacherId = {[Op.in]: repoRequest.teacherIds};
+      }
+
       if (!isNil(repoRequest.teacherId)) {
         filters.teacherId = repoRequest.teacherId;
       }

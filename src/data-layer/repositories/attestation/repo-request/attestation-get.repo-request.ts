@@ -8,6 +8,7 @@ export class AttestationGetRepoRequest extends BaseRepoRequest {
   dateMore: Date;
   dateLess: Date;
   teacherId: number;
+  teacherIds: Array<number>;
   categoryId: number;
   showDeleted: boolean;
   showCascadeDeletedBy: string;

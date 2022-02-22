@@ -18,7 +18,7 @@ export class PublicationMapper {
   getPublicationListRequestToRepoRequest(source: PublicationGetListRequest): PublicationGetRepoRequest {
     const destination = new PublicationGetRepoRequest();
 
-    destination.teacherIds = source.teacherIds;
+    destination.teacherAll = source.teacherIds;
     destination.publisher = source.publisher;
     destination.dateMore = source.dateMore;
     destination.dateLess = source.dateLess;

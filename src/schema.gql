@@ -372,6 +372,35 @@ input EducationUpdateRequest {
   yearOfIssue: Float
 }
 
+input ExportRequest {
+  commissionId: ID
+  departmentId: ID
+  from: DateTime
+  select: [ExportSelectEnum!]!
+  teacherIds: [ID!]
+  to: DateTime
+  type: ExportTypeEnum!
+}
+
+type ExportResponse {
+  url: String!
+}
+
+enum ExportSelectEnum {
+  ATTESTATIONS
+  HONORS
+  INTERNSHIPS
+  PUBLICATIONS
+  REBUKES
+  TEACHER_PERSONAL_INFO
+  TEACHER_PROFESSIONAL_INFO
+}
+
+enum ExportTypeEnum {
+  CSV
+  EXCEL
+}
+
 input HonorCreateRequest {
   date: String
   description: String
@@ -569,6 +598,7 @@ type Mutation {
   deleteTeachingRank(guid: String!, id: Int!): IdResponse!
   deleteUser(guid: String!, id: Int!): IdResponse!
   editProfile(body: EditProfileRequest!): ProfileResponse!
+  generateReport(body: ExportRequest!): ExportResponse!
   login(body: LoginRequest!): LoginResponse!
   loginTeacher(email: String!): LoginTeacherResponse!
   logout(refreshToken: String!): ResultResponse!

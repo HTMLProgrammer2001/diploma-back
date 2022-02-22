@@ -11,6 +11,7 @@ export class HonorGetRepoRequest extends BaseRepoRequest {
   orderNumber: string;
   orderNumberEqual: string;
   teacherId: number;
+  teacherIds: Array<number>;
   showDeleted: boolean;
   showCascadeDeletedBy: string;
   showInActive: boolean;

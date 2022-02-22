@@ -42,6 +42,7 @@ import {CategoryModule} from './features/category/category.module';
 import {AttestationModule} from './features/attestation/attestation.module';
 import {storage} from './global/utils/storage';
 import {SetupRequestStorageMiddleware} from './global/middlewares/setup-request-storage.middleware';
+import {ExportModule} from './features/export/export.module';
 
 @Module({
   imports: [
@@ -164,6 +165,7 @@ import {SetupRequestStorageMiddleware} from './global/middlewares/setup-request-
     EducationModule,
     CategoryModule,
     AttestationModule,
+    ExportModule,
   ],
   controllers: [AppController],
   providers: [

@@ -123,11 +123,18 @@ export class PublicationRepository {
         }
       }
 
-      if (!isNil(repoRequest.teacherIds)) {
+      if (!isNil(repoRequest.teacherAll)) {
         filters[<any>Op.and] = Sequelize.literal(`(
-          SELECT COUNT(PublicationTeacher.userId) FROM PublicationTeacher WHERE 
-          PublicationTeacher.publicationId = PublicationDbModel.id AND PublicationTeacher.teacherId IN (${repoRequest.teacherIds.join(',')})
-        ) = ${repoRequest.teacherIds.length}`);
+          SELECT COUNT(PublicationTeacher.teacherId) FROM PublicationTeacher WHERE 
+          PublicationTeacher.publicationId = PublicationDbModel.id AND PublicationTeacher.teacherId IN (${repoRequest.teacherAll.join(',')})
+        ) = ${repoRequest.teacherAll.length}`);
+      }
+
+      if (!isNil(repoRequest.teacherOneOf)) {
+        filters[<any>Op.and] = Sequelize.literal(`(
+          SELECT COUNT(PublicationTeacher.teacherId) FROM PublicationTeacher WHERE 
+          PublicationTeacher.publicationId = PublicationDbModel.id AND PublicationTeacher.teacherId IN (${repoRequest.teacherOneOf.join(',')})
+        ) > 0`);
       }
 
       if (!repoRequest.showDeleted) {
