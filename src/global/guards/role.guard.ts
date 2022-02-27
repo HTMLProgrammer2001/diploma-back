@@ -20,11 +20,13 @@ export class RoleGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const gqlContext = GqlExecutionContext.create(context);
-
     const roles = this.reflector.get<Array<RolesEnum>>(MetaDataFieldEnum.ROLES, gqlContext.getHandler());
 
     if (!isNil(roles)) {
-      const token = gqlContext.getContext().req.headers['authorization'];
+      const token = context.getType() === 'http' ?
+        context.switchToHttp().getRequest().headers['authorization'] :
+        gqlContext.getContext().req.headers['authorization'];
+
       try {
         const payload = this.jwtService.verify<IAccessTokenInfoInterface>(
           token,

@@ -21,9 +21,14 @@ export class IsAuthorisedGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const gqlContext = GqlExecutionContext.create(context);
 
+    const token = context.getType() === 'http' ?
+      context.switchToHttp().getRequest().headers['authorization'] :
+      gqlContext.getContext().req?.headers['authorization'];
+
     const isAuthorized = this.reflector.get<boolean>(MetaDataFieldEnum.IS_CHECK_AUTHORIZATION, gqlContext.getHandler());
-    if (isAuthorized || isNil(isAuthorized)) {
-      const token = gqlContext.getContext().req.headers['authorization'];
+    if((isAuthorized || isNil(isAuthorized)) && !token) {
+      return false;
+    } else if (isAuthorized || isNil(isAuthorized)) {
       try {
         const isTeacherHasAccess = this.reflector.get<boolean>(MetaDataFieldEnum.IS_TEACHER_HAS_ACCESS, gqlContext.getHandler());
         const payload = this.jwtService.verify<IAccessTokenInfoInterface>(

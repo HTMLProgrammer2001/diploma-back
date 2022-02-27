@@ -1,6 +1,5 @@
 import {FillerInterface} from './filler.interface';
 import {Workbook, Worksheet} from 'exceljs';
-import {TeacherDbModel} from '../../../data-layer/db-models/teacher.db-model';
 import {ExportDataInterface} from '../types/common/export-data.interface';
 import {WorksheetEnum} from '../types/common/worksheet.enum';
 import {TeacherPersonalAndProfessionalColumnsEnum} from '../types/common/columns/teacher-personal-and-professional-columns.enum';
@@ -12,7 +11,7 @@ export class TeacherFiller implements FillerInterface {
 
   constructor(private isIncludePersonal: boolean, private isIncludeProfessional: boolean) {}
 
-  async fill(workbook: Workbook, teacherList: Array<TeacherDbModel>, data: ExportDataInterface): Promise<void> {
+  async fill(workbook: Workbook, data: ExportDataInterface): Promise<void> {
     let worksheet: Worksheet;
 
     if(this.isIncludeProfessional && this.isIncludePersonal) {
@@ -25,13 +24,12 @@ export class TeacherFiller implements FillerInterface {
       worksheet = workbook.getWorksheet(WorksheetEnum.TEACHER_PROFESSIONAL);
     }
 
-    for(let i = 0; i < teacherList.length; i++) {
-      const teacher = teacherList[i];
+    for(let i = 0; i < data.teacherData.length; i++) {
       const row = TeacherFiller.START_ROW + i;
-      const teacherData = data.teacherData.find(el => el.id === teacher.id);
+      const teacherData = data.teacherData[i];
 
       if(this.isIncludePersonal && this.isIncludeProfessional) {
-        worksheet.getRow(row).getCell(TeacherPersonalAndProfessionalColumnsEnum.TEACHER).value = teacher.fullName;
+        worksheet.getRow(row).getCell(TeacherPersonalAndProfessionalColumnsEnum.TEACHER).value = teacherData.fullName;
         worksheet.getRow(row).getCell(TeacherPersonalAndProfessionalColumnsEnum.EMAIL).value = teacherData.email;
         worksheet.getRow(row).getCell(TeacherPersonalAndProfessionalColumnsEnum.PHONE).value = teacherData.phone;
         worksheet.getRow(row).getCell(TeacherPersonalAndProfessionalColumnsEnum.ADDRESS).value = teacherData.address;
@@ -44,14 +42,14 @@ export class TeacherFiller implements FillerInterface {
         worksheet.getRow(row).getCell(TeacherPersonalAndProfessionalColumnsEnum.WORK_START_DATE).value = teacherData.workStartDate;
       }
       else if(this.isIncludePersonal) {
-        worksheet.getRow(row).getCell(TeacherPersonalColumnsEnum.TEACHER).value = teacher.fullName;
+        worksheet.getRow(row).getCell(TeacherPersonalColumnsEnum.TEACHER).value = teacherData.fullName;
         worksheet.getRow(row).getCell(TeacherPersonalColumnsEnum.EMAIL).value = teacherData.email;
         worksheet.getRow(row).getCell(TeacherPersonalColumnsEnum.PHONE).value = teacherData.phone;
         worksheet.getRow(row).getCell(TeacherPersonalColumnsEnum.ADDRESS).value = teacherData.address;
         worksheet.getRow(row).getCell(TeacherPersonalColumnsEnum.BIRTHDAY).value = teacherData.birthday;
       }
       else {
-        worksheet.getRow(row).getCell(TeacherProfessionalColumnsEnum.TEACHER).value = teacher.fullName;
+        worksheet.getRow(row).getCell(TeacherProfessionalColumnsEnum.TEACHER).value = teacherData.fullName;
         worksheet.getRow(row).getCell(TeacherProfessionalColumnsEnum.RANK).value = teacherData.teacherRank?.name;
         worksheet.getRow(row).getCell(TeacherProfessionalColumnsEnum.ACADEMIC_TITLE).value = teacherData.academicTitle?.name;
         worksheet.getRow(row).getCell(TeacherProfessionalColumnsEnum.ACADEMIC_DEGREE).value = teacherData.academicDegree?.name;

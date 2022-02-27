@@ -39,7 +39,11 @@ export class ExportMapper {
     ];
 
     destination.ids = teacherIds;
-    destination.select = [TeacherSelectFieldsEnum.ID, ...(isSelectPersonal ? personalSelect: []), ...(isSelectProfessional ? professionalSelect : [])];
+    destination.select = [
+      TeacherSelectFieldsEnum.ID, TeacherSelectFieldsEnum.FULL_NAME,
+      ...(isSelectPersonal ? personalSelect: []),
+      ...(isSelectProfessional ? professionalSelect : [])
+    ];
     destination.orderField = TeacherOrderFieldsEnum.FULL_NAME;
     destination.isDesc = false;
     destination.showDeleted = false;
@@ -55,9 +59,10 @@ export class ExportMapper {
     destination.teacherIds = teacherIds;
     destination.select = [
       HonorSelectFieldsEnum.ORDER_NUMBER, HonorSelectFieldsEnum.DATE,
-      HonorSelectFieldsEnum.TITLE, HonorSelectFieldsEnum.DESCRIPTION
+      HonorSelectFieldsEnum.TITLE, HonorSelectFieldsEnum.DESCRIPTION,
+      HonorSelectFieldsEnum.TEACHER_NAME
     ];
-    destination.orderField = HonorOrderFieldsEnum.TEACHER;
+    destination.orderField = HonorOrderFieldsEnum.DATE;
     destination.dateMore = from;
     destination.dateLess = to;
     destination.isDesc = false;
@@ -75,9 +80,10 @@ export class ExportMapper {
     destination.teacherIds = teacherIds;
     destination.select = [
       RebukeSelectFieldsEnum.ORDER_NUMBER, RebukeSelectFieldsEnum.DATE,
-      RebukeSelectFieldsEnum.TITLE, RebukeSelectFieldsEnum.DESCRIPTION
+      RebukeSelectFieldsEnum.TITLE, RebukeSelectFieldsEnum.DESCRIPTION,
+      RebukeSelectFieldsEnum.TEACHER_NAME
     ];
-    destination.orderField = RebukeOrderFieldsEnum.TEACHER;
+    destination.orderField = RebukeOrderFieldsEnum.DATE;
     destination.isDesc = false;
     destination.dateMore = from;
     destination.dateLess = to;
@@ -96,9 +102,9 @@ export class ExportMapper {
     destination.select = [
       InternshipSelectFieldsEnum.TITLE, InternshipSelectFieldsEnum.FROM, InternshipSelectFieldsEnum.TO,
       InternshipSelectFieldsEnum.HOURS, InternshipSelectFieldsEnum.PLACE, InternshipSelectFieldsEnum.CREDITS,
-      InternshipSelectFieldsEnum.DESCRIPTION
+      InternshipSelectFieldsEnum.DESCRIPTION, InternshipSelectFieldsEnum.TEACHER_NAME
     ];
-    destination.orderField = RebukeOrderFieldsEnum.TEACHER;
+    destination.orderField = RebukeOrderFieldsEnum.DATE;
     destination.isDesc = false;
     destination.dateFromMore = from;
     destination.dateToLess = to;
@@ -116,9 +122,9 @@ export class ExportMapper {
     destination.select = [
       PublicationSelectFieldsEnum.TITLE, PublicationSelectFieldsEnum.DATE, PublicationSelectFieldsEnum.PUBLISHER,
       PublicationSelectFieldsEnum.ANOTHER_AUTHORS, PublicationSelectFieldsEnum.TEACHER_NAME,
-      PublicationSelectFieldsEnum.DESCRIPTION
+      PublicationSelectFieldsEnum.URL, PublicationSelectFieldsEnum.DESCRIPTION
     ];
-    destination.orderField = PublicationOrderFieldsEnum.ID;
+    destination.orderField = PublicationOrderFieldsEnum.DATE;
     destination.isDesc = false;
     destination.dateMore = from;
     destination.dateLess = to;
@@ -133,8 +139,11 @@ export class ExportMapper {
     const destination = new AttestationGetRepoRequest();
 
     destination.teacherIds = teacherIds;
-    destination.select = [AttestationSelectFieldsEnum.DATE, AttestationSelectFieldsEnum.CATEGORY_NAME, AttestationSelectFieldsEnum.DESCRIPTION];
-    destination.orderField = AttestationOrderFieldsEnum.TEACHER;
+    destination.select = [
+      AttestationSelectFieldsEnum.DATE, AttestationSelectFieldsEnum.CATEGORY_NAME,
+      AttestationSelectFieldsEnum.DESCRIPTION, AttestationSelectFieldsEnum.TEACHER_NAME
+    ];
+    destination.orderField = AttestationOrderFieldsEnum.DATE;
     destination.isDesc = false;
     destination.dateMore = from;
     destination.dateLess = to;
@@ -149,9 +158,7 @@ export class ExportMapper {
     const destination = new TeacherGetRepoRequest();
 
     destination.commissionId = commissionId;
-    destination.select = [TeacherSelectFieldsEnum.ID, TeacherSelectFieldsEnum.FULL_NAME];
-    destination.orderField = TeacherOrderFieldsEnum.ID;
-    destination.isDesc = false;
+    destination.select = [TeacherSelectFieldsEnum.ID];
     destination.showDeleted = false;
     destination.page = 1;
     destination.size = 5000;
@@ -163,9 +170,7 @@ export class ExportMapper {
     const destination = new TeacherGetRepoRequest();
 
     destination.departmentId = departmentId;
-    destination.select = [TeacherSelectFieldsEnum.ID, TeacherSelectFieldsEnum.FULL_NAME];
-    destination.orderField = TeacherOrderFieldsEnum.ID;
-    destination.isDesc = false;
+    destination.select = [TeacherSelectFieldsEnum.ID];
     destination.showDeleted = false;
     destination.page = 1;
     destination.size = 5000;
@@ -177,9 +182,7 @@ export class ExportMapper {
     const destination = new TeacherGetRepoRequest();
 
     destination.ids = teacherIds;
-    destination.select = [TeacherSelectFieldsEnum.ID, TeacherSelectFieldsEnum.FULL_NAME];
-    destination.orderField = TeacherOrderFieldsEnum.ID;
-    destination.isDesc = false;
+    destination.select = [TeacherSelectFieldsEnum.ID];
     destination.showDeleted = false;
     destination.page = 1;
     destination.size = 5000;

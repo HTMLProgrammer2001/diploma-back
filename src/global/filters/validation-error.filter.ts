@@ -13,6 +13,12 @@ export class ValidationErrorFilter implements GqlExceptionFilter {
       message: errMsg
     }));
 
-    return transformedError;
+    if(host.getType() === 'http') {
+      const res = host.switchToHttp().getResponse();
+      return res.json({errors: [transformedError], data: null});
+    }
+    else {
+      return transformedError;
+    }
   }
 }

@@ -105,7 +105,7 @@ export class ExportService {
       const teachersList = await this.getTeacherList(request);
       const teacherIds = teachersList.map(teacher => teacher.id);
 
-      if(!teachersList.length) {
+      if(!teacherIds.length) {
         const error = new CustomError({code: ErrorCodesEnum.NOT_FOUND, message: 'No teachers found for this filter'});
         this.logger.error(error);
         throw error;
@@ -164,7 +164,7 @@ export class ExportService {
       }
 
       //create export excel file
-      const url = await this.createFile(teachersList, {
+      const url = await this.createFile({
         attestationData, honorData, internshipData,
         publicationData, rebukeData, teacherData,
         departmentData, commissionData
@@ -204,18 +204,9 @@ export class ExportService {
     return teacherList;
   }
 
-  private async createFile(teacherList: Array<TeacherDbModel>, data: ExportDataInterface, request: ExportRequest):
+  private async createFile(data: ExportDataInterface, request: ExportRequest):
     Promise<string> {
-    let workbook = await this.createWorkbookTemplate(teacherList, data, request);
-    workbook = await this.fillWorkbookData(workbook, teacherList, data, request);
-
-    return await this.fileService.saveReport(workbook, request.type);
-  }
-
-  async createWorkbookTemplate(teacherList: Array<TeacherDbModel>, data: ExportDataInterface, request: ExportRequest):
-    Promise<Workbook> {
-    const workbook = new Workbook();
-
+    let workbook = new Workbook();
     let headerText = 'Report for teachers ';
 
     if(request.departmentId) {
@@ -233,8 +224,15 @@ export class ExportService {
       headerText += `to ${request.to.toLocaleDateString() || new Date().toLocaleDateString()}`;
     }
 
-    const template = await workbook.xlsx.readFile('./templates/report-template.xlsx');
+    let template = await workbook.xlsx.readFile('./templates/report-template.xlsx');
+    template = await this.fillWorkbookData(template, data, request);
+    template = await this.formatWorkbookTemplate(template, data, request, headerText);
 
+    return await this.fileService.saveReport(template, request.type);
+  }
+
+  async formatWorkbookTemplate(template: Workbook, data: ExportDataInterface, request: ExportRequest, headerText: string):
+    Promise<Workbook> {
     if(request.select.includes(ExportSelectEnum.TEACHER_PERSONAL_INFO)
       && request.select.includes(ExportSelectEnum.TEACHER_PROFESSIONAL_INFO)) {
       template.getWorksheet(WorksheetEnum.TEACHER_PERSONAL_AND_PROFESSIONAL).getRow(1).getCell(1).value = headerText;
@@ -250,6 +248,11 @@ export class ExportService {
       template.getWorksheet(WorksheetEnum.TEACHER_PERSONAL).getRow(1).getCell(1).value = headerText;
       template.removeWorksheet(WorksheetEnum.TEACHER_PERSONAL_AND_PROFESSIONAL);
       template.removeWorksheet(WorksheetEnum.TEACHER_PROFESSIONAL);
+    }
+    else {
+      template.removeWorksheet(WorksheetEnum.TEACHER_PERSONAL_AND_PROFESSIONAL);
+      template.removeWorksheet(WorksheetEnum.TEACHER_PROFESSIONAL);
+      template.removeWorksheet(WorksheetEnum.TEACHER_PERSONAL);
     }
 
     if(request.select.includes(ExportSelectEnum.INTERNSHIPS)) {
@@ -287,37 +290,37 @@ export class ExportService {
       template.removeWorksheet(WorksheetEnum.REBUKE);
     }
 
-    return workbook;
+    return template;
   }
 
-  async fillWorkbookData(workbook: Workbook, teacherList: Array<TeacherDbModel>, data: ExportDataInterface, request: ExportRequest):
+  async fillWorkbookData(workbook: Workbook, data: ExportDataInterface, request: ExportRequest):
     Promise<Workbook> {
     if(request.select.includes(ExportSelectEnum.TEACHER_PERSONAL_INFO)
         || request.select.includes(ExportSelectEnum.TEACHER_PROFESSIONAL_INFO)) {
       await this.fillerFactory.getTeacherInfoFiller(
         request.select.includes(ExportSelectEnum.TEACHER_PERSONAL_INFO),
         request.select.includes(ExportSelectEnum.TEACHER_PROFESSIONAL_INFO)
-      ).fill(workbook, teacherList, data);
+      ).fill(workbook, data);
     }
 
     if(request.select.includes(ExportSelectEnum.INTERNSHIPS)) {
-      await this.fillerFactory.getInternshipFiller().fill(workbook, teacherList, data);
+      await this.fillerFactory.getInternshipFiller().fill(workbook, data);
     }
 
     if(request.select.includes(ExportSelectEnum.ATTESTATIONS)) {
-      await this.fillerFactory.getAttestationFiller().fill(workbook, teacherList, data);
+      await this.fillerFactory.getAttestationFiller().fill(workbook, data);
     }
 
     if(request.select.includes(ExportSelectEnum.REBUKES)) {
-      await this.fillerFactory.getRebukeFiller().fill(workbook, teacherList, data);
+      await this.fillerFactory.getRebukeFiller().fill(workbook, data);
     }
 
     if(request.select.includes(ExportSelectEnum.HONORS)) {
-      await this.fillerFactory.getHonorFiller().fill(workbook, teacherList, data);
+      await this.fillerFactory.getHonorFiller().fill(workbook, data);
     }
 
     if(request.select.includes(ExportSelectEnum.PUBLICATIONS)) {
-      await this.fillerFactory.getPublicationFiller().fill(workbook, teacherList, data);
+      await this.fillerFactory.getPublicationFiller().fill(workbook, data);
     }
 
     return workbook;

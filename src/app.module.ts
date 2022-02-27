@@ -49,10 +49,10 @@ import {ExportModule} from './features/export/export.module';
     ConfigModule.forRoot({
       envFilePath: process.env.NODE_ENV === 'development' ? '.env.development' : '.env.production'
     }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'static'),
-      serveRoot: '/static'
-    }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'static'),
+    //   serveRoot: '/static'
+    // }),
     SequelizeModule.forRoot({
       dialect: 'mysql',
       host: process.env.DATABASE_HOST,
@@ -71,6 +71,7 @@ import {ExportModule} from './features/export/export.module';
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
+      playground: false,
       formatError: (error: GraphQLError) => {
         const logger = new Logger();
         const originalError = error.originalError;

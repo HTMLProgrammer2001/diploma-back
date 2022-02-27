@@ -1,7 +1,11 @@
 import {Injectable} from '@nestjs/common';
 import {FillerInterface} from './filler.interface';
 import {TeacherFiller} from './teacher-filler';
-import {MockFiller} from './mock-filler';
+import {InternshipFiller} from './internship-filler';
+import {AttestationFiller} from './attestation-filler';
+import {RebukeFiller} from './rebuke-filler';
+import {HonorFiller} from './honor-filler';
+import {PublicationFiller} from './publication-filler';
 
 @Injectable()
 export class FillerFactory {
@@ -10,22 +14,22 @@ export class FillerFactory {
   }
 
   getInternshipFiller(): FillerInterface {
-    return new MockFiller();
+    return new InternshipFiller();
   }
 
   getAttestationFiller(): FillerInterface {
-    return new MockFiller();
+    return new AttestationFiller();
   }
 
   getRebukeFiller(): FillerInterface {
-    return new MockFiller();
+    return new RebukeFiller();
   }
 
   getHonorFiller(): FillerInterface {
-    return new MockFiller();
+    return new HonorFiller();
   }
 
   getPublicationFiller(): FillerInterface {
-    return new MockFiller();
+    return new PublicationFiller();
   }
 }
