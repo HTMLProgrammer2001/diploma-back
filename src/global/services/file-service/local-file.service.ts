@@ -4,9 +4,9 @@ import {FileUpload} from 'graphql-upload';
 import {randomUUID} from 'crypto';
 import {createWriteStream} from 'fs';
 import {Workbook} from 'exceljs';
-import {ExportTypeEnum} from '../../../features/export/types/common/export-type.enum';
 import {ConfigService} from '@nestjs/config';
 import {dateToString} from '../../utils/functions';
+import {ImportDataTypeEnum} from '../../../features/import/types/common/import-data-type.enum';
 
 @Injectable()
 export class LocalFileService extends FileServiceInterface {
@@ -21,12 +21,21 @@ export class LocalFileService extends FileServiceInterface {
     return `${this.configService.get('APP_URL')}/static/avatars/${newFileName}`;
   }
 
-  async saveReport(workbook: Workbook, type: ExportTypeEnum): Promise<string> {
+  async saveReport(workbook: Workbook): Promise<string> {
     const date = new Date();
     const hash = `${dateToString(date)}_${date.getHours()}.${date.getMinutes()}.${date.getSeconds()}`;
-    const fileName = type === ExportTypeEnum.EXCEL ? `Report-teacher-${hash}.xlsx` : `Report-teacher-${hash}.csv`;
+    const fileName = `Report-teacher-${hash}.xlsx`;
 
     await workbook.xlsx.writeFile(`./static/reports/${fileName}`);
     return `${this.configService.get('APP_URL')}/static/reports/${fileName}`;
+  }
+
+  async saveImportTemplate(workbook: Workbook, type: ImportDataTypeEnum): Promise<string> {
+    const date = new Date();
+    const hash = `${dateToString(date)}_${date.getHours()}.${date.getMinutes()}.${date.getSeconds()}`;
+    const fileName = `Report-${type.toLowerCase()}-${hash}.xlsx`;
+
+    await workbook.xlsx.writeFile(`./static/import-templates/${fileName}`);
+    return `${this.configService.get('APP_URL')}/static/import-templates/${fileName}`;
   }
 }

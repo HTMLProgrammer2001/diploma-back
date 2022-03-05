@@ -1,6 +1,6 @@
 import {FileUpload} from 'graphql-upload';
 import {Workbook} from 'exceljs';
-import {ExportTypeEnum} from '../../../features/export/types/common/export-type.enum';
+import {ImportDataTypeEnum} from '../../../features/import/types/common/import-data-type.enum';
 
 export abstract class FileServiceInterface {
   /**
@@ -12,5 +12,10 @@ export abstract class FileServiceInterface {
   /**
    * Save report and return his url
    */
-  abstract saveReport(workbook: Workbook, type: ExportTypeEnum): Promise<string>;
+  abstract saveReport(workbook: Workbook): Promise<string>;
+
+  /**
+   * Save import template and return his url
+   */
+  abstract saveImportTemplate(workbook: Workbook, type: ImportDataTypeEnum): Promise<string>;
 }

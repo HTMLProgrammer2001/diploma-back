@@ -8,7 +8,7 @@ export class LocalMailService extends MailServiceInterface {
 
   constructor() {
     super();
-    this.logger = new Logger('LocalMail');
+    this.logger = new Logger(LocalMailService.name);
   }
 
   async sendTeacherLoginMail(email: string, token: string): Promise<void> {

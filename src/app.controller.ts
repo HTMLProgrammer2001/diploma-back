@@ -29,4 +29,14 @@ export class AppController {
       (err) => err && response.status(HttpStatus.NOT_FOUND).send(`Report ${fileName} does not exist`)
     );
   }
+
+  @SetMetadata(MetaDataFieldEnum.IS_CHECK_AUTHORIZATION, true)
+  @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
+  @Get('/static/import-templates/:filename')
+  getImportTemplate(@Param('filename') fileName: string, @Res() response: Response): void {
+    response.sendFile(
+      join(__dirname, '..', 'static', 'import-templates', fileName),
+      (err) => err && response.status(HttpStatus.NOT_FOUND).send(`Import template ${fileName} does not exist`)
+    );
+  }
 }

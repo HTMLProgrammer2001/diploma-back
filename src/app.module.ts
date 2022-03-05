@@ -44,6 +44,7 @@ import {SetupRequestStorageMiddleware} from './global/middlewares/setup-request-
 import {ExportModule} from './features/export/export.module';
 import {ScheduleModule} from '@nestjs/schedule';
 import {NotificationModule} from './features/notification/notification.module';
+import {ImportModule} from './features/import/import.module';
 
 const notificationLoader: ConfigFactory = () => ({NOTIFICATION: require('../notification.config.json')});
 
@@ -169,6 +170,7 @@ const notificationLoader: ConfigFactory = () => ({NOTIFICATION: require('../noti
     AttestationModule,
     ExportModule,
     NotificationModule,
+    ImportModule,
   ],
   controllers: [AppController],
   providers: [

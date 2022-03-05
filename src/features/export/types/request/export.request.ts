@@ -1,13 +1,9 @@
-import {Field, ID, InputType, registerEnumType} from '@nestjs/graphql';
-import {ArrayMinSize, ArrayUnique, IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, Min, MIN} from 'class-validator';
+import {Field, ID, InputType} from '@nestjs/graphql';
+import {ArrayMinSize, ArrayUnique, IsArray, IsEnum, IsNumber, IsOptional, Min} from 'class-validator';
 import {Transform} from 'class-transformer';
 import {ValidateDateRange} from '../../../../global/pipes/validate-date-range';
 import {ExportSelectEnum} from '../common/export-select.enum';
-import {ExportTypeEnum} from '../common/export-type.enum';
 import {ParseNumber} from '../../../../global/pipes/parse-number';
-
-registerEnumType(ExportSelectEnum, {name: 'ExportSelectEnum'});
-registerEnumType(ExportTypeEnum, {name: 'ExportTypeEnum'});
 
 @InputType()
 export class ExportRequest {
@@ -50,8 +46,4 @@ export class ExportRequest {
   @IsEnum(ExportSelectEnum, {each: true})
   @ArrayMinSize(1)
   select: Array<ExportSelectEnum>;
-
-  @Field(type => ExportTypeEnum, {nullable: false})
-  @IsEnum(ExportTypeEnum)
-  type: ExportTypeEnum;
 }

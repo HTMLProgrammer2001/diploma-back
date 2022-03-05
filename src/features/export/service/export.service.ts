@@ -241,7 +241,7 @@ export class ExportService {
     template = await this.fillWorkbookData(template, data, request);
     template = await this.formatWorkbookTemplate(template, data, request, headerText);
 
-    return await this.fileService.saveReport(template, request.type);
+    return await this.fileService.saveReport(template);
   }
 
   async formatWorkbookTemplate(template: Workbook, data: ExportDataInterface, request: ExportRequest, headerText: string):

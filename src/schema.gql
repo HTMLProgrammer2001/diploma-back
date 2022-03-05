@@ -379,7 +379,6 @@ input ExportRequest {
   select: [ExportSelectEnum!]!
   teacherIds: [ID!]
   to: DateTime
-  type: ExportTypeEnum!
 }
 
 type ExportResponse {
@@ -396,9 +395,12 @@ enum ExportSelectEnum {
   TEACHER_PROFESSIONAL_INFO
 }
 
-enum ExportTypeEnum {
-  CSV
-  EXCEL
+input GenerateImportTemplateRequest {
+  type: ImportTypeEnum!
+}
+
+type GenerateImportTemplateResponse {
+  url: String!
 }
 
 input HonorCreateRequest {
@@ -470,6 +472,17 @@ type IdNameResponse {
 
 type IdResponse {
   id: ID!
+}
+
+enum ImportTypeEnum {
+  ATTESTATION
+  EDUCATION
+  HONOR
+  INTERNSHIP
+  PUBLICATION
+  REBUKE
+  TEACHER
+  USER
 }
 
 input InternshipCreateRequest {
@@ -598,6 +611,7 @@ type Mutation {
   deleteTeachingRank(guid: String!, id: Int!): IdResponse!
   deleteUser(guid: String!, id: Int!): IdResponse!
   editProfile(body: EditProfileRequest!): ProfileResponse!
+  generateImportTemplate(body: GenerateImportTemplateRequest!): GenerateImportTemplateResponse!
   generateReport(body: ExportRequest!): ExportResponse!
   login(body: LoginRequest!): LoginResponse!
   loginTeacher(email: String!): LoginTeacherResponse!
@@ -631,7 +645,7 @@ type NotificationConfigResponse {
   notifyBeforeDays: Float!
   notifyDay: Float!
   notifyTime: String!
-  notifyType: notificationTypes!
+  notifyType: NotificationTypes!
   requiredInternshipHours: Float!
   schedule: String!
 }
@@ -649,6 +663,12 @@ type NotificationTeacherResponse {
   teacher: NotificationTeacherModelResponse
 }
 
+enum NotificationTypes {
+  DAILY
+  MONTHLY
+  WEEKLY
+}
+
 input NotificationUpdateRequest {
   adminEmails: [String!]
   attestationYearsPeriod: Float
@@ -657,7 +677,7 @@ input NotificationUpdateRequest {
   notifyBeforeDays: Float
   notifyDay: Float
   notifyTime: String
-  notifyType: notificationTypes
+  notifyType: NotificationTypes
   requiredInternshipHours: Float
 }
 
@@ -1063,10 +1083,4 @@ input UserUpdateRequest {
   password: String
   phone: String
   roleId: ID
-}
-
-enum notificationTypes {
-  DAILY
-  MONTHLY
-  WEEKLY
 }

@@ -1,7 +1,5 @@
-import {Field, ObjectType, registerEnumType} from '@nestjs/graphql';
+import {Field, ObjectType} from '@nestjs/graphql';
 import {NotificationTypesEnum} from '../common/notification-types.enum';
-
-registerEnumType(NotificationTypesEnum, {name: 'notificationTypes'});
 
 @ObjectType()
 export class NotificationConfigResponse {
