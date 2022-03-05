@@ -81,8 +81,8 @@ export class InternshipService {
           lastAttestation.responseList[0].date
         );
 
-        const {data: hours} = await this.internshipRepository.getInternshipHours(getInternshipHoursRepoRequest);
-        return {hours};
+        const {data} = await this.internshipRepository.getInternshipHours(getInternshipHoursRepoRequest);
+        return {hours: data[0]?.hours || 0};
       }
     } catch (e) {
       if (!(e instanceof CustomError)) {

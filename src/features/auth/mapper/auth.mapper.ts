@@ -7,9 +7,12 @@ import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-req
 import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
 import {TeacherGetRepoRequest} from '../../../data-layer/repositories/teacher/repo-request/teacher-get.repo-request';
 import {TeacherSelectFieldsEnum} from '../../../data-layer/repositories/teacher/enums/teacher-select-fields.enum';
+import {ConfigService} from '@nestjs/config';
 
 @Injectable()
 export class AuthMapper {
+  constructor(private configService: ConfigService) {}
+
   initializeGetUserByEmailRepoRequest(email: string): UserGetRepoRequest {
     const destination = new UserGetRepoRequest();
 
@@ -30,7 +33,8 @@ export class AuthMapper {
 
     destination.userId = userId;
     destination.sessionCode = sessionCode;
-    destination.expirationTime = new Date(Date.now() + Number(process.env.JWT_REFRESH_TOKEN_TTL_SECONDS) * 1000).toISOString();
+    destination.expirationTime = new Date(Date.now() +
+      Number(this.configService.get('JWT_REFRESH_TOKEN_TTL_SECONDS')) * 1000).toISOString();
 
     return destination;
   }
@@ -66,7 +70,8 @@ export class AuthMapper {
 
     destination.currentSessionCode = currentSessionCode;
     destination.newSessionCode = newSessionCode;
-    destination.expirationTime = new Date(Date.now() + Number(process.env.JWT_REFRESH_TOKEN_TTL_SECONDS) * 1000).toISOString();
+    destination.expirationTime = new Date(Date.now() +
+      Number(this.configService.get('JWT_REFRESH_TOKEN_TTL_SECONDS')) * 1000).toISOString();
 
     return destination;
   }

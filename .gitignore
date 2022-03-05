@@ -4,3 +4,4 @@ dist
 migrations
 .env.development
 logs
+package-lock.json

@@ -18,7 +18,10 @@ import {InternshipCreateRepoRequest} from './repo-request/internship-create.repo
 import {InternshipUpdateRepoRequest} from './repo-request/internship-update.repo-request';
 import {InternshipDeleteRepoRequest} from './repo-request/internship-delete.repo-request';
 import {InternshipGetHoursRepoRequest} from './repo-request/internship-get-hours.repo-request';
-import {InternshipGetHoursRepoResponse} from './repo-response/internship-get-hours.repo-response';
+import {
+  InternshipGetHoursRepoResponse,
+  InternshipHoursDbModel
+} from './repo-response/internship-get-hours.repo-response';
 import {TeacherDbModel} from '../../db-models/teacher.db-model';
 
 @Injectable()
@@ -231,8 +234,15 @@ export class InternshipRepository {
         filters.to = {[Op.lte]: repoRequest.to};
       }
 
-      const hours = await this.internshipDbModel.sum('hours', {where: filters});
-      return {data: hours || 0};
+      filters.isDeleted = false;
+
+      const data = await this.internshipDbModel.findAll({
+        attributes: ['teacherId', [sequelize.fn('sum', sequelize.col('hours')), 'hours']],
+        where: filters,
+        group: ['teacherId'],
+        raw: true
+      }) as Array<InternshipHoursDbModel>;
+      return {data};
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

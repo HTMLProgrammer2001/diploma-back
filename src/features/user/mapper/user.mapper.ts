@@ -14,9 +14,12 @@ import {UserCreateRepoRequest} from '../../../data-layer/repositories/user/repo-
 import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
 import {UserUpdateRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-update.repo-request';
 import {UserDeleteRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-delete.repo-request';
+import {ConfigService} from '@nestjs/config';
 
 @Injectable()
 export class UserMapper {
+  constructor(private configService: ConfigService) {}
+
   getUserListRequestToRepoRequest(source: UserGetListRequest): UserGetRepoRequest {
     const destination = new UserGetRepoRequest();
 
@@ -93,7 +96,7 @@ export class UserMapper {
     destination.phone = source.phone;
     destination.avatarUrl = avatarUrl;
     destination.roleId = source.roleId;
-    destination.passwordHash = bcrypt.hashSync(source.password, Number(process.env.SALT));
+    destination.passwordHash = bcrypt.hashSync(source.password, Number(this.configService.get('SALT')));
 
     return destination;
   }
@@ -139,7 +142,7 @@ export class UserMapper {
     destination.roleId = source.roleId;
 
     if (source.password) {
-      destination.passwordHash = bcrypt.hashSync(source.password, Number(process.env.SALT));
+      destination.passwordHash = bcrypt.hashSync(source.password, Number(this.configService.get('SALT')));
     }
 
     return destination;

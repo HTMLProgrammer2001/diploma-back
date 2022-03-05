@@ -9,12 +9,17 @@ import {Reflector} from '@nestjs/core';
 import {MetaDataFieldEnum} from '../constants/meta-data-fields.enum';
 import {RolesEnum} from '../constants/roles.enum';
 import {isNil} from 'lodash';
+import {ConfigService} from '@nestjs/config';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
   private logger: Logger;
 
-  constructor(private jwtService: JwtService, private reflector: Reflector) {
+  constructor(
+    private jwtService: JwtService,
+    private reflector: Reflector,
+    private configService: ConfigService,
+  ) {
     this.logger = new Logger(RoleGuard.name);
   }
 
@@ -30,7 +35,7 @@ export class RoleGuard implements CanActivate {
       try {
         const payload = this.jwtService.verify<IAccessTokenInfoInterface>(
           token,
-          {secret: process.env.JWT_ACCESS_TOKEN_SECRET}
+          {secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET')}
         );
 
         if (roles.includes(payload.role)) {

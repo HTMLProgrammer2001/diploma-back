@@ -603,6 +603,7 @@ type Mutation {
   loginTeacher(email: String!): LoginTeacherResponse!
   logout(refreshToken: String!): ResultResponse!
   refreshToken(refreshToken: String!): RefreshTokenResponse!
+  triggerNotification: ResultResponse!
   updateAcademicDegree(body: AcademicDegreeUpdateRequest!): AcademicDegreeResponse!
   updateAcademicTitle(body: AcademicTitleUpdateRequest!): AcademicTitleResponse!
   updateAttestation(body: AttestationUpdateRequest!): AttestationResponse!
@@ -613,12 +614,51 @@ type Mutation {
   updateEducationQualification(body: EducationQualificationUpdateRequest!): EducationQualificationResponse!
   updateHonor(body: HonorUpdateRequest!): HonorResponse!
   updateInternship(body: InternshipUpdateRequest!): InternshipResponse!
+  updateNotificationConfig(body: NotificationUpdateRequest!): NotificationConfigResponse!
   updatePublication(body: PublicationUpdateRequest!): PublicationResponse!
   updateRebuke(body: RebukeUpdateRequest!): RebukeResponse!
   updateRole(body: RoleUpdateRequest!): RoleResponse!
   updateTeacher(body: TeacherUpdateRequest!): TeacherResponse!
   updateTeachingRank(body: TeachingRankUpdateRequest!): TeachingRankResponse!
   updateUser(body: UserUpdateRequest!): UserResponse!
+}
+
+type NotificationConfigResponse {
+  adminEmails: [String!]!
+  attestationYearsPeriod: Float!
+  isNotifyAdmins: Boolean!
+  isNotifyTeachers: Boolean!
+  notifyBeforeDays: Float!
+  notifyDay: Float!
+  notifyTime: String!
+  notifyType: notificationTypes!
+  requiredInternshipHours: Float!
+  schedule: String!
+}
+
+type NotificationTeacherModelResponse {
+  email: String!
+  id: ID!
+  name: String!
+}
+
+type NotificationTeacherResponse {
+  internshipHours: Float
+  lastAttestationDate: String
+  nextAttestationDate: String
+  teacher: NotificationTeacherModelResponse
+}
+
+input NotificationUpdateRequest {
+  adminEmails: [String!]
+  attestationYearsPeriod: Float
+  isNotifyAdmins: Boolean
+  isNotifyTeachers: Boolean
+  notifyBeforeDays: Float
+  notifyDay: Float
+  notifyTime: String
+  notifyType: notificationTypes
+  requiredInternshipHours: Float
 }
 
 interface PaginatedData {
@@ -724,6 +764,7 @@ type Query {
   getInternshipById(query: InternshipGetByIdRequest!): InternshipResponse!
   getInternshipHoursFromLastAttestation(query: InternshipGetHoursFromLastAttestationRequest!): InternshipGetHoursFromLastAttestationResponse!
   getInternshipList(query: InternshipGetListRequest!): InternshipListResponse!
+  getNotificationConfig: NotificationConfigResponse!
   getProfile: ProfileResponse!
   getPublicationById(query: PublicationGetByIdRequest!): PublicationResponse!
   getPublicationList(query: PublicationGetListRequest!): PublicationListResponse!
@@ -733,6 +774,7 @@ type Query {
   getRoleList(query: RoleGetListRequest!): RoleListResponse!
   getTeacherById(query: TeacherGetByIdRequest!): TeacherResponse!
   getTeacherList(query: TeacherGetListRequest!): TeacherListResponse!
+  getTeachersToNotify: [NotificationTeacherResponse!]!
   getTeachingRankById(query: TeachingRankGetByIdRequest!): TeachingRankResponse!
   getTeachingRankList(query: TeachingRankGetListRequest!): TeachingRankListResponse!
   getUserById(query: UserGetByIdRequest!): UserResponse!
@@ -1021,4 +1063,10 @@ input UserUpdateRequest {
   password: String
   phone: String
   roleId: ID
+}
+
+enum notificationTypes {
+  DAILY
+  MONTHLY
+  WEEKLY
 }

@@ -17,8 +17,7 @@ import {DataLayerModule} from './data-layer/data-layer.module';
 import {AcademicDegreeModule} from './features/academic-degree/academic-degree.module';
 import {AcademicTitleModule} from './features/academic-title/academic-title.module';
 import {TeacherModule} from './features/teacher/teacher.module';
-import {ServeStaticModule} from '@nestjs/serve-static';
-import {ConfigModule} from '@nestjs/config';
+import {ConfigFactory, ConfigModule} from '@nestjs/config';
 import {GlobalModule} from './global/global.module';
 import {CustomArrayError} from './global/class/custom-array-error';
 import {CustomError} from './global/class/custom-error';
@@ -43,16 +42,18 @@ import {AttestationModule} from './features/attestation/attestation.module';
 import {storage} from './global/utils/storage';
 import {SetupRequestStorageMiddleware} from './global/middlewares/setup-request-storage.middleware';
 import {ExportModule} from './features/export/export.module';
+import {ScheduleModule} from '@nestjs/schedule';
+import {NotificationModule} from './features/notification/notification.module';
+
+const notificationLoader: ConfigFactory = () => ({NOTIFICATION: require('../notification.config.json')});
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
-      envFilePath: process.env.NODE_ENV === 'development' ? '.env.development' : '.env.production'
+      envFilePath: process.env.NODE_ENV === 'development' ? '.env.development' : '.env.production',
+      load: [notificationLoader]
     }),
-    // ServeStaticModule.forRoot({
-    //   rootPath: join(__dirname, '..', 'static'),
-    //   serveRoot: '/static'
-    // }),
     SequelizeModule.forRoot({
       dialect: 'mysql',
       host: process.env.DATABASE_HOST,
@@ -167,6 +168,7 @@ import {ExportModule} from './features/export/export.module';
     CategoryModule,
     AttestationModule,
     ExportModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [
@@ -200,6 +202,7 @@ export class AppModule implements OnApplicationBootstrap {
   }
 
   onApplicationBootstrap() {
+    // Logging
     const config = fs.readFileSync(process.env.NODE_ENV === 'development' ? '.env.development' : '.env.production');
     this.logger.log(`App started with config: ${config}`);
   }

@@ -28,6 +28,8 @@ import {RebukeCascadeDeletedByEnum, RebukeDbModel} from '../../db-models/rebuke.
 import {Sequelize} from 'sequelize-typescript';
 import {TeacherDeleteRepoRequest} from './repo-request/teacher-delete.repo-request';
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
+import {TeacherToNotifyRepoRequest} from './repo-request/teacher-to-notify.repo-request';
+import {TeacherToNotifyRepoResponse} from './repo-response/teacher-to-notify.repo-response';
 
 @Injectable()
 export class TeacherRepository {
@@ -311,7 +313,6 @@ export class TeacherRepository {
     }
   }
 
-
   async updateTeacher(repoRequest: TeacherUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
     const updateData = {} as TeacherInterface;
 
@@ -440,5 +441,28 @@ export class TeacherRepository {
 
       throw e;
     }
+  }
+
+  async getTeachersToNotify(repoRequest: TeacherToNotifyRepoRequest): Promise<Array<TeacherToNotifyRepoResponse>> {
+    const [rows] = await this.sequelize.query('' +
+      'SELECT `Teacher`.`id` as `teacherId`, `Teacher`.`fullName` as `teacherName`, `Teacher`.`email` as `teacherEmail`, ' +
+      'IFNULL(SUM(`Internship`.`hours`), 0) as `internshipHours`, ' +
+      'IFNULL(MAX(`Attestation`.`date`), NOW()) as `lastAttestationDate`, ' +
+      'DATE_ADD(IFNULL(MAX(`Attestation`.`date`), NOW()), INTERVAL :attestationYearsPeriod YEAR) as `nextAttestationDate` ' +
+      'FROM `Attestation` ' +
+      'LEFT JOIN `Teacher` ON `Teacher`.`id` = `Attestation`.`teacherId` AND `Teacher`.`isDeleted` = 0 ' +
+      'LEFT JOIN `Internship` ON `Internship`.`teacherId` = `Attestation`.`teacherId` AND `Internship`.`isDeleted` = 0 ' +
+      'WHERE `Attestation`.`isDeleted` = 0 ' +
+      'GROUP BY `Attestation`.`teacherId` ' +
+      'HAVING `internshipHours` < :requiredInternshipHours ' +
+      'AND DATE_ADD(NOW(), INTERVAL :daysBefore DAY) >= `nextAttestationDate`', {
+      replacements: {
+        attestationYearsPeriod: repoRequest.attestationYearsPeriod,
+        requiredInternshipHours: repoRequest.requiredInternshipHours,
+        daysBefore: repoRequest.notifyBeforeDays,
+      }
+    });
+
+    return rows as Array<TeacherToNotifyRepoResponse>;
   }
 }

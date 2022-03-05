@@ -9,12 +9,17 @@ import {CustomError} from '../class/custom-error';
 import {ErrorCodesEnum} from '../constants/error-codes.enum';
 import {MetaDataFieldEnum} from '../constants/meta-data-fields.enum';
 import {AccessTokenTypeEnum} from '../constants/access-token-type.enum';
+import {ConfigService} from '@nestjs/config';
 
 @Injectable()
 export class IsAuthorisedGuard implements CanActivate {
   private logger: Logger;
 
-  constructor(private jwtService: JwtService, private reflector: Reflector) {
+  constructor(
+    private jwtService: JwtService,
+    private reflector: Reflector,
+    private configService: ConfigService,
+  ) {
     this.logger = new Logger();
   }
 
@@ -33,7 +38,7 @@ export class IsAuthorisedGuard implements CanActivate {
         const isTeacherHasAccess = this.reflector.get<boolean>(MetaDataFieldEnum.IS_TEACHER_HAS_ACCESS, gqlContext.getHandler());
         const payload = this.jwtService.verify<IAccessTokenInfoInterface>(
           token,
-          {secret: process.env.JWT_ACCESS_TOKEN_SECRET}
+          {secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET')}
         );
 
         const canActivate = !!payload.userId && (isTeacherHasAccess || payload.type === AccessTokenTypeEnum.user);

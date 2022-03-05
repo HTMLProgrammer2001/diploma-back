@@ -4,6 +4,7 @@ import {ExportDataInterface} from '../types/common/export-data.interface';
 import {WorksheetEnum} from '../types/common/worksheet.enum';
 import {InternshipColumnsEnum} from '../types/common/columns/internship-columns.enum';
 import {RebukeColumnsEnum} from '../types/common/columns/rebuke-columns.enum';
+import {dateToString} from '../../../global/utils/functions';
 
 export class RebukeFiller implements FillerInterface {
   static START_ROW = 4;
@@ -19,7 +20,7 @@ export class RebukeFiller implements FillerInterface {
 
       worksheet.getRow(row).getCell(RebukeColumnsEnum.TEACHER).value = rebukeData.teacher?.fullName;
       worksheet.getRow(row).getCell(RebukeColumnsEnum.TITLE).value = rebukeData.title;
-      worksheet.getRow(row).getCell(RebukeColumnsEnum.DATE).value = rebukeData.date?.toLocaleDateString();
+      worksheet.getRow(row).getCell(RebukeColumnsEnum.DATE).value = dateToString(rebukeData.date);
       worksheet.getRow(row).getCell(RebukeColumnsEnum.ORDER_NUMBER).value = rebukeData.orderNumber;
       worksheet.getRow(row).getCell(RebukeColumnsEnum.DESCRIPTION).value = rebukeData.description;
     }

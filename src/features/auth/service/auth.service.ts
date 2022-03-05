@@ -18,6 +18,7 @@ import {TeacherRepository} from '../../../data-layer/repositories/teacher/teache
 import {RolesEnum} from '../../../global/constants/roles.enum';
 import {AccessTokenTypeEnum} from '../../../global/constants/access-token-type.enum';
 import {MailServiceInterface} from '../../../global/services/mail-service/mail-service.interface';
+import {ConfigService} from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +31,7 @@ export class AuthService {
     private teacherRepository: TeacherRepository,
     private mailService: MailServiceInterface,
     private authMapper: AuthMapper,
+    private configService: ConfigService,
   ) {
     this.logger = new Logger(AuthService.name);
   }
@@ -68,8 +70,8 @@ export class AuthService {
       await this.refreshTokenRepository.createRefreshToken(createRefreshTokenRepoRequest);
       const refreshTokenPayload: IRefreshTokenInfoInterface = {sessionCode: userSessionCode, userId: userModel.id};
       const refreshToken = this.jwtService.sign(refreshTokenPayload, {
-        secret: process.env.JWT_REFRESH_TOKEN_SECRET,
-        expiresIn: Number(process.env.JWT_REFRESH_TOKEN_TTL_SECONDS)
+        secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+        expiresIn: Number(this.configService.get('JWT_REFRESH_TOKEN_TTL_SECONDS'))
       });
 
       const accessTokenPayload: IAccessTokenInfoInterface = {
@@ -79,8 +81,8 @@ export class AuthService {
       };
 
       const accessToken = this.jwtService.sign(accessTokenPayload, {
-        secret: process.env.JWT_ACCESS_TOKEN_SECRET,
-        expiresIn: Number(process.env.JWT_ACCESS_TOKEN_TTL_SECONDS)
+        secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
+        expiresIn: Number(this.configService.get('JWT_ACCESS_TOKEN_TTL_SECONDS'))
       });
 
       this.logger.debug(`User with id ${userModel.id} logged in`);
@@ -99,7 +101,7 @@ export class AuthService {
     try {
       const {sessionCode, userId} = await this.jwtService.verify<IRefreshTokenInfoInterface>(
         refreshToken,
-        {secret: process.env.JWT_REFRESH_TOKEN_SECRET}
+        {secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET')}
       );
 
       const getRefreshTokenRepoRequest = this.authMapper.initializeGetRefreshTokenRepoRequest(sessionCode);
@@ -135,7 +137,7 @@ export class AuthService {
       //check refresh token validity
       const {sessionCode} = await this.jwtService.verify<IRefreshTokenInfoInterface>(
         refreshToken,
-        {secret: process.env.JWT_REFRESH_TOKEN_SECRET}
+        {secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET')}
       );
 
       const getRefreshTokenRepoRequest = this.authMapper.initializeGetRefreshTokenRepoRequest(sessionCode);
@@ -182,8 +184,8 @@ export class AuthService {
       await this.refreshTokenRepository.updateRefreshToken(updateRefreshTokenRepoRequest);
       const newRefreshTokenPayload: IRefreshTokenInfoInterface = {sessionCode: newUserSessionCode, userId: userModel.id};
       const newRefreshToken = this.jwtService.sign(newRefreshTokenPayload, {
-        secret: process.env.JWT_REFRESH_TOKEN_SECRET,
-        expiresIn: Number(process.env.JWT_REFRESH_TOKEN_TTL_SECONDS)
+        secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+        expiresIn: Number(this.configService.get('JWT_REFRESH_TOKEN_TTL_SECONDS'))
       });
 
       const newAccessTokenPayload: IAccessTokenInfoInterface = {
@@ -193,8 +195,8 @@ export class AuthService {
       };
 
       const newAccessToken = this.jwtService.sign(newAccessTokenPayload, {
-        secret: process.env.JWT_ACCESS_TOKEN_SECRET,
-        expiresIn: Number(process.env.JWT_ACCESS_TOKEN_TTL_SECONDS)
+        secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
+        expiresIn: Number(this.configService.get('JWT_ACCESS_TOKEN_TTL_SECONDS'))
       });
 
       this.logger.debug(`User with id ${userModel.id} refreshed token`);
@@ -231,8 +233,8 @@ export class AuthService {
       };
 
       const accessToken = this.jwtService.sign(accessTokenPayload, {
-        secret: process.env.JWT_ACCESS_TOKEN_SECRET,
-        expiresIn: Number(process.env.JWT_ACCESS_TOKEN_TTL_SECONDS)
+        secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
+        expiresIn: Number(this.configService.get('JWT_ACCESS_TOKEN_TTL_SECONDS'))
       });
 
       this.logger.debug(`Send teacher access link to email ${email}`);

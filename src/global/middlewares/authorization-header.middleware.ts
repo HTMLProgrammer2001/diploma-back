@@ -4,6 +4,7 @@ import {RequestContext} from '../services/request-context';
 import {JwtService} from '@nestjs/jwt';
 import {IAccessTokenInfoInterface} from '../types/interface/IAccessTokenInfo.interface';
 import {CustomError} from '../class/custom-error';
+import {ConfigService} from '@nestjs/config';
 
 @Injectable()
 export class AuthorizationHeaderMiddleware implements NestMiddleware {
@@ -12,6 +13,7 @@ export class AuthorizationHeaderMiddleware implements NestMiddleware {
   constructor(
     private requestContext: RequestContext,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {
     this.logger = new Logger(AuthorizationHeaderMiddleware.name);
   }
@@ -22,7 +24,7 @@ export class AuthorizationHeaderMiddleware implements NestMiddleware {
 
       if (token) {
         const payload = this.jwtService.verify<IAccessTokenInfoInterface>(token, {
-          secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+          secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET')
         });
 
         this.requestContext.setToken(token);

@@ -7,9 +7,12 @@ import {EditProfileRequest} from '../types/request/edit-profile.request';
 import {UserDeleteRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-delete.repo-request';
 import {UserUpdateRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-update.repo-request';
 import * as bcrypt from 'bcrypt';
+import {ConfigService} from '@nestjs/config';
 
 @Injectable()
 export class ProfileMapper {
+  constructor(private configService: ConfigService) {}
+
   profileDbModelToResponse(source: UserDbModel): ProfileResponse {
     const destination = new ProfileResponse();
 
@@ -63,7 +66,7 @@ export class ProfileMapper {
     destination.email = source.email;
     destination.phone = source.phone;
     destination.avatarUrl = avatarUrl;
-    destination.passwordHash = bcrypt.hashSync(source.password, Number(process.env.SALT));
+    destination.passwordHash = bcrypt.hashSync(source.password, Number(this.configService.get('SALT')));
 
     return destination;
   }

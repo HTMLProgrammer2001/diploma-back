@@ -1,3 +1,8 @@
+export interface InternshipHoursDbModel {
+  teacherId: number;
+  hours: number;
+}
+
 export class InternshipGetHoursRepoResponse {
-  data: number;
+  data: Array<InternshipHoursDbModel>;
 }

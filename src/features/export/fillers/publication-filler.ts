@@ -5,6 +5,7 @@ import {WorksheetEnum} from '../types/common/worksheet.enum';
 import {InternshipColumnsEnum} from '../types/common/columns/internship-columns.enum';
 import {RebukeColumnsEnum} from '../types/common/columns/rebuke-columns.enum';
 import {PublicationColumnsEnum} from '../types/common/columns/publication-columns.enum';
+import {dateToString} from '../../../global/utils/functions';
 
 export class PublicationFiller implements FillerInterface {
   static START_ROW = 4;
@@ -21,7 +22,7 @@ export class PublicationFiller implements FillerInterface {
       let authors = publicationData.teachers.map(teacher => teacher.fullName).join(', ');
       authors += publicationData.anotherAuthors ? ` & ${publicationData.anotherAuthors}` : '';
       worksheet.getRow(row).getCell(PublicationColumnsEnum.TITLE).value = publicationData.title;
-      worksheet.getRow(row).getCell(PublicationColumnsEnum.DATE).value = publicationData.date?.toLocaleDateString();
+      worksheet.getRow(row).getCell(PublicationColumnsEnum.DATE).value = dateToString(publicationData.date);
       worksheet.getRow(row).getCell(PublicationColumnsEnum.PUBLISHER).value = publicationData.publisher;
       worksheet.getRow(row).getCell(PublicationColumnsEnum.AUTHORS).value = authors;
       worksheet.getRow(row).getCell(PublicationColumnsEnum.URL).value = publicationData.url;

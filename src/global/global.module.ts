@@ -1,5 +1,6 @@
 import {Global, Module} from '@nestjs/common';
 import {JwtModule} from '@nestjs/jwt';
+import {ConfigModule} from '@nestjs/config';
 import {RoleGuard} from './guards/role.guard';
 import {FileServiceInterface} from './services/file-service/file-service.interface';
 import {LocalFileService} from './services/file-service/local-file.service';
@@ -11,7 +12,7 @@ import {LocalMailService} from './services/mail-service/local-mail.service';
 
 @Global()
 @Module({
-  imports: [JwtModule.register({})],
+  imports: [JwtModule.register({}), ConfigModule],
   providers: [{
     provide: FileServiceInterface,
     useClass: LocalFileService

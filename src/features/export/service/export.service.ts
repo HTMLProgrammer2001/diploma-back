@@ -26,6 +26,7 @@ import {DepartmentDbModel} from '../../../data-layer/db-models/department.db-mod
 import {FileServiceInterface} from '../../../global/services/file-service/file-service.interface';
 import {FillerFactory} from '../fillers/filler-factory';
 import {WorksheetEnum} from '../types/common/worksheet.enum';
+import {dateToString} from '../../../global/utils/functions';
 
 @Injectable()
 export class ExportService {
@@ -49,6 +50,8 @@ export class ExportService {
 
   async generateReport(request: ExportRequest): Promise<ExportResponse> {
     try {
+      this.logger.debug('Start validate request');
+
       if((request.departmentId && request.commissionId)
         || (request.departmentId && request.teacherIds)
         || (request.commissionId && request.teacherIds)) {
@@ -111,6 +114,8 @@ export class ExportService {
         throw error;
       }
 
+      this.logger.debug('Finish validate request');
+
       //Variables with data for export
       let teacherData: Array<TeacherDbModel> = [];
       let honorData: Array<HonorDbModel> = [];
@@ -118,6 +123,8 @@ export class ExportService {
       let internshipData: Array<InternshipDbModel> = [];
       let publicationData: Array<PublicationDbModel> = [];
       let attestationData: Array<AttestationDbModel> = [];
+
+      this.logger.debug('Start data requesting');
 
       //Get data for export
       const isSelectTeacherPersonalInfo = request.select.includes(ExportSelectEnum.TEACHER_PERSONAL_INFO);
@@ -163,12 +170,18 @@ export class ExportService {
         attestationData = data.responseList;
       }
 
+      this.logger.debug('Finish data requesting');
+
+      this.logger.debug('Start excel generation');
+
       //create export excel file
       const url = await this.createFile({
         attestationData, honorData, internshipData,
         publicationData, rebukeData, teacherData,
         departmentData, commissionData
       }, request);
+
+      this.logger.debug('Finish excel generation with url ' + url);
 
       return {url};
     } catch (e) {
@@ -220,8 +233,8 @@ export class ExportService {
     }
 
     if(request.from || request.to){
-      headerText += `for period from ${request.from.toLocaleDateString() || new Date(0).toLocaleDateString()} `;
-      headerText += `to ${request.to.toLocaleDateString() || new Date().toLocaleDateString()}`;
+      headerText += `for period from ${dateToString(request.from || new Date(0))} `;
+      headerText += `to ${dateToString(request.to || new Date())}`;
     }
 
     let template = await workbook.xlsx.readFile('./templates/report-template.xlsx');
@@ -295,6 +308,9 @@ export class ExportService {
 
   async fillWorkbookData(workbook: Workbook, data: ExportDataInterface, request: ExportRequest):
     Promise<Workbook> {
+
+    this.logger.debug('Start fill teacher');
+
     if(request.select.includes(ExportSelectEnum.TEACHER_PERSONAL_INFO)
         || request.select.includes(ExportSelectEnum.TEACHER_PROFESSIONAL_INFO)) {
       await this.fillerFactory.getTeacherInfoFiller(
@@ -303,25 +319,47 @@ export class ExportService {
       ).fill(workbook, data);
     }
 
+    this.logger.debug('Finish fill teacher');
+
+    this.logger.debug('Start fill internship');
+
     if(request.select.includes(ExportSelectEnum.INTERNSHIPS)) {
       await this.fillerFactory.getInternshipFiller().fill(workbook, data);
     }
+
+    this.logger.debug('Finish fill internship');
+
+    this.logger.debug('Start fill attestation');
 
     if(request.select.includes(ExportSelectEnum.ATTESTATIONS)) {
       await this.fillerFactory.getAttestationFiller().fill(workbook, data);
     }
 
+    this.logger.debug('Finish fill attestation');
+
+    this.logger.debug('Start fill rebukes');
+
     if(request.select.includes(ExportSelectEnum.REBUKES)) {
       await this.fillerFactory.getRebukeFiller().fill(workbook, data);
     }
+
+    this.logger.debug('Finish fill rebukes');
+
+    this.logger.debug('Start fill honors');
 
     if(request.select.includes(ExportSelectEnum.HONORS)) {
       await this.fillerFactory.getHonorFiller().fill(workbook, data);
     }
 
+    this.logger.debug('Finish fill honors');
+
+    this.logger.debug('Start fill publications');
+
     if(request.select.includes(ExportSelectEnum.PUBLICATIONS)) {
       await this.fillerFactory.getPublicationFiller().fill(workbook, data);
     }
+
+    this.logger.debug('Finish fill publications');
 
     return workbook;
   }
