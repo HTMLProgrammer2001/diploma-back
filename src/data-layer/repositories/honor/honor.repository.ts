@@ -18,6 +18,7 @@ import {HonorUpdateRepoRequest} from './repo-request/honor-update.repo-request';
 import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {HonorDbModel, HonorInterface} from '../../db-models/honor.db-model';
 import {TeacherDbModel} from '../../db-models/teacher.db-model';
+import {HonorImportData} from '../../../features/import/types/common/import-data/honor-import-data';
 
 @Injectable()
 export class HonorRepository {
@@ -108,6 +109,10 @@ export class HonorRepository {
 
       if (!isNil(repoRequest.orderNumberEqual)) {
         filters.orderNumber = repoRequest.orderNumberEqual;
+      }
+
+      if (!isNil(repoRequest.orderNumberIn)) {
+        filters.orderNumber = {[Op.in]: repoRequest.orderNumberIn};
       }
 
       if (!isNil(repoRequest.dateMore)) {
@@ -261,6 +266,26 @@ export class HonorRepository {
     try {
       await this.honorDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
       return {deletedID: repoRequest.id};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async import(data: Array<HonorImportData>, ignoreErrors: boolean): Promise<void> {
+    try {
+      await this.honorDbModel.bulkCreate(data.map(el => ({
+        teacherId: el.teacherId,
+        isActive: el.isActive,
+        description: el.description,
+        orderNumber: el.orderNumber,
+        date: el.date,
+        title: el.title
+      })), {ignoreDuplicates: ignoreErrors})
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

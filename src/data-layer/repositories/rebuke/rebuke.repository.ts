@@ -18,6 +18,7 @@ import {RebukeCreateRepoRequest} from './repo-request/rebuke-create.repo-request
 import {RebukeUpdateRepoRequest} from './repo-request/rebuke-update.repo-request';
 import {RebukeDeleteRepoRequest} from './repo-request/rebuke-delete.repo-request';
 import {TeacherDbModel} from '../../db-models/teacher.db-model';
+import {RebukeImportData} from '../../../features/import/types/common/import-data/rebuke-import-data';
 
 @Injectable()
 export class RebukeRepository {
@@ -108,6 +109,10 @@ export class RebukeRepository {
 
       if (!isNil(repoRequest.orderNumberEqual)) {
         filters.orderNumber = repoRequest.orderNumberEqual;
+      }
+
+      if (!isNil(repoRequest.orderNumberIn)) {
+        filters.orderNumber = {[Op.in]: repoRequest.orderNumberIn};
       }
 
       if (!isNil(repoRequest.dateMore)) {
@@ -261,6 +266,26 @@ export class RebukeRepository {
     try {
       await this.rebukeDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
       return {deletedID: repoRequest.id};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async import(data: Array<RebukeImportData>, ignoreErrors: boolean): Promise<void> {
+    try {
+      await this.rebukeDbModel.bulkCreate(data.map(el => ({
+        teacherId: el.teacherId,
+        isActive: el.isActive,
+        description: el.description,
+        orderNumber: el.orderNumber,
+        date: el.date,
+        title: el.title
+      })), {ignoreDuplicates: ignoreErrors})
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

@@ -21,6 +21,10 @@ import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-req
 import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
 import {InternshipGetRepoRequest} from '../../../data-layer/repositories/internship/repo-request/internship-get.repo-request';
 import {InternshipSelectFieldsEnum} from '../../../data-layer/repositories/internship/enums/internship-select-fields.enum';
+import {HonorGetRepoRequest} from '../../../data-layer/repositories/honor/repo-request/honor-get.repo-request';
+import {HonorSelectFieldsEnum} from '../../../data-layer/repositories/honor/enums/honor-select-fields.enum';
+import {RebukeGetRepoRequest} from '../../../data-layer/repositories/rebuke/repo-request/rebuke-get.repo-request';
+import {RebukeSelectFieldsEnum} from '../../../data-layer/repositories/rebuke/enums/rebuke-select-fields.enum';
 
 @Injectable()
 export class ImportMapper {
@@ -173,6 +177,28 @@ export class ImportMapper {
     destination.select = [InternshipSelectFieldsEnum.CODE];
     destination.codeIn = codes;
     destination.size = codes.length;
+    destination.showDeleted = false;
+
+    return destination;
+  }
+
+  initializeGetHonorsByOrderNumbers(orderNumbers: Array<string>): HonorGetRepoRequest {
+    const destination = new HonorGetRepoRequest();
+
+    destination.select = [HonorSelectFieldsEnum.ORDER_NUMBER];
+    destination.orderNumberIn = orderNumbers;
+    destination.size = orderNumbers.length;
+    destination.showDeleted = false;
+
+    return destination;
+  }
+
+  initializeGetRebukesByOrderNumbers(orderNumbers: Array<string>): RebukeGetRepoRequest {
+    const destination = new RebukeGetRepoRequest();
+
+    destination.select = [RebukeSelectFieldsEnum.ORDER_NUMBER];
+    destination.orderNumberIn = orderNumbers;
+    destination.size = orderNumbers.length;
     destination.showDeleted = false;
 
     return destination;

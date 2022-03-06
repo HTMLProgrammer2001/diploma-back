@@ -26,6 +26,14 @@ import {InternshipRepository} from '../../../data-layer/repositories/internship/
 import {PublicationImportData} from '../types/common/import-data/publication-import-data';
 import {PublicationImportColumnsEnum} from '../types/common/columns/publication-import-columns.enum';
 import {PublicationRepository} from '../../../data-layer/repositories/publication/publication.repository';
+import {HonorImportData} from '../types/common/import-data/honor-import-data';
+import {HonorImportColumnsEnum} from '../types/common/columns/honor-import-columns.enum';
+import {HonorDbModel} from '../../../data-layer/db-models/honor.db-model';
+import {HonorRepository} from '../../../data-layer/repositories/honor/honor.repository';
+import {RebukeRepository} from '../../../data-layer/repositories/rebuke/rebuke.repository';
+import {RebukeImportData} from '../types/common/import-data/rebuke-import-data';
+import {RebukeImportColumnsEnum} from '../types/common/columns/rebuke-import-columns.enum';
+import {RebukeDbModel} from '../../../data-layer/db-models/rebuke.db-model';
 
 @Injectable()
 export class ImportService {
@@ -40,6 +48,8 @@ export class ImportService {
     private teacherRepository: TeacherRepository,
     private internshipRepository: InternshipRepository,
     private publicationRepository: PublicationRepository,
+    private honorRepository: HonorRepository,
+    private rebukeRepository: RebukeRepository,
   ) {
     this.logger = new Logger(ImportService.name);
   }
@@ -55,6 +65,12 @@ export class ImportService {
 
         case ImportDataTypeEnum.PUBLICATION:
           return this.importPublications(request);
+
+        case ImportDataTypeEnum.HONOR:
+          return this.importHonors(request);
+
+        case ImportDataTypeEnum.REBUKE:
+          return this.importRebukes(request);
 
         default:
           throw new CustomError({code: ErrorCodesEnum.GENERAL, message: 'Unsupported type'});
@@ -479,6 +495,272 @@ export class ImportService {
       });
 
       await this.publicationRepository.import(publicationImportDataArray, request.ignoreErrors);
+      return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async importHonors(request: ImportRequest): Promise<ImportResponse> {
+    try {
+      const workbook = new Workbook();
+      const file = await request.file;
+      const template = await workbook.xlsx.read(file.createReadStream());
+      const worksheet = template.getWorksheet(1);
+
+      const importErrors: Array<ImportErrorResponse> = [];
+      let honorImportDataArray: Array<HonorImportData> = [];
+      let startRow = request.from ?? ImportService.START_ROW;
+      let currentRow = startRow;
+
+      while (true) {
+        const row = worksheet.getRow(currentRow);
+
+        //read data from row
+        const honorImportData = new HonorImportData();
+
+        if(row.getCell(HonorImportColumnsEnum.TEACHER).value) {
+          honorImportData.teacherId = Number(row.getCell(HonorImportColumnsEnum.TEACHER).value.toString().split(' - ')[0]);
+        }
+
+        honorImportData.title = String(row.getCell(HonorImportColumnsEnum.TITLE).value ?? '');
+        honorImportData.orderNumber = String(row.getCell(HonorImportColumnsEnum.ORDER_NUMBER).value ?? '');
+        honorImportData.isActive = row.getCell(HonorImportColumnsEnum.IS_NOT_ACTIVE).value === 'no';
+
+        if(row.getCell(HonorImportColumnsEnum.DATE).value){
+          honorImportData.date = new Date(String(row.getCell(HonorImportColumnsEnum.DATE).value ?? ''));
+        }
+
+        if(row.getCell(InternshipImportColumnsEnum.DESCRIPTION).value) {
+          honorImportData.description = String(row.getCell(InternshipImportColumnsEnum.DESCRIPTION).value ?? '');
+        }
+
+        if((isNil(request.to) && !isFilledWithData(row)) || (!isNil(request.to) && currentRow <= request.to)) {
+          break;
+        }
+        else {
+          //data validation of row
+          const validationErrors = await validate(honorImportData);
+          validationErrors.forEach(validationError => {
+            Object.values(validationError.constraints).map(errorMessage => {
+              importErrors.push({row: currentRow, property: validationError.property, message: errorMessage});
+            });
+          });
+
+          //add row to import if valid
+          if(!validationErrors.length) {
+            honorImportDataArray.push(honorImportData);
+          }
+
+          currentRow++;
+        }
+      }
+
+      if(!honorImportDataArray.length && !importErrors.length) {
+        importErrors.push({message: 'No data to import'});
+      }
+
+      //logic validation
+      const uniqueOrderNumbers: Array<string> = [];
+      const existTeachers: Array<number> = [];
+
+      honorImportDataArray = honorImportDataArray.filter((honorImportData, index) => {
+        if(uniqueOrderNumbers.includes(honorImportData.orderNumber)) {
+          importErrors.push({row: startRow + index, property: 'orderNumber', message: 'Order number not unique in file'});
+          return false;
+        }
+        else {
+          uniqueOrderNumbers.push(honorImportData.orderNumber);
+        }
+
+        existTeachers.push(honorImportData.teacherId);
+        return true;
+      });
+
+      //local file validation without database end
+      if(!request.ignoreErrors && importErrors.length) {
+        return {result: false, errors: importErrors};
+      }
+
+      //get data to validate unique
+      let honorsWithOrderNumbers: Array<HonorDbModel> = [];
+      let teachers: Array<TeacherDbModel> = [];
+
+      if(existTeachers.length) {
+        const getTeachersRequest = this.importMapper.initializeGetTeachersByIds(uniq(existTeachers));
+        const teacherResponse = await this.teacherRepository.getTeachers(getTeachersRequest);
+        teachers = teacherResponse.data.responseList;
+      }
+
+      if(uniqueOrderNumbers.length) {
+        const getHonorsByOrderNumbersRequest = this.importMapper.initializeGetHonorsByOrderNumbers(uniqueOrderNumbers);
+        const honorsWithOrderNumbersResponse = await this.honorRepository.getHonors(getHonorsByOrderNumbersRequest);
+        honorsWithOrderNumbers = honorsWithOrderNumbersResponse.data.responseList;
+      }
+
+      honorImportDataArray = honorImportDataArray.filter((honorImportData, index) => {
+        if(honorsWithOrderNumbers.find(internship => internship.orderNumber === honorImportData.orderNumber)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'orderNumber',
+            message: `Honor with order number ${honorImportData.orderNumber} already exist`
+          });
+
+          return false;
+        }
+
+        if(!teachers.find(teacher => teacher.id === honorImportData.teacherId)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'teacher',
+            message: `Teacher with id ${honorImportData.teacherId} not exist`
+          });
+
+          return false;
+        }
+
+        return true;
+      });
+
+      await this.honorRepository.import(honorImportDataArray, request.ignoreErrors);
+      return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async importRebukes(request: ImportRequest): Promise<ImportResponse> {
+    try {
+      const workbook = new Workbook();
+      const file = await request.file;
+      const template = await workbook.xlsx.read(file.createReadStream());
+      const worksheet = template.getWorksheet(1);
+
+      const importErrors: Array<ImportErrorResponse> = [];
+      let rebukeImportDataArray: Array<RebukeImportData> = [];
+      let startRow = request.from ?? ImportService.START_ROW;
+      let currentRow = startRow;
+
+      while (true) {
+        const row = worksheet.getRow(currentRow);
+
+        //read data from row
+        const rebukeImportData = new RebukeImportData();
+
+        if(row.getCell(RebukeImportColumnsEnum.TEACHER).value) {
+          rebukeImportData.teacherId = Number(row.getCell(RebukeImportColumnsEnum.TEACHER).value.toString().split(' - ')[0]);
+        }
+
+        rebukeImportData.title = String(row.getCell(RebukeImportColumnsEnum.TITLE).value ?? '');
+        rebukeImportData.orderNumber = String(row.getCell(RebukeImportColumnsEnum.ORDER_NUMBER).value ?? '');
+        rebukeImportData.isActive = row.getCell(RebukeImportColumnsEnum.IS_NOT_ACTIVE).value === 'no';
+
+        if(row.getCell(RebukeImportColumnsEnum.DATE).value){
+          rebukeImportData.date = new Date(String(row.getCell(RebukeImportColumnsEnum.DATE).value ?? ''));
+        }
+
+        if(row.getCell(RebukeImportColumnsEnum.DESCRIPTION).value) {
+          rebukeImportData.description = String(row.getCell(RebukeImportColumnsEnum.DESCRIPTION).value ?? '');
+        }
+
+        if((isNil(request.to) && !isFilledWithData(row)) || (!isNil(request.to) && currentRow <= request.to)) {
+          break;
+        }
+        else {
+          //data validation of row
+          const validationErrors = await validate(rebukeImportData);
+          validationErrors.forEach(validationError => {
+            Object.values(validationError.constraints).map(errorMessage => {
+              importErrors.push({row: currentRow, property: validationError.property, message: errorMessage});
+            });
+          });
+
+          //add row to import if valid
+          if(!validationErrors.length) {
+            rebukeImportDataArray.push(rebukeImportData);
+          }
+
+          currentRow++;
+        }
+      }
+
+      if(!rebukeImportDataArray.length && !importErrors.length) {
+        importErrors.push({message: 'No data to import'});
+      }
+
+      //logic validation
+      const uniqueOrderNumbers: Array<string> = [];
+      const existTeachers: Array<number> = [];
+
+      rebukeImportDataArray = rebukeImportDataArray.filter((rebukeImportData, index) => {
+        if(uniqueOrderNumbers.includes(rebukeImportData.orderNumber)) {
+          importErrors.push({row: startRow + index, property: 'orderNumber', message: 'Order number not unique in file'});
+          return false;
+        }
+        else {
+          uniqueOrderNumbers.push(rebukeImportData.orderNumber);
+        }
+
+        existTeachers.push(rebukeImportData.teacherId);
+        return true;
+      });
+
+      //local file validation without database end
+      if(!request.ignoreErrors && importErrors.length) {
+        return {result: false, errors: importErrors};
+      }
+
+      //get data to validate unique
+      let rebukesWithOrderNumbers: Array<RebukeDbModel> = [];
+      let teachers: Array<TeacherDbModel> = [];
+
+      if(existTeachers.length) {
+        const getTeachersRequest = this.importMapper.initializeGetTeachersByIds(uniq(existTeachers));
+        const teacherResponse = await this.teacherRepository.getTeachers(getTeachersRequest);
+        teachers = teacherResponse.data.responseList;
+      }
+
+      if(uniqueOrderNumbers.length) {
+        const getRebukesByOrderNumbersRequest = this.importMapper.initializeGetRebukesByOrderNumbers(uniqueOrderNumbers);
+        const rebukesWithOrderNumbersResponse = await this.rebukeRepository.getRebukes(getRebukesByOrderNumbersRequest);
+        rebukesWithOrderNumbers = rebukesWithOrderNumbersResponse.data.responseList;
+      }
+
+      rebukeImportDataArray = rebukeImportDataArray.filter((honorImportData, index) => {
+        if(rebukesWithOrderNumbers.find(internship => internship.orderNumber === honorImportData.orderNumber)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'orderNumber',
+            message: `Rebuke with order number ${honorImportData.orderNumber} already exist`
+          });
+
+          return false;
+        }
+
+        if(!teachers.find(teacher => teacher.id === honorImportData.teacherId)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'teacher',
+            message: `Teacher with id ${honorImportData.teacherId} not exist`
+          });
+
+          return false;
+        }
+
+        return true;
+      });
+
+      await this.rebukeRepository.import(rebukeImportDataArray, request.ignoreErrors);
       return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
     } catch (e) {
       if (!(e instanceof CustomError)) {

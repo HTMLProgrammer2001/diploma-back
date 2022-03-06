@@ -43,7 +43,7 @@ export function dateToString(date: Date): string {
 
 export function isFilledWithData(row: Row): boolean {
   for(let i = 1; i <= row.cellCount; i++) {
-    if(!!row.getCell(i).value) {
+    if(!!row.getCell(i).value && row.getCell(i).value !== 'no') {
       return true;
     }
   }

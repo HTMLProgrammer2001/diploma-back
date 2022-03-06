@@ -10,6 +10,7 @@ export class RebukeGetRepoRequest extends BaseRepoRequest {
   dateLess: Date;
   orderNumber: string;
   orderNumberEqual: string;
+  orderNumberIn: Array<string>;
   teacherId: number;
   teacherIds: Array<number>;
   showDeleted: boolean;
