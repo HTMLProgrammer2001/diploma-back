@@ -34,6 +34,16 @@ import {RebukeRepository} from '../../../data-layer/repositories/rebuke/rebuke.r
 import {RebukeImportData} from '../types/common/import-data/rebuke-import-data';
 import {RebukeImportColumnsEnum} from '../types/common/columns/rebuke-import-columns.enum';
 import {RebukeDbModel} from '../../../data-layer/db-models/rebuke.db-model';
+import {EducationImportData} from '../types/common/import-data/education-import-data';
+import {EducationImportColumnsEnum} from '../types/common/columns/education-import-columns.enum';
+import {EducationQualificationDbModel} from '../../../data-layer/db-models/education-qualification.db-model';
+import {EducationQualificationRepository} from '../../../data-layer/repositories/education-qualification/education-qualification.repository';
+import {EducationRepository} from '../../../data-layer/repositories/education/education.repository';
+import {AttestationRepository} from '../../../data-layer/repositories/attestation/attestation.repository';
+import {CategoryRepository} from '../../../data-layer/repositories/category/category.repository';
+import {AttestationImportData} from '../types/common/import-data/attestation-import-data';
+import {AttestationImportColumnsEnum} from '../types/common/columns/attestation-import-columns.enum';
+import {CategoryDbModel} from '../../../data-layer/db-models/category.db-model';
 
 @Injectable()
 export class ImportService {
@@ -50,6 +60,10 @@ export class ImportService {
     private publicationRepository: PublicationRepository,
     private honorRepository: HonorRepository,
     private rebukeRepository: RebukeRepository,
+    private educationQualificationRepository: EducationQualificationRepository,
+    private educationRepository: EducationRepository,
+    private attestationRepository: AttestationRepository,
+    private categoryRepository: CategoryRepository,
   ) {
     this.logger = new Logger(ImportService.name);
   }
@@ -71,6 +85,12 @@ export class ImportService {
 
         case ImportDataTypeEnum.REBUKE:
           return this.importRebukes(request);
+
+        case ImportDataTypeEnum.EDUCATION:
+          return this.importEducations(request);
+
+        case ImportDataTypeEnum.ATTESTATION:
+          return this.importAttestations(request);
 
         default:
           throw new CustomError({code: ErrorCodesEnum.GENERAL, message: 'Unsupported type'});
@@ -761,6 +781,262 @@ export class ImportService {
       });
 
       await this.rebukeRepository.import(rebukeImportDataArray, request.ignoreErrors);
+      return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async importEducations(request: ImportRequest): Promise<ImportResponse> {
+    try {
+      const workbook = new Workbook();
+      const file = await request.file;
+      const template = await workbook.xlsx.read(file.createReadStream());
+      const worksheet = template.getWorksheet(1);
+
+      const importErrors: Array<ImportErrorResponse> = [];
+      let educationImportDataArray: Array<EducationImportData> = [];
+      let startRow = request.from ?? ImportService.START_ROW;
+      let currentRow = startRow;
+
+      while (true) {
+        const row = worksheet.getRow(currentRow);
+
+        //read data from row
+        const educationImportData = new EducationImportData();
+
+        if(row.getCell(EducationImportColumnsEnum.TEACHER).value) {
+          educationImportData.teacherId = Number(row.getCell(EducationImportColumnsEnum.TEACHER).value.toString().split(' - ')[0]);
+        }
+
+        if(row.getCell(EducationImportColumnsEnum.EDUCATION_QUALIFICATION).value) {
+          educationImportData.educationQualificationId = Number(row.getCell(EducationImportColumnsEnum.EDUCATION_QUALIFICATION)
+            .value.toString().split(' - ')[0]);
+        }
+
+        educationImportData.institution = String(row.getCell(EducationImportColumnsEnum.INSTITUTION).value ?? '');
+        educationImportData.specialty = String(row.getCell(EducationImportColumnsEnum.SPECIALTY).value ?? '');
+
+        if(row.getCell(EducationImportColumnsEnum.YEAR_OF_ISSUE).value){
+          educationImportData.yearOfIssue = Number(String(row.getCell(EducationImportColumnsEnum.YEAR_OF_ISSUE).value ?? 0));
+        }
+
+        if(row.getCell(EducationImportColumnsEnum.DESCRIPTION).value) {
+          educationImportData.description = String(row.getCell(EducationImportColumnsEnum.DESCRIPTION).value ?? '');
+        }
+
+        if((isNil(request.to) && !isFilledWithData(row)) || (!isNil(request.to) && currentRow <= request.to)) {
+          break;
+        }
+        else {
+          //data validation of row
+          const validationErrors = await validate(educationImportData);
+          validationErrors.forEach(validationError => {
+            Object.values(validationError.constraints).map(errorMessage => {
+              importErrors.push({row: currentRow, property: validationError.property, message: errorMessage});
+            });
+          });
+
+          //add row to import if valid
+          if(!validationErrors.length) {
+            educationImportDataArray.push(educationImportData);
+          }
+
+          currentRow++;
+        }
+      }
+
+      if(!educationImportDataArray.length && !importErrors.length) {
+        importErrors.push({message: 'No data to import'});
+      }
+
+      //logic validation
+      const existTeachers: Array<number> = [];
+      const existEducationQualifications: Array<number> = [];
+
+      educationImportDataArray = educationImportDataArray.filter((educationImportData, index) => {
+        existTeachers.push(educationImportData.teacherId);
+        existEducationQualifications.push(educationImportData.educationQualificationId);
+        return true;
+      });
+
+      //local file validation without database end
+      if(!request.ignoreErrors && importErrors.length) {
+        return {result: false, errors: importErrors};
+      }
+
+      //get data to validate unique
+      let teachers: Array<TeacherDbModel> = [];
+      let educationQualifications: Array<EducationQualificationDbModel> = [];
+
+      if(existTeachers.length) {
+        const getTeachersRequest = this.importMapper.initializeGetTeachersByIds(uniq(existTeachers));
+        const teacherResponse = await this.teacherRepository.getTeachers(getTeachersRequest);
+        teachers = teacherResponse.data.responseList;
+      }
+
+      if(existEducationQualifications.length) {
+        const getEducationQualificationsRequest = this.importMapper.initializeGetEducationQualificationsByIds(uniq(existEducationQualifications));
+        const educationQualificationsResponse = await this.educationQualificationRepository.getEducationQualification(getEducationQualificationsRequest);
+        educationQualifications = educationQualificationsResponse.data.responseList;
+      }
+
+      educationImportDataArray = educationImportDataArray.filter((educationImportData, index) => {
+        if(!teachers.find(teacher => teacher.id === educationImportData.teacherId)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'teacher',
+            message: `Teacher with id ${educationImportData.teacherId} not exist`
+          });
+
+          return false;
+        }
+
+        if(!educationQualifications.find(educationQualification => educationQualification.id === educationImportData.educationQualificationId)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'educationQualification',
+            message: `Education qualification with id ${educationImportData.educationQualificationId} not exist`
+          });
+
+          return false;
+        }
+
+        return true;
+      });
+
+      await this.educationRepository.import(educationImportDataArray, request.ignoreErrors);
+      return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async importAttestations(request: ImportRequest): Promise<ImportResponse> {
+    try {
+      const workbook = new Workbook();
+      const file = await request.file;
+      const template = await workbook.xlsx.read(file.createReadStream());
+      const worksheet = template.getWorksheet(1);
+
+      const importErrors: Array<ImportErrorResponse> = [];
+      let attestationImportDataArray: Array<AttestationImportData> = [];
+      let startRow = request.from ?? ImportService.START_ROW;
+      let currentRow = startRow;
+
+      while (true) {
+        const row = worksheet.getRow(currentRow);
+
+        //read data from row
+        const attestationImportData = new AttestationImportData();
+
+        if(row.getCell(AttestationImportColumnsEnum.TEACHER).value) {
+          attestationImportData.teacherId = Number(row.getCell(AttestationImportColumnsEnum.TEACHER).value.toString().split(' - ')[0]);
+        }
+
+        if(row.getCell(AttestationImportColumnsEnum.CATEGORY).value) {
+          attestationImportData.categoryId = Number(row.getCell(AttestationImportColumnsEnum.CATEGORY).value.toString().split(' - ')[0]);
+        }
+
+        if(row.getCell(AttestationImportColumnsEnum.DATE).value){
+          attestationImportData.date = new Date(String(row.getCell(AttestationImportColumnsEnum.DATE).value ?? ''));
+        }
+
+        if(row.getCell(EducationImportColumnsEnum.DESCRIPTION).value) {
+          attestationImportData.description = String(row.getCell(EducationImportColumnsEnum.DESCRIPTION).value ?? '');
+        }
+
+        if((isNil(request.to) && !isFilledWithData(row)) || (!isNil(request.to) && currentRow <= request.to)) {
+          break;
+        }
+        else {
+          //data validation of row
+          const validationErrors = await validate(attestationImportData);
+          validationErrors.forEach(validationError => {
+            Object.values(validationError.constraints).map(errorMessage => {
+              importErrors.push({row: currentRow, property: validationError.property, message: errorMessage});
+            });
+          });
+
+          //add row to import if valid
+          if(!validationErrors.length) {
+            attestationImportDataArray.push(attestationImportData);
+          }
+
+          currentRow++;
+        }
+      }
+
+      if(!attestationImportDataArray.length && !importErrors.length) {
+        importErrors.push({message: 'No data to import'});
+      }
+
+      //logic validation
+      const existTeachers: Array<number> = [];
+      const existCategories: Array<number> = [];
+
+      attestationImportDataArray = attestationImportDataArray.filter(educationImportData => {
+        existTeachers.push(educationImportData.teacherId);
+        existCategories.push(educationImportData.categoryId);
+        return true;
+      });
+
+      //local file validation without database end
+      if(!request.ignoreErrors && importErrors.length) {
+        return {result: false, errors: importErrors};
+      }
+
+      //get data to validate unique
+      let teachers: Array<TeacherDbModel> = [];
+      let categories: Array<CategoryDbModel> = [];
+
+      if(existTeachers.length) {
+        const getTeachersRequest = this.importMapper.initializeGetTeachersByIds(uniq(existTeachers));
+        const teacherResponse = await this.teacherRepository.getTeachers(getTeachersRequest);
+        teachers = teacherResponse.data.responseList;
+      }
+
+      if(existCategories.length) {
+        const getCategoriesRequest = this.importMapper.initializeGetCategoriesByIds(uniq(existCategories));
+        const categoriesResponse = await this.categoryRepository.getCategories(getCategoriesRequest);
+        categories = categoriesResponse.data.responseList;
+      }
+
+      attestationImportDataArray = attestationImportDataArray.filter((attestationImportData, index) => {
+        if(!teachers.find(teacher => teacher.id === attestationImportData.teacherId)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'teacher',
+            message: `Teacher with id ${attestationImportData.teacherId} not exist`
+          });
+
+          return false;
+        }
+
+        if(!categories.find(category => category.id === attestationImportData.categoryId)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'category',
+            message: `Category with id ${attestationImportData.categoryId} not exist`
+          });
+
+          return false;
+        }
+
+        return true;
+      });
+
+      await this.attestationRepository.import(attestationImportDataArray, request.ignoreErrors);
       return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
     } catch (e) {
       if (!(e instanceof CustomError)) {

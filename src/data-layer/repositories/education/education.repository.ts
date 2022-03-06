@@ -19,6 +19,7 @@ import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {EducationDeleteRepoRequest} from './repo-request/education-delete.repo-request';
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {TeacherDbModel} from '../../db-models/teacher.db-model';
+import {EducationImportData} from '../../../features/import/types/common/import-data/education-import-data';
 
 @Injectable()
 export class EducationRepository {
@@ -275,6 +276,26 @@ export class EducationRepository {
     try {
       await this.educationDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
       return {deletedID: repoRequest.id};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async import(data: Array<EducationImportData>, ignoreErrors: boolean): Promise<void> {
+    try {
+      await this.educationDbModel.bulkCreate(data.map(el => ({
+        educationQualificationId: el.educationQualificationId,
+        teacherId: el.teacherId,
+        institution: el.institution,
+        specialty: el.specialty,
+        description: el.description,
+        yearOfIssue: el.yearOfIssue
+      })), {ignoreDuplicates: ignoreErrors})
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

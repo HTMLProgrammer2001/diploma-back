@@ -203,4 +203,26 @@ export class ImportMapper {
 
     return destination;
   }
+
+  initializeGetEducationQualificationsByIds(educationQualificationIds: Array<number>): EducationQualificationGetRepoRequest {
+    const destination = new EducationQualificationGetRepoRequest();
+
+    destination.select = [EducationQualificationSelectFieldsEnum.ID];
+    destination.ids = educationQualificationIds;
+    destination.size = educationQualificationIds.length;
+    destination.showDeleted = false;
+
+    return destination;
+  }
+
+  initializeGetCategoriesByIds(categoryIds: Array<number>): CategoryGetRepoRequest {
+    const destination = new CategoryGetRepoRequest();
+
+    destination.select = [CategorySelectFieldsEnum.ID];
+    destination.ids = categoryIds;
+    destination.size = categoryIds.length;
+    destination.showDeleted = false;
+
+    return destination;
+  }
 }

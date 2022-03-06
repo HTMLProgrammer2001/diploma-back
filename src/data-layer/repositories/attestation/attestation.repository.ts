@@ -19,6 +19,7 @@ import {AttestationDeleteRepoRequest} from './repo-request/attestation-delete.re
 import {AttestationDbModel, AttestationInterface} from '../../db-models/attestation.db-model';
 import {CategoryDbModel} from '../../db-models/category.db-model';
 import {TeacherDbModel} from '../../db-models/teacher.db-model';
+import {AttestationImportData} from '../../../features/import/types/common/import-data/attestation-import-data';
 
 @Injectable()
 export class AttestationRepository {
@@ -243,6 +244,24 @@ export class AttestationRepository {
     try {
       await this.attestationDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
       return {deletedID: repoRequest.id};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async import(data: Array<AttestationImportData>, ignoreErrors: boolean): Promise<void> {
+    try {
+      await this.attestationDbModel.bulkCreate(data.map(el => ({
+        date: el.date,
+        description: el.description,
+        teacherId: el.teacherId,
+        categoryId: el.categoryId
+      })), {ignoreDuplicates: ignoreErrors})
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);
