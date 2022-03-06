@@ -33,7 +33,7 @@ export class LocalFileService extends FileServiceInterface {
   async saveImportTemplate(workbook: Workbook, type: ImportDataTypeEnum): Promise<string> {
     const date = new Date();
     const hash = `${dateToString(date)}_${date.getHours()}.${date.getMinutes()}.${date.getSeconds()}`;
-    const fileName = `Report-${type.toLowerCase()}-${hash}.xlsx`;
+    const fileName = `Import-${type.toLowerCase()}-${hash}.xlsx`;
 
     await workbook.xlsx.writeFile(`./static/import-templates/${fileName}`);
     return `${this.configService.get('APP_URL')}/static/import-templates/${fileName}`;
