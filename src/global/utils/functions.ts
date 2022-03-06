@@ -1,6 +1,7 @@
 import {IPaginator} from '../types/interface/IPaginator.interface';
 import {NotificationConfig} from '../../features/notification/types/common/notification.config';
 import {NotificationTypesEnum} from '../../features/notification/types/common/notification-types.enum';
+import {Row} from 'exceljs';
 
 export function convertFindAndCountToPaginator<T>(data: { rows: Array<T>, count: number }, page: number, size: number):
   IPaginator<T> {
@@ -38,4 +39,14 @@ export function dateToString(date: Date): string {
   const day = date.getDate();
 
   return date && `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day}`;
+}
+
+export function isFilledWithData(row: Row): boolean {
+  for(let i = 1; i <= row.cellCount; i++) {
+    if(!!row.getCell(i).value) {
+      return true;
+    }
+  }
+
+  return false;
 }

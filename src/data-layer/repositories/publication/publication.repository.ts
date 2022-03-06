@@ -19,6 +19,7 @@ import {PublicationCreateRepoRequest} from './repo-request/publication-create.re
 import {PublicationUpdateRepoRequest} from './repo-request/publication-update.repo-request';
 import {PublicationDeleteRepoRequest} from './repo-request/publication-delete.repo-request';
 import {TeacherDbModel} from '../../db-models/teacher.db-model';
+import {PublicationImportData} from '../../../features/import/types/common/import-data/publication-import-data';
 
 @Injectable()
 export class PublicationRepository {
@@ -264,6 +265,31 @@ export class PublicationRepository {
     try {
       await this.publicationDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
       return {deletedID: repoRequest.id};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async import(data: Array<PublicationImportData>, ignoreErrors: boolean): Promise<void> {
+    try {
+      for(let item of data) {
+        await this.publicationDbModel.create({
+          url: item.url,
+          publisher: item.publisher,
+          date: item.date,
+          description: item.description,
+          title: item.title,
+          anotherAuthors: item.anotherAuthors,
+        }, {ignoreDuplicates: ignoreErrors}).then(async publication => {
+          await publication.$set('teachers', item.teacherIds);
+          return publication;
+        });
+      }
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

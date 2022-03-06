@@ -256,7 +256,7 @@ export class UserRepository {
     }
   }
 
-  async import(data: Array<UserImportData>, ignoreErrors: boolean) {
+  async import(data: Array<UserImportData>, ignoreErrors: boolean): Promise<void> {
     try {
       await this.userDbModel.bulkCreate(data.map(el => ({
         fullName: el.fullName,

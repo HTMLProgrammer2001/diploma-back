@@ -16,6 +16,16 @@ import {ImportMapper} from '../mapper/import.mapper';
 import {UserDbModel} from '../../../data-layer/db-models/user.db-model';
 import {RoleDbModel} from '../../../data-layer/db-models/role.db-model';
 import {UserRepository} from '../../../data-layer/repositories/user/user.repository';
+import {InternshipImportData} from '../types/common/import-data/internship-import-data';
+import {InternshipImportColumnsEnum} from '../types/common/columns/internship-import-columns.enum';
+import {isFilledWithData} from '../../../global/utils/functions';
+import {InternshipDbModel} from '../../../data-layer/db-models/internship.db-model';
+import {TeacherDbModel} from '../../../data-layer/db-models/teacher.db-model';
+import {TeacherRepository} from '../../../data-layer/repositories/teacher/teacher.repository';
+import {InternshipRepository} from '../../../data-layer/repositories/internship/internship.repository';
+import {PublicationImportData} from '../types/common/import-data/publication-import-data';
+import {PublicationImportColumnsEnum} from '../types/common/columns/publication-import-columns.enum';
+import {PublicationRepository} from '../../../data-layer/repositories/publication/publication.repository';
 
 @Injectable()
 export class ImportService {
@@ -27,6 +37,9 @@ export class ImportService {
     private importMapper: ImportMapper,
     private roleRepository: RoleRepository,
     private userRepository: UserRepository,
+    private teacherRepository: TeacherRepository,
+    private internshipRepository: InternshipRepository,
+    private publicationRepository: PublicationRepository,
   ) {
     this.logger = new Logger(ImportService.name);
   }
@@ -36,6 +49,12 @@ export class ImportService {
       switch (request.type) {
         case ImportDataTypeEnum.USER:
           return this.importUsers(request);
+
+        case ImportDataTypeEnum.INTERNSHIP:
+          return this.importInternships(request);
+
+        case ImportDataTypeEnum.PUBLICATION:
+          return this.importPublications(request);
 
         default:
           throw new CustomError({code: ErrorCodesEnum.GENERAL, message: 'Unsupported type'});
@@ -68,17 +87,15 @@ export class ImportService {
         //read data from row
         const userImportData = new UserImportData();
         userImportData.fullName = String(row.getCell(UserImportColumnsEnum.FULL_NAME).value ?? '');
-        userImportData.roleId = Number(row.getCell(UserImportColumnsEnum.ROLE).toString().split(' - ')[0]);
         userImportData.email = String(row.getCell(UserImportColumnsEnum.EMAIL).value ?? '');
         userImportData.phone = String(row.getCell(UserImportColumnsEnum.PHONE).value ?? '');
         userImportData.password = String(row.getCell(UserImportColumnsEnum.PASSWORD).value ?? '');
         userImportData.passwordHash = bcrypt.hashSync(userImportData.password, Number(this.configService.get('SALT')));
+        if(row.getCell(UserImportColumnsEnum.ROLE).value) {
+          userImportData.roleId = Number(row.getCell(UserImportColumnsEnum.ROLE).value.toString().split(' - ')[0]);
+        }
 
-        //calculate is filled row
-        const isFilledRow = userImportData.fullName || userImportData.roleId || userImportData.email
-          || userImportData.phone || userImportData.password;
-
-        if((isNil(request.to) && !isFilledRow) || (!isNil(request.to) && currentRow <= request.to)) {
+        if((isNil(request.to) && !isFilledWithData(row)) || (!isNil(request.to) && currentRow <= request.to)) {
           break;
         }
         else {
@@ -192,6 +209,276 @@ export class ImportService {
       });
 
       await this.userRepository.import(userImportDataArray, request.ignoreErrors);
+      return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async importInternships(request: ImportRequest): Promise<ImportResponse> {
+    try {
+      const workbook = new Workbook();
+      const file = await request.file;
+      const template = await workbook.xlsx.read(file.createReadStream());
+      const worksheet = template.getWorksheet(1);
+
+      const importErrors: Array<ImportErrorResponse> = [];
+      let internshipImportDataArray: Array<InternshipImportData> = [];
+      let startRow = request.from ?? ImportService.START_ROW;
+      let currentRow = startRow;
+
+      while (true) {
+        const row = worksheet.getRow(currentRow);
+
+        //read data from row
+        const internshipImportData = new InternshipImportData();
+
+        if(row.getCell(InternshipImportColumnsEnum.TEACHER).value) {
+          internshipImportData.teacherId = Number(row.getCell(InternshipImportColumnsEnum.TEACHER).value.toString().split(' - ')[0]);
+        }
+
+        internshipImportData.title = String(row.getCell(InternshipImportColumnsEnum.TITLE).value ?? '');
+        internshipImportData.code = String(row.getCell(InternshipImportColumnsEnum.CODE).value ?? '');
+
+        if(row.getCell(InternshipImportColumnsEnum.DESCRIPTION).value) {
+          internshipImportData.description = String(row.getCell(InternshipImportColumnsEnum.DESCRIPTION).value ?? '');
+        }
+
+        if(row.getCell(InternshipImportColumnsEnum.PLACE).value) {
+          internshipImportData.place = String(row.getCell(InternshipImportColumnsEnum.PLACE).value ?? '');
+        }
+
+        if(row.getCell(InternshipImportColumnsEnum.FROM).value){
+          internshipImportData.from = new Date(String(row.getCell(InternshipImportColumnsEnum.FROM).value ?? ''));
+        }
+
+        if(row.getCell(InternshipImportColumnsEnum.TO).value){
+          internshipImportData.to = new Date(String(row.getCell(InternshipImportColumnsEnum.TO).value ?? ''));
+        }
+
+        internshipImportData.isToMoreThanFrom = internshipImportData.from && internshipImportData.to
+          && internshipImportData.to >= internshipImportData.from;
+
+
+        if(row.getCell(InternshipImportColumnsEnum.HOURS).value) {
+          internshipImportData.hours = Number(row.getCell(InternshipImportColumnsEnum.HOURS).value ?? 0);
+        }
+
+        if(row.getCell(InternshipImportColumnsEnum.CREDITS).value) {
+          internshipImportData.credits = Number(row.getCell(InternshipImportColumnsEnum.CREDITS).value ?? 0);
+        }
+
+        if((isNil(request.to) && !isFilledWithData(row)) || (!isNil(request.to) && currentRow <= request.to)) {
+          break;
+        }
+        else {
+          //data validation of row
+          const validationErrors = await validate(internshipImportData);
+          validationErrors.forEach(validationError => {
+            Object.values(validationError.constraints).map(errorMessage => {
+              importErrors.push({row: currentRow, property: validationError.property, message: errorMessage});
+            });
+          });
+
+          //add row to import if valid
+          if(!validationErrors.length) {
+            internshipImportDataArray.push(internshipImportData);
+          }
+
+          currentRow++;
+        }
+      }
+
+      if(!internshipImportDataArray.length && !importErrors.length) {
+        importErrors.push({message: 'No data to import'});
+      }
+
+      //logic validation
+      const uniqueCodes: Array<string> = [];
+      const existTeachers: Array<number> = [];
+
+      internshipImportDataArray = internshipImportDataArray.filter((internshipImportData, index) => {
+        if(uniqueCodes.includes(internshipImportData.code)) {
+          importErrors.push({row: startRow + index, property: 'code', message: 'Code not unique in file'});
+          return false;
+        }
+        else {
+          uniqueCodes.push(internshipImportData.code);
+        }
+
+        existTeachers.push(internshipImportData.teacherId);
+        return true;
+      });
+
+      //local file validation without database end
+      if(!request.ignoreErrors && importErrors.length) {
+        return {result: false, errors: importErrors};
+      }
+
+      //get data to validate unique
+      let internshipsWithCodes: Array<InternshipDbModel> = [];
+      let teachers: Array<TeacherDbModel> = [];
+
+      if(existTeachers.length) {
+        const getTeachersRequest = this.importMapper.initializeGetTeachersByIds(uniq(existTeachers));
+        const teacherResponse = await this.teacherRepository.getTeachers(getTeachersRequest);
+        teachers = teacherResponse.data.responseList;
+      }
+
+      if(uniqueCodes.length) {
+        const getInternshipsByEmailsRequest = this.importMapper.initializeGetInternshipsByCodes(uniqueCodes);
+        const internshipsWithCodesResponse = await this.internshipRepository.getInternships(getInternshipsByEmailsRequest);
+        internshipsWithCodes = internshipsWithCodesResponse.data.responseList;
+      }
+
+      internshipImportDataArray = internshipImportDataArray.filter((internshipImportData, index) => {
+        if(internshipsWithCodes.find(internship => internship.code === internshipImportData.code)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'code',
+            message: `Internship with code ${internshipImportData.code} already exist`
+          });
+
+          return false;
+        }
+
+        if(!teachers.find(teacher => teacher.id === internshipImportData.teacherId)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'teacher',
+            message: `Teacher with id ${internshipImportData.teacherId} not exist`
+          });
+
+          return false;
+        }
+
+        return true;
+      });
+
+      await this.internshipRepository.import(internshipImportDataArray, request.ignoreErrors);
+      return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async importPublications(request: ImportRequest): Promise<ImportResponse> {
+    try {
+      const workbook = new Workbook();
+      const file = await request.file;
+      const template = await workbook.xlsx.read(file.createReadStream());
+      const worksheet = template.getWorksheet(1);
+
+      const importErrors: Array<ImportErrorResponse> = [];
+      let publicationImportDataArray: Array<PublicationImportData> = [];
+      let startRow = request.from ?? ImportService.START_ROW;
+      let currentRow = startRow;
+
+      while (true) {
+        const row = worksheet.getRow(currentRow);
+
+        //read data from row
+        const publicationImportData = new PublicationImportData();
+        publicationImportData.title = String(row.getCell(PublicationImportColumnsEnum.TITLE).value ?? '');
+        publicationImportData.date = new Date(String(row.getCell(PublicationImportColumnsEnum.DATE).value ?? ''));
+
+        if(row.getCell(PublicationImportColumnsEnum.PUBLISHER).value) {
+          publicationImportData.publisher = String(row.getCell(PublicationImportColumnsEnum.PUBLISHER).value ?? '');
+        }
+
+        if(row.getCell(PublicationImportColumnsEnum.URL).value) {
+          publicationImportData.url = String(row.getCell(PublicationImportColumnsEnum.URL).value ?? '');
+        }
+
+        if(row.getCell(PublicationImportColumnsEnum.ANOTHER_AUTHORS).value) {
+          publicationImportData.anotherAuthors = String(row.getCell(PublicationImportColumnsEnum.ANOTHER_AUTHORS).value ?? '');
+        }
+
+        if(row.getCell(PublicationImportColumnsEnum.DESCRIPTION).value) {
+          publicationImportData.description = String(row.getCell(PublicationImportColumnsEnum.DESCRIPTION).value ?? '');
+        }
+
+        if(row.getCell(PublicationImportColumnsEnum.TEACHERS).value) {
+           publicationImportData.teacherIds = row.getCell(PublicationImportColumnsEnum.TEACHERS).value
+             .toString().split('\n').map(el => Number(el.split(' - ')[0]));
+        }
+
+        if((isNil(request.to) && !isFilledWithData(row)) || (!isNil(request.to) && currentRow <= request.to)) {
+          break;
+        }
+        else {
+          //data validation of row
+          const validationErrors = await validate(publicationImportData);
+          validationErrors.forEach(validationError => {
+            Object.values(validationError.constraints).map(errorMessage => {
+              importErrors.push({row: currentRow, property: validationError.property, message: errorMessage});
+            });
+          });
+
+          //add row to import if valid
+          if(!validationErrors.length) {
+            publicationImportDataArray.push(publicationImportData);
+          }
+
+          currentRow++;
+        }
+      }
+
+      if(!publicationImportDataArray.length && !importErrors.length) {
+        importErrors.push({message: 'No data to import'});
+      }
+
+      //logic validation
+      let existTeachers: Array<number> = [];
+
+      publicationImportDataArray = publicationImportDataArray.filter(publicationImportData => {
+        existTeachers = existTeachers.concat(publicationImportData.teacherIds);
+        return true;
+      });
+
+      //local file validation without database end
+      if(!request.ignoreErrors && importErrors.length) {
+        return {result: false, errors: importErrors};
+      }
+
+      //get data to validate unique
+      let teachers: Array<TeacherDbModel> = [];
+
+      if(existTeachers.length) {
+        const getTeachersRequest = this.importMapper.initializeGetTeachersByIds(uniq(existTeachers));
+        const teacherResponse = await this.teacherRepository.getTeachers(getTeachersRequest);
+        teachers = teacherResponse.data.responseList;
+      }
+
+      publicationImportDataArray = publicationImportDataArray.filter((publicationImportData, index) => {
+        const notExistIds = publicationImportData.teacherIds.filter(teacherId => {
+          return !teachers.find(teacher => teacher.id === teacherId);
+        });
+
+        if(notExistIds.length) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'teachers',
+            message: `Teachers with ids ${notExistIds.join(', ')} not exist`
+          });
+
+          return false;
+        }
+
+        return true;
+      });
+
+      await this.publicationRepository.import(publicationImportDataArray, request.ignoreErrors);
       return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
     } catch (e) {
       if (!(e instanceof CustomError)) {

@@ -10,6 +10,7 @@ export class InternshipGetRepoRequest extends BaseRepoRequest {
   dateToLess: Date;
   code: string;
   codeEqual: string;
+  codeIn: Array<string>;
   place: string;
   teacherId: number;
   teacherIds: Array<number>;

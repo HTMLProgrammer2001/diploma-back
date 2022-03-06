@@ -59,7 +59,7 @@ export class InternshipUpdateRequest {
   @Field({nullable: true})
   @IsOptional()
   @IsNumber()
-  @Min(1)
+  @Min(0)
   credits: number;
 
   @Field(type => ID, {nullable: true})

@@ -23,6 +23,7 @@ import {
   InternshipHoursDbModel
 } from './repo-response/internship-get-hours.repo-response';
 import {TeacherDbModel} from '../../db-models/teacher.db-model';
+import {InternshipImportData} from '../../../features/import/types/common/import-data/internship-import-data';
 
 @Injectable()
 export class InternshipRepository {
@@ -125,6 +126,10 @@ export class InternshipRepository {
 
       if (!isNil(repoRequest.codeEqual)) {
         filters.code = repoRequest.codeEqual;
+      }
+
+      if (!isNil(repoRequest.codeIn)) {
+        filters.code = {[Op.in]: repoRequest.codeIn};
       }
 
       if (!isNil(repoRequest.place)) {
@@ -328,6 +333,29 @@ export class InternshipRepository {
     try {
       await this.internshipDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
       return {deletedID: repoRequest.id};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async import(data: Array<InternshipImportData>, ignoreErrors: boolean): Promise<void> {
+    try {
+      await this.internshipDbModel.bulkCreate(data.map(el => ({
+        teacherId: el.teacherId,
+        code: el.code,
+        title: el.title,
+        place: el.place,
+        from: el.from,
+        to: el.to,
+        hours: el.hours,
+        credits: el.credits,
+        description: el.description
+      })), {ignoreDuplicates: ignoreErrors})
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);
