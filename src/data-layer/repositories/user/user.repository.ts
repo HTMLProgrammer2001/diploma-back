@@ -18,6 +18,7 @@ import {UserCreateRepoRequest} from './repo-request/user-create.repo-request';
 import {CommonCreateRepoResponse} from '../common/common-create.repo-response';
 import {UserUpdateRepoRequest} from './repo-request/user-update.repo-request';
 import {UserDeleteRepoRequest} from './repo-request/user-delete.repo-request';
+import {UserImportData} from '../../../features/import/types/common/import-data/user-import-data';
 
 @Injectable()
 export class UserRepository {
@@ -130,6 +131,14 @@ export class UserRepository {
         filters.phone = repoRequest.phoneEqual;
       }
 
+      if (!isNil(repoRequest.emailIn)) {
+        filters.email = {[Op.in]: repoRequest.emailIn};
+      }
+
+      if (!isNil(repoRequest.phoneIn)) {
+        filters.phone = {[Op.in]: repoRequest.phoneIn};
+      }
+
       //endregion
 
       //region Sorting
@@ -237,6 +246,24 @@ export class UserRepository {
     try {
       await this.userDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}});
       return {deletedID: repoRequest.id};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async import(data: Array<UserImportData>, ignoreErrors: boolean) {
+    try {
+      await this.userDbModel.bulkCreate(data.map(el => ({
+        fullName: el.fullName,
+        email: el.email,
+        roleId: el.roleId,
+        passwordHash: el.passwordHash
+      })), {ignoreDuplicates: ignoreErrors})
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

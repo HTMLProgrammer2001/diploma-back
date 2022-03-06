@@ -17,6 +17,8 @@ import {AcademicTitleGetRepoRequest} from '../../../data-layer/repositories/acad
 import {AcademicTitleSelectFieldsEnum} from '../../../data-layer/repositories/academic-title/enums/academic-title-select-fields.enum';
 import {AcademicDegreeGetRepoRequest} from '../../../data-layer/repositories/academic-degree/repo-request/academic-degree-get.repo-request';
 import {AcademicDegreeSelectFieldsEnum} from '../../../data-layer/repositories/academic-degree/enums/academic-degree-select-fields.enum';
+import {UserGetRepoRequest} from '../../../data-layer/repositories/user/repo-request/user-get.repo-request';
+import {UserSelectFieldsEnum} from '../../../data-layer/repositories/user/enums/user-select-fields.enum';
 
 @Injectable()
 export class ImportMapper {
@@ -115,6 +117,38 @@ export class ImportMapper {
     destination.showDeleted = false;
     destination.page = 1;
     destination.size = 5000;
+
+    return destination;
+  }
+
+  initializeGetRolesByIds(roleIds: Array<number>): RoleGetRepoRequest {
+    const destination = new RoleGetRepoRequest();
+
+    destination.select = [RoleSelectFieldsEnum.ID];
+    destination.size = roleIds.length;
+    destination.showDeleted = false;
+
+    return destination;
+  }
+
+  initializeGetUsersByEmails(emails: Array<string>): UserGetRepoRequest {
+    const destination = new UserGetRepoRequest();
+
+    destination.select = [UserSelectFieldsEnum.EMAIL];
+    destination.emailIn = emails;
+    destination.size = emails.length;
+    destination.showDeleted = false;
+
+    return destination;
+  }
+
+  initializeGetUsersByPhones(phones: Array<string>): UserGetRepoRequest {
+    const destination = new UserGetRepoRequest();
+
+    destination.select = [UserSelectFieldsEnum.PHONE];
+    destination.phoneIn = phones;
+    destination.size = phones.length;
+    destination.showDeleted = false;
 
     return destination;
   }

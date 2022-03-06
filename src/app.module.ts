@@ -45,6 +45,7 @@ import {ExportModule} from './features/export/export.module';
 import {ScheduleModule} from '@nestjs/schedule';
 import {NotificationModule} from './features/notification/notification.module';
 import {ImportModule} from './features/import/import.module';
+import {ImportTypeModule} from './features/import-type/import-type.module';
 
 const notificationLoader: ConfigFactory = () => ({NOTIFICATION: require('../notification.config.json')});
 
@@ -171,6 +172,7 @@ const notificationLoader: ConfigFactory = () => ({NOTIFICATION: require('../noti
     ExportModule,
     NotificationModule,
     ImportModule,
+    ImportTypeModule,
   ],
   controllers: [AppController],
   providers: [

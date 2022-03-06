@@ -5,8 +5,10 @@ import {ImportService} from './services/import.service';
 import {registerEnumType} from '@nestjs/graphql';
 import {ImportDataTypeEnum} from './types/common/import-data-type.enum';
 import {GenerateImportTemplateService} from './services/generate-import-template.service';
+import {ConfigModule} from '@nestjs/config';
 
 @Module({
+  imports: [ConfigModule],
   providers: [ImportMapper, ImportResolver, ImportService, GenerateImportTemplateService]
 })
 export class ImportModule {

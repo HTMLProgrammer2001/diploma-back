@@ -34,6 +34,8 @@ import {CategoryDbModel} from './db-models/category.db-model';
 import {CategoryRepository} from './repositories/category/category.repository';
 import {AttestationDbModel} from './db-models/attestation.db-model';
 import {AttestationRepository} from './repositories/attestation/attestation.repository';
+import {ImportTypeDbModel} from './db-models/import-type.db-model';
+import {ImportTypeRepository} from './repositories/import-type/import-type.repository';
 
 const getAppModels = () => SequelizeModule.forFeature([
   CommissionDbModel,
@@ -53,6 +55,7 @@ const getAppModels = () => SequelizeModule.forFeature([
   EducationDbModel,
   CategoryDbModel,
   AttestationDbModel,
+  ImportTypeDbModel,
 ]);
 
 const getAppRepositories = () => [
@@ -73,6 +76,7 @@ const getAppRepositories = () => [
   EducationRepository,
   CategoryRepository,
   AttestationRepository,
+  ImportTypeRepository,
 ]
 
 @Global()

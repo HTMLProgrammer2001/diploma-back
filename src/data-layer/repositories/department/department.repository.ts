@@ -162,7 +162,7 @@ export class DepartmentRepository {
         return this.departmentDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}, transaction: t})
           .then(() => this.departmentDbModel.findByPk(repoRequest.id, {
             transaction: t,
-            include: {model: TeacherDbModel, attributes: ['id']}
+            include: {model: TeacherDbModel, attributes: ['id'], where: {isDeleted: false}}
           }))
           .then(async department => {
             const teacherIds = department.teachers.map(teacher => teacher.id);

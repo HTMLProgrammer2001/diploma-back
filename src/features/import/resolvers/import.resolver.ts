@@ -6,6 +6,9 @@ import {ImportService} from '../services/import.service';
 import {GenerateImportTemplateService} from '../services/generate-import-template.service';
 import {MetaDataFieldEnum} from '../../../global/constants/meta-data-fields.enum';
 import {writeRoles} from '../../../global/utils/roles';
+import {ImportRequest} from '../types/request/import.request';
+import {ResultResponse} from '../../../global/types/response/result.response';
+import {ImportResponse} from '../types/response/import.response';
 
 @Resolver()
 export class ImportResolver {
@@ -19,5 +22,11 @@ export class ImportResolver {
   async generateImportTemplate(@Args('body') body: GenerateImportTemplateRequest):
     Promise<GenerateImportTemplateResponse> {
     return this.generateImportTemplateService.generateImportTemplate(body);
+  }
+
+  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
+  @Mutation(returns => ImportResponse)
+  async importData(@Args('body') body: ImportRequest): Promise<ImportResponse> {
+    return this.importService.importData(body);
   }
 }

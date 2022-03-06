@@ -162,7 +162,7 @@ export class TeachingRankRepository {
         return this.teachingRankDbModel.update({isDeleted: true}, {where: {id: repoRequest.id}, transaction: t})
           .then(() => this.teachingRankDbModel.findByPk(repoRequest.id, {
             transaction: t,
-            include: {model: TeacherDbModel, attributes: ['id']}
+            include: {model: TeacherDbModel, attributes: ['id'], where: {isDeleted: false}}
           }))
           .then(async teachingRank => {
             console.debug(`Start delete teachers that belongs to teaching rank with id ${repoRequest.id}`);

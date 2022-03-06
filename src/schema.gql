@@ -474,6 +474,25 @@ type IdResponse {
   id: ID!
 }
 
+type ImportErrorResponse {
+  message: String!
+  property: String
+  row: Int
+}
+
+input ImportRequest {
+  file: Upload!
+  from: Int
+  ignoreErrors: Boolean = false
+  to: Int
+  type: ImportTypeEnum!
+}
+
+type ImportResponse {
+  errors: [ImportErrorResponse!]!
+  result: Boolean!
+}
+
 enum ImportTypeEnum {
   ATTESTATION
   EDUCATION
@@ -483,6 +502,39 @@ enum ImportTypeEnum {
   REBUKE
   TEACHER
   USER
+}
+
+input ImportTypeGetByIdRequest {
+  id: ID!
+}
+
+input ImportTypeGetListRequest {
+  isDesc: Boolean
+  name: String
+  orderField: String = "id"
+  page: Int = 1
+  size: Int = 5
+}
+
+type ImportTypeListResponse implements PaginatedData {
+  page: Int!
+  responseList: [ImportTypeResponse!]!
+  size: Int!
+  skip: Int!
+  totalElements: Int!
+  totalPages: Int!
+}
+
+type ImportTypeResponse {
+  guid: String!
+  id: ID!
+  name: String!
+}
+
+input ImportTypeUpdateRequest {
+  guid: String!
+  id: ID!
+  name: String
 }
 
 input InternshipCreateRequest {
@@ -613,6 +665,7 @@ type Mutation {
   editProfile(body: EditProfileRequest!): ProfileResponse!
   generateImportTemplate(body: GenerateImportTemplateRequest!): GenerateImportTemplateResponse!
   generateReport(body: ExportRequest!): ExportResponse!
+  importData(body: ImportRequest!): ImportResponse!
   login(body: LoginRequest!): LoginResponse!
   loginTeacher(email: String!): LoginTeacherResponse!
   logout(refreshToken: String!): ResultResponse!
@@ -627,6 +680,7 @@ type Mutation {
   updateEducation(body: EducationUpdateRequest!): EducationResponse!
   updateEducationQualification(body: EducationQualificationUpdateRequest!): EducationQualificationResponse!
   updateHonor(body: HonorUpdateRequest!): HonorResponse!
+  updateImportType(body: ImportTypeUpdateRequest!): ImportTypeResponse!
   updateInternship(body: InternshipUpdateRequest!): InternshipResponse!
   updateNotificationConfig(body: NotificationUpdateRequest!): NotificationConfigResponse!
   updatePublication(body: PublicationUpdateRequest!): PublicationResponse!
@@ -781,6 +835,8 @@ type Query {
   getEducationQualificationList(query: EducationQualificationGetListRequest!): EducationQualificationListResponse!
   getHonorById(query: HonorGetByIdRequest!): HonorResponse!
   getHonorList(query: HonorGetListRequest!): HonorListResponse!
+  getImportTypeById(query: ImportTypeGetByIdRequest!): ImportTypeResponse!
+  getImportTypeList(query: ImportTypeGetListRequest!): ImportTypeListResponse!
   getInternshipById(query: InternshipGetByIdRequest!): InternshipResponse!
   getInternshipHoursFromLastAttestation(query: InternshipGetHoursFromLastAttestationRequest!): InternshipGetHoursFromLastAttestationResponse!
   getInternshipList(query: InternshipGetListRequest!): InternshipListResponse!
