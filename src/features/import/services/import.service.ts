@@ -44,6 +44,18 @@ import {CategoryRepository} from '../../../data-layer/repositories/category/cate
 import {AttestationImportData} from '../types/common/import-data/attestation-import-data';
 import {AttestationImportColumnsEnum} from '../types/common/columns/attestation-import-columns.enum';
 import {CategoryDbModel} from '../../../data-layer/db-models/category.db-model';
+import {TeacherImportData} from '../types/common/import-data/teacher-import-data';
+import {TeacherImportColumnsEnum} from '../types/common/columns/teacher-import-columns.enum';
+import {DepartmentDbModel} from '../../../data-layer/db-models/department.db-model';
+import {CommissionDbModel} from '../../../data-layer/db-models/commission.db-model';
+import {TeachingRankDbModel} from '../../../data-layer/db-models/teaching-rank.db-model';
+import {AcademicTitleDbModel} from '../../../data-layer/db-models/academic-title.db-model';
+import {AcademicDegreeDbModel} from '../../../data-layer/db-models/academic-degree.db-model';
+import {DepartmentRepository} from '../../../data-layer/repositories/department/department.repository';
+import {CommissionRepository} from '../../../data-layer/repositories/commission/commission.repository';
+import {TeachingRankRepository} from '../../../data-layer/repositories/teaching-rank/teaching-rank.repository';
+import {AcademicDegreeRepository} from '../../../data-layer/repositories/academic-degree/academic-degree.repository';
+import {AcademicTitleRepository} from '../../../data-layer/repositories/academic-title/academic-title.repository';
 
 @Injectable()
 export class ImportService {
@@ -64,6 +76,11 @@ export class ImportService {
     private educationRepository: EducationRepository,
     private attestationRepository: AttestationRepository,
     private categoryRepository: CategoryRepository,
+    private departmentRepository: DepartmentRepository,
+    private commissionRepository: CommissionRepository,
+    private teachingRankRepository: TeachingRankRepository,
+    private academicDegreeRepository: AcademicDegreeRepository,
+    private academicTitleRepository: AcademicTitleRepository,
   ) {
     this.logger = new Logger(ImportService.name);
   }
@@ -91,6 +108,9 @@ export class ImportService {
 
         case ImportDataTypeEnum.ATTESTATION:
           return this.importAttestations(request);
+
+        case ImportDataTypeEnum.TEACHER:
+          return this.importTeachers(request);
 
         default:
           throw new CustomError({code: ErrorCodesEnum.GENERAL, message: 'Unsupported type'});
@@ -1037,6 +1057,275 @@ export class ImportService {
       });
 
       await this.attestationRepository.import(attestationImportDataArray, request.ignoreErrors);
+      return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async importTeachers(request: ImportRequest): Promise<ImportResponse> {
+    try {
+      const workbook = new Workbook();
+      const file = await request.file;
+      const template = await workbook.xlsx.read(file.createReadStream());
+      const worksheet = template.getWorksheet(1);
+
+      const importErrors: Array<ImportErrorResponse> = [];
+      let teacherImportDataArray: Array<TeacherImportData> = [];
+      let startRow = request.from ?? ImportService.START_ROW;
+      let currentRow = startRow;
+
+      while (true) {
+        const row = worksheet.getRow(currentRow);
+
+        //read data from row
+        const teacherImportData = new TeacherImportData();
+
+        teacherImportData.fullName = String(row.getCell(TeacherImportColumnsEnum.FULL_NAME).value);
+        teacherImportData.email = String(row.getCell(TeacherImportColumnsEnum.EMAIL).value);
+
+        if(row.getCell(TeacherImportColumnsEnum.BIRTHDAY).value){
+          teacherImportData.birthday = new Date(String(row.getCell(TeacherImportColumnsEnum.BIRTHDAY).value ?? ''));
+        }
+
+        if(row.getCell(TeacherImportColumnsEnum.WORK_START_DATE).value){
+          teacherImportData.workStartDate = new Date(String(row.getCell(TeacherImportColumnsEnum.WORK_START_DATE).value ?? ''));
+        }
+
+        if(row.getCell(TeacherImportColumnsEnum.PHONE).value) {
+          teacherImportData.phone = String(row.getCell(TeacherImportColumnsEnum.PHONE).value);
+        }
+
+        if(row.getCell(TeacherImportColumnsEnum.ADDRESS).value) {
+          teacherImportData.address = String(row.getCell(TeacherImportColumnsEnum.ADDRESS).value);
+        }
+
+        if(row.getCell(TeacherImportColumnsEnum.DEPARTMENT).value) {
+          teacherImportData.departmentId = Number(row.getCell(TeacherImportColumnsEnum.DEPARTMENT).value.toString().split(' - ')[0]);
+        }
+
+        if(row.getCell(TeacherImportColumnsEnum.COMMISSION).value) {
+          teacherImportData.commissionId = Number(row.getCell(TeacherImportColumnsEnum.COMMISSION).value.toString().split(' - ')[0]);
+        }
+
+        if(row.getCell(TeacherImportColumnsEnum.TEACHING_RANK).value) {
+          teacherImportData.teacherRankId = Number(row.getCell(TeacherImportColumnsEnum.TEACHING_RANK).value.toString().split(' - ')[0]);
+        }
+
+        if(row.getCell(TeacherImportColumnsEnum.ACADEMIC_DEGREE).value) {
+          teacherImportData.academicDegreeId = Number(row.getCell(TeacherImportColumnsEnum.ACADEMIC_DEGREE).value.toString().split(' - ')[0]);
+        }
+
+        if(row.getCell(TeacherImportColumnsEnum.ACADEMIC_TITLE).value) {
+          teacherImportData.academicTitleId = Number(row.getCell(TeacherImportColumnsEnum.ACADEMIC_TITLE).value.toString().split(' - ')[0]);
+        }
+
+        if((isNil(request.to) && !isFilledWithData(row)) || (!isNil(request.to) && currentRow <= request.to)) {
+          break;
+        }
+        else {
+          //data validation of row
+          const validationErrors = await validate(teacherImportData);
+          validationErrors.forEach(validationError => {
+            Object.values(validationError.constraints).map(errorMessage => {
+              importErrors.push({row: currentRow, property: validationError.property, message: errorMessage});
+            });
+          });
+
+          //add row to import if valid
+          if(!validationErrors.length) {
+            teacherImportDataArray.push(teacherImportData);
+          }
+
+          currentRow++;
+        }
+      }
+
+      if(!teacherImportDataArray.length && !importErrors.length) {
+        importErrors.push({message: 'No data to import'});
+      }
+
+      //logic validation
+      const existDepartments: Array<number> = [];
+      const existCommissions: Array<number> = [];
+      const existTeachingRanks: Array<number> = [];
+      const existAcademicTitles: Array<number> = [];
+      const existAcademicDegrees: Array<number> = [];
+      const uniqueEmails: Array<string> = [];
+      const uniquePhones: Array<string> = [];
+
+      teacherImportDataArray = teacherImportDataArray.filter((teacherImportData, index) => {
+        if(uniqueEmails.includes(teacherImportData.email)) {
+          importErrors.push({row: startRow + index, property: 'email', message: 'Email not unique in file'});
+          return false;
+        }
+        else {
+          uniqueEmails.push(teacherImportData.email);
+        }
+
+        if(teacherImportData.phone && uniquePhones.includes(teacherImportData.phone)) {
+          importErrors.push({row: startRow + index, property: 'phone', message: 'Phone not unique in file'});
+          return false;
+        }
+        else if (teacherImportData.phone) {
+          uniquePhones.push(teacherImportData.phone);
+        }
+
+        existDepartments.push(teacherImportData.departmentId);
+        existCommissions.push(teacherImportData.commissionId);
+
+        if(teacherImportData.teacherRankId) {
+          existTeachingRanks.push(teacherImportData.teacherRankId);
+        }
+
+        if(teacherImportData.academicTitleId) {
+          existAcademicTitles.push(teacherImportData.academicTitleId);
+        }
+
+        if(teacherImportData.academicDegreeId) {
+          existAcademicDegrees.push(teacherImportData.academicDegreeId);
+        }
+
+        return true;
+      });
+
+      //local file validation without database end
+      if(!request.ignoreErrors && importErrors.length) {
+        return {result: false, errors: importErrors};
+      }
+
+      //get data to validate unique and exist
+      let teachersWithEmail: Array<TeacherDbModel> = [];
+      let teachersWithPhone: Array<TeacherDbModel> = [];
+
+      let departments: Array<DepartmentDbModel> = [];
+      let commissions: Array<CommissionDbModel> = [];
+      let teachingRanks: Array<TeachingRankDbModel> = [];
+      let academicTitles: Array<AcademicTitleDbModel> = [];
+      let academicDegrees: Array<AcademicDegreeDbModel> = [];
+
+      if(uniqueEmails.length) {
+        const getTeachersRequest = this.importMapper.initializeGetTeachersByEmails(uniq(uniqueEmails));
+        const teacherResponse = await this.teacherRepository.getTeachers(getTeachersRequest);
+        teachersWithEmail = teacherResponse.data.responseList;
+      }
+
+      if(uniquePhones.length) {
+        const getTeachersRequest = this.importMapper.initializeGetTeachersByPhones(uniq(uniquePhones));
+        const teacherResponse = await this.teacherRepository.getTeachers(getTeachersRequest);
+        teachersWithPhone = teacherResponse.data.responseList;
+      }
+
+      if(existDepartments.length) {
+        const getDepartmentsRequest = this.importMapper.initializeGetDepartmentsByIds(uniq(existDepartments));
+        const departmentsResponse = await this.departmentRepository.getDepartments(getDepartmentsRequest);
+        departments = departmentsResponse.data.responseList;
+      }
+
+      if(existCommissions.length) {
+        const getCommissionsRequest = this.importMapper.initializeGetCommissionsByIds(uniq(existCommissions));
+        const commissionsResponse = await this.commissionRepository.getCommissions(getCommissionsRequest);
+        commissions = commissionsResponse.data.responseList;
+      }
+
+      if(existTeachingRanks.length) {
+        const getTeachingRanksRequest = this.importMapper.initializeGetTeachingRanksByIds(uniq(existTeachingRanks));
+        const teachingRanksResponse = await this.teachingRankRepository.getTeachingRanks(getTeachingRanksRequest);
+        teachingRanks = teachingRanksResponse.data.responseList;
+      }
+
+      if(existAcademicDegrees.length) {
+        const getAcademicDegreesRequest = this.importMapper.initializeGetAcademicDegreesByIds(uniq(existAcademicDegrees));
+        const academicDegreesResponse = await this.academicDegreeRepository.getAcademicDegree(getAcademicDegreesRequest);
+        academicDegrees = academicDegreesResponse.data.responseList;
+      }
+
+      if(existAcademicTitles.length) {
+        const getAcademicTitlesRequest = this.importMapper.initializeGetAcademicTitlesByIds(uniq(existAcademicTitles));
+        const academicTitlesResponse = await this.academicTitleRepository.getAcademicTitle(getAcademicTitlesRequest);
+        academicTitles = academicTitlesResponse.data.responseList;
+      }
+
+      teacherImportDataArray = teacherImportDataArray.filter((teacherImportData, index) => {
+        if(teachersWithEmail.find(teacher => teacher.email === teacherImportData.email)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'email',
+            message: `Teacher with email ${teacherImportData.email} already exist`
+          });
+
+          return false;
+        }
+
+        if(teacherImportData.phone && teachersWithPhone.find(teacher => teacher.phone === teacherImportData.phone)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'phone',
+            message: `Teacher with phone ${teacherImportData.phone} already exist`
+          });
+
+          return false;
+        }
+
+        if(!departments.find(department => department.id === teacherImportData.departmentId)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'department',
+            message: `Department with id ${teacherImportData.departmentId} not exist`
+          });
+
+          return false;
+        }
+
+        if(!commissions.find(commission => commission.id === teacherImportData.commissionId)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'commission',
+            message: `Commission with id ${teacherImportData.commissionId} not exist`
+          });
+
+          return false;
+        }
+
+        if(teacherImportData.teacherRankId && !teachingRanks.find(teachingRank => teachingRank.id === teacherImportData.teacherRankId)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'Teaching rank',
+            message: `Teaching rank with id ${teacherImportData.teacherRankId} not exist`
+          });
+
+          return false;
+        }
+
+        if(teacherImportData.academicTitleId && !academicTitles.find(academicTitle => academicTitle.id === teacherImportData.academicTitleId)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'Academic title',
+            message: `Academic title with id ${teacherImportData.academicTitleId} not exist`
+          });
+
+          return false;
+        }
+
+        if(teacherImportData.academicDegreeId && !academicDegrees.find(academicDegree => academicDegree.id === teacherImportData.academicDegreeId)) {
+          importErrors.push({
+            row: startRow + index,
+            property: 'Academic degree',
+            message: `Academic degree with id ${teacherImportData.academicDegreeId} not exist`
+          });
+
+          return false;
+        }
+
+        return true;
+      });
+
+      await this.teacherRepository.import(teacherImportDataArray, request.ignoreErrors);
       return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
     } catch (e) {
       if (!(e instanceof CustomError)) {

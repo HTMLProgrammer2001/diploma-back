@@ -225,4 +225,81 @@ export class ImportMapper {
 
     return destination;
   }
+
+  initializeGetTeachersByEmails(emails: Array<string>): TeacherGetRepoRequest {
+    const destination = new TeacherGetRepoRequest();
+
+    destination.select = [TeacherSelectFieldsEnum.EMAIL];
+    destination.emailIn = emails;
+    destination.size = emails.length;
+    destination.showDeleted = false;
+
+    return destination;
+  }
+
+  initializeGetTeachersByPhones(phones: Array<string>): TeacherGetRepoRequest {
+    const destination = new TeacherGetRepoRequest();
+
+    destination.select = [TeacherSelectFieldsEnum.PHONE];
+    destination.phoneIn = phones;
+    destination.size = phones.length;
+    destination.showDeleted = false;
+
+    return destination;
+  }
+
+  initializeGetDepartmentsByIds(departmentIds: Array<number>): DepartmentGetRepoRequest {
+    const destination = new DepartmentGetRepoRequest();
+
+    destination.select = [DepartmentSelectFieldsEnum.ID];
+    destination.ids = departmentIds;
+    destination.size = departmentIds.length;
+    destination.showDeleted = false;
+
+    return destination;
+  }
+
+  initializeGetCommissionsByIds(commissionIds: Array<number>): CommissionGetRepoRequest {
+    const destination = new CommissionGetRepoRequest();
+
+    destination.select = [CommissionSelectFieldsEnum.ID];
+    destination.ids = commissionIds;
+    destination.size = commissionIds.length;
+    destination.showDeleted = false;
+
+    return destination;
+  }
+
+  initializeGetTeachingRanksByIds(teachingRankIds: Array<number>): TeachingRankGetRepoRequest {
+    const destination = new TeachingRankGetRepoRequest();
+
+    destination.select = [TeachingRankSelectFieldsEnum.ID];
+    destination.ids = teachingRankIds;
+    destination.size = teachingRankIds.length;
+    destination.showDeleted = false;
+
+    return destination;
+  }
+
+  initializeGetAcademicTitlesByIds(academicTitleIds: Array<number>): AcademicTitleGetRepoRequest {
+    const destination = new AcademicTitleGetRepoRequest();
+
+    destination.select = [AcademicTitleSelectFieldsEnum.ID];
+    destination.ids = academicTitleIds;
+    destination.size = academicTitleIds.length;
+    destination.showDeleted = false;
+
+    return destination;
+  }
+
+  initializeGetAcademicDegreesByIds(academicDegreeIds: Array<number>): AcademicDegreeGetRepoRequest {
+    const destination = new AcademicDegreeGetRepoRequest();
+
+    destination.select = [AcademicDegreeSelectFieldsEnum.ID];
+    destination.ids = academicDegreeIds;
+    destination.size = academicDegreeIds.length;
+    destination.showDeleted = false;
+
+    return destination;
+  }
 }

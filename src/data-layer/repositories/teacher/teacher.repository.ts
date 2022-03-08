@@ -30,6 +30,7 @@ import {TeacherDeleteRepoRequest} from './repo-request/teacher-delete.repo-reque
 import {CommonDeleteRepoResponse} from '../common/common-delete.repo-response';
 import {TeacherToNotifyRepoRequest} from './repo-request/teacher-to-notify.repo-request';
 import {TeacherToNotifyRepoResponse} from './repo-response/teacher-to-notify.repo-response';
+import {TeacherImportData} from '../../../features/import/types/common/import-data/teacher-import-data';
 
 @Injectable()
 export class TeacherRepository {
@@ -232,6 +233,14 @@ export class TeacherRepository {
 
       if (!isNil(repoRequest.phoneEqual)) {
         filters.phone = repoRequest.phoneEqual;
+      }
+
+      if (!isNil(repoRequest.emailIn)) {
+        filters.email = {[Op.in]: repoRequest.emailIn};
+      }
+
+      if (!isNil(repoRequest.phoneIn)) {
+        filters.phone = {[Op.in]: repoRequest.phoneIn};
       }
 
       //endregion
@@ -464,5 +473,30 @@ export class TeacherRepository {
     });
 
     return rows as Array<TeacherToNotifyRepoResponse>;
+  }
+
+  async import(data: Array<TeacherImportData>, ignoreErrors: boolean): Promise<void> {
+    try {
+      await this.teacherDbModel.bulkCreate(data.map(el => ({
+        fullName: el.fullName,
+        email: el.email,
+        address: el.address,
+        phone: el.phone,
+        birthday: el.birthday,
+        workStartDate: el.workStartDate,
+        departmentId: el.departmentId,
+        commissionId: el.commissionId,
+        teacherRankId: el.teacherRankId,
+        academicDegreeId: el.academicDegreeId,
+        academicTitleId: el.academicTitleId,
+      })), {ignoreDuplicates: ignoreErrors})
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
+      }
+
+      throw e;
+    }
   }
 }
