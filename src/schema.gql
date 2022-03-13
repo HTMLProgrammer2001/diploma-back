@@ -650,7 +650,7 @@ type Mutation {
   deleteAcademicTitle(guid: String!, id: Int!): IdResponse!
   deleteAttestation(guid: String!, id: Int!): IdResponse!
   deleteCategory(guid: String!, id: Int!): IdResponse!
-  deleteCommission(guid: String!, id: Int!): IdResponse!
+  deleteCommission(guid: String!, id: ID!): IdResponse!
   deleteDepartment(guid: String!, id: Int!): IdResponse!
   deleteEducation(guid: String!, id: Int!): IdResponse!
   deleteEducationQualification(guid: String!, id: Int!): IdResponse!
@@ -705,6 +705,7 @@ type NotificationConfigResponse {
 }
 
 type NotificationTeacherModelResponse {
+  avatarUrl: String!
   email: String!
   id: ID!
   name: String!

@@ -5,4 +5,7 @@ export interface IAccessTokenInfoInterface {
   type: AccessTokenTypeEnum;
   userId: number;
   role: RolesEnum;
+  email: string;
+  fullName: string;
+  avatarUrl: string;
 }

@@ -41,7 +41,7 @@ export class IsAuthorisedGuard implements CanActivate {
           {secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET')}
         );
 
-        const canActivate = !!payload.userId && (isTeacherHasAccess || payload.type === AccessTokenTypeEnum.user);
+        const canActivate = !!payload.userId && (isTeacherHasAccess || payload.type === AccessTokenTypeEnum.USER);
 
         if(!canActivate) {
           this.logger.debug(`Not authorized access to ${gqlContext.getHandler().name}`);

@@ -1,4 +1,4 @@
 export enum AccessTokenTypeEnum {
-  user = 'user',
-  teacher = 'teacher'
+  USER = 'USER',
+  TEACHER = 'TEACHER'
 }

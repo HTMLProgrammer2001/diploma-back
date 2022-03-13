@@ -21,7 +21,10 @@ export class AuthMapper {
       UserSelectFieldsEnum.ID,
       UserSelectFieldsEnum.IS_DELETED,
       UserSelectFieldsEnum.PASSWORD_HASH,
-      UserSelectFieldsEnum.ROLE_ID
+      UserSelectFieldsEnum.ROLE_ID,
+      UserSelectFieldsEnum.EMAIL,
+      UserSelectFieldsEnum.FULL_NAME,
+      UserSelectFieldsEnum.AVATAR_URL,
     ];
     destination.showDeleted = false;
 
@@ -59,7 +62,14 @@ export class AuthMapper {
     const destination = new UserGetRepoRequest();
 
     destination.id = id;
-    destination.select = [UserSelectFieldsEnum.ID, UserSelectFieldsEnum.IS_DELETED];
+    destination.select = [
+      UserSelectFieldsEnum.ID,
+      UserSelectFieldsEnum.IS_DELETED,
+      UserSelectFieldsEnum.ROLE_ID,
+      UserSelectFieldsEnum.EMAIL,
+      UserSelectFieldsEnum.FULL_NAME,
+      UserSelectFieldsEnum.AVATAR_URL,
+    ];
 
     return destination;
   }
@@ -79,7 +89,12 @@ export class AuthMapper {
   initializeGetTeacherByEmailRepoRequest(email: string): TeacherGetRepoRequest {
     const destination = new TeacherGetRepoRequest();
 
-    destination.select = [TeacherSelectFieldsEnum.ID];
+    destination.select = [
+      TeacherSelectFieldsEnum.ID,
+      TeacherSelectFieldsEnum.EMAIL,
+      TeacherSelectFieldsEnum.FULL_NAME,
+      TeacherSelectFieldsEnum.AVATAR_URL
+    ];
     destination.emailEqual = email;
 
     return destination;

@@ -75,9 +75,12 @@ export class AuthService {
       });
 
       const accessTokenPayload: IAccessTokenInfoInterface = {
-        type: AccessTokenTypeEnum.user,
+        type: AccessTokenTypeEnum.USER,
         userId: userModel.id,
-        role: userModel.role?.id
+        role: userModel.role?.id,
+        email: userModel.email,
+        fullName: userModel.fullName,
+        avatarUrl: userModel.avatarUrl,
       };
 
       const accessToken = this.jwtService.sign(accessTokenPayload, {
@@ -189,9 +192,12 @@ export class AuthService {
       });
 
       const newAccessTokenPayload: IAccessTokenInfoInterface = {
-        type: AccessTokenTypeEnum.user,
+        type: AccessTokenTypeEnum.USER,
         userId: userModel.id,
-        role: userModel.roleId
+        role: userModel.role?.id,
+        email: userModel.email,
+        fullName: userModel.fullName,
+        avatarUrl: userModel.avatarUrl,
       };
 
       const newAccessToken = this.jwtService.sign(newAccessTokenPayload, {
@@ -226,15 +232,20 @@ export class AuthService {
         throw error;
       }
 
+      const teacher = getTeacherResponse.responseList[0];
+
       const accessTokenPayload: IAccessTokenInfoInterface = {
-        type: AccessTokenTypeEnum.teacher,
-        userId: getTeacherResponse.responseList[0].id,
-        role: RolesEnum.VIEWER
+        type: AccessTokenTypeEnum.TEACHER,
+        role: RolesEnum.VIEWER,
+        userId: teacher.id,
+        email: teacher.email,
+        fullName: teacher.fullName,
+        avatarUrl: teacher.avatarUrl
       };
 
       const accessToken = this.jwtService.sign(accessTokenPayload, {
         secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
-        expiresIn: Number(this.configService.get('JWT_ACCESS_TOKEN_TTL_SECONDS'))
+        expiresIn: Number(this.configService.get('JWT_TEACHER_ACCESS_TOKEN_TTL_SECONDS'))
       });
 
       this.logger.debug(`Send teacher access link to email ${email}`);

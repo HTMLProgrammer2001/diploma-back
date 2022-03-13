@@ -58,7 +58,8 @@ export class NotificationMapper {
     destination.teacher = {
       id: source.teacherId,
       name: source.teacherName,
-      email: source.teacherEmail
+      email: source.teacherEmail,
+      avatarUrl: source.teacherAvatarUrl,
     };
     destination.lastAttestationDate = dateToString(new Date(source.lastAttestationDate));
     destination.nextAttestationDate = dateToString(new Date(source.nextAttestationDate));

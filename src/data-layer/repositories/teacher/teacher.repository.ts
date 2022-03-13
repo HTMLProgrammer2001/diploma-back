@@ -454,7 +454,8 @@ export class TeacherRepository {
 
   async getTeachersToNotify(repoRequest: TeacherToNotifyRepoRequest): Promise<Array<TeacherToNotifyRepoResponse>> {
     const [rows] = await this.sequelize.query('' +
-      'SELECT `Teacher`.`id` as `teacherId`, `Teacher`.`fullName` as `teacherName`, `Teacher`.`email` as `teacherEmail`, ' +
+      'SELECT `Teacher`.`id` as `teacherId`, `Teacher`.`fullName` as `teacherName`, ' +
+      '`Teacher`.`email` as `teacherEmail`, `Teacher`.`avatarUrl` as `teacherAvatarUrl`' +
       'IFNULL(SUM(`Internship`.`hours`), 0) as `internshipHours`, ' +
       'IFNULL(MAX(`Attestation`.`date`), NOW()) as `lastAttestationDate`, ' +
       'DATE_ADD(IFNULL(MAX(`Attestation`.`date`), NOW()), INTERVAL :attestationYearsPeriod YEAR) as `nextAttestationDate` ' +

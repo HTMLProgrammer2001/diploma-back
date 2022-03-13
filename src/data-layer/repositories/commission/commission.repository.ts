@@ -162,7 +162,7 @@ export class CommissionRepository {
         return this.commissionModel.update({isDeleted: true}, {where: {id: repoRequest.id}, transaction: t})
           .then(() => this.commissionModel.findByPk(repoRequest.id, {
             transaction: t,
-            include: {model: TeacherDbModel, attributes: ['id'], where: {isDeleted: false}}
+            include: {model: TeacherDbModel, attributes: ['id'], where: {isDeleted: false}, required: false}
           }))
           .then(async commission => {
             const teacherIds = commission.teachers.map(teacher => teacher.id);

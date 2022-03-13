@@ -1,4 +1,4 @@
-import {Args, Info, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
+import {Args, ID, Info, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {GraphQLResolveInfo} from 'graphql';
 import {fieldsProjection} from 'graphql-fields-list';
 import {CommissionService} from '../service/commission.service';
@@ -54,7 +54,7 @@ export class CommissionResolver {
   @Mutation(returns => IdResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async deleteCommission(
-    @Args('id', {type: () => Int}) id: number,
+    @Args('id', {type: () => ID}) id: number,
     @Args('guid', {type: () => String}) guid: string,
   ): Promise<IdResponse> {
     return this.commissionService.deleteCommission(id, guid);

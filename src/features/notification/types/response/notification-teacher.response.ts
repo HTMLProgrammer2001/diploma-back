@@ -10,6 +10,9 @@ class NotificationTeacherModelResponse {
 
   @Field()
   email: string;
+
+  @Field()
+  avatarUrl: string;
 }
 
 @ObjectType()
