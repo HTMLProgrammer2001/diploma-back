@@ -46,12 +46,12 @@ export class RebukeGetListRequest extends BasePaginatorRequest {
   @IsBoolean()
   showDeleted: boolean;
 
-  @Field({nullable: true})
+  @Field(type => RebukeCascadeDeletedByEnum,{nullable: true})
   @IsOptional()
   @IsEnum(RebukeCascadeDeletedByEnum)
   showCascadeDeletedBy?: string;
 
-  @Field({nullable: true, defaultValue: RebukeOrderFieldsEnum.ID})
+  @Field(type => RebukeOrderFieldsEnum, {nullable: true, defaultValue: RebukeOrderFieldsEnum.ID})
   @IsOptional()
   @IsEnum(RebukeOrderFieldsEnum)
   orderField: string;

@@ -1,4 +1,4 @@
-import {Args, Info, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
+import {Args, ID, Info, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {AcademicTitleService} from '../service/academic-title.service';
 import {AcademicTitleGetListRequest} from '../types/request/academic-title-get-list.request';
 import {AcademicTitleResponse} from '../types/response/academic-title.response';
@@ -54,7 +54,7 @@ export class AcademicTitleResolver {
   @Mutation(returns => IdResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async deleteAcademicTitle(
-    @Args('id', {type: () => Int}) id: number,
+    @Args('id', {type: () => ID}) id: number,
     @Args('guid', {type: () => String}) guid: string,
   ): Promise<IdResponse> {
     return this.academicTitleService.deleteAcademicTitle(id, guid);

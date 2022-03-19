@@ -17,7 +17,7 @@ export class DepartmentGetListRequest extends BasePaginatorRequest {
   @IsBoolean()
   showDeleted: boolean;
 
-  @Field({nullable: true, defaultValue: DepartmentOrderFieldsEnum.ID})
+  @Field(type => DepartmentOrderFieldsEnum, {nullable: true, defaultValue: DepartmentOrderFieldsEnum.ID})
   @IsOptional()
   @IsEnum(DepartmentOrderFieldsEnum)
   orderField: string;

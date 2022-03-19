@@ -14,6 +14,9 @@ import {AttestationRepository} from '../../../data-layer/repositories/attestatio
 import {CategoryRepository} from '../../../data-layer/repositories/category/category.repository';
 import {AttestationSelectFieldsEnum} from '../../../data-layer/repositories/attestation/enums/attestation-select-fields.enum';
 import {TeacherRepository} from '../../../data-layer/repositories/teacher/teacher.repository';
+import {AttestationGetLastDateRequest} from '../types/request/attestation-get-last-date.request';
+import {AttestationGetLastDateResponse} from '../types/response/attestation-get-last-date.response';
+import {NotificationRepository} from '../../../data-layer/repositories/notification/notification.repository';
 
 @Injectable()
 export class AttestationService {
@@ -24,6 +27,7 @@ export class AttestationService {
     private teacherRepository: TeacherRepository,
     private categoryRepository: CategoryRepository,
     private attestationMapper: AttestationMapper,
+    private notificationRepository: NotificationRepository,
   ) {
     this.logger = new Logger(AttestationService.name);
   }
@@ -166,6 +170,24 @@ export class AttestationService {
 
       throw e;
     }
+  }
+
+  async getLastDate(body: AttestationGetLastDateRequest): Promise<AttestationGetLastDateResponse> {
+    const getLastAttestationDateForTeacherRepoRequest = this.attestationMapper.getLastAttestationDateToRepoRequest(body);
+    const {data} = await this.attestationRepository.getAttestations(getLastAttestationDateForTeacherRepoRequest);
+
+    const notificationConfig = await this.notificationRepository.getNotificationConfig();
+    const lastAttestationDate = data.responseList?.[0].date;
+    const lastAttestationDateString = lastAttestationDate?.toISOString().split('T')[0];
+    let nextAttestationDate: Date = null;
+
+    if(lastAttestationDate) {
+      nextAttestationDate = new Date(lastAttestationDate);
+      nextAttestationDate.setFullYear(lastAttestationDate.getFullYear() + notificationConfig.ATTESTATION_YEARS_PERIOD);
+    }
+
+    const nextAttestationDateString = nextAttestationDate?.toISOString().split('T')[0];
+    return {lastAttestationDate: lastAttestationDateString, nextAttestationDate: nextAttestationDateString};
   }
 
   async validateRequest(request: AttestationCreateRequest) {

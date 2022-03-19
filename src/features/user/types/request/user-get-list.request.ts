@@ -29,7 +29,7 @@ export class UserGetListRequest extends BasePaginatorRequest {
   @IsBoolean()
   showDeleted: boolean;
 
-  @Field({nullable: true, defaultValue: UserOrderFieldsEnum.ID})
+  @Field(type => UserOrderFieldsEnum, {nullable: true, defaultValue: UserOrderFieldsEnum.ID})
   @IsOptional()
   @IsEnum(UserOrderFieldsEnum)
   orderField: string;

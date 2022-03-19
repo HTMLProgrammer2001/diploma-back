@@ -14,6 +14,9 @@ import {CategoryGetRepoRequest} from '../../../data-layer/repositories/category/
 import {CategorySelectFieldsEnum} from '../../../data-layer/repositories/category/enums/category-select-fields.enum';
 import {TeacherGetRepoRequest} from '../../../data-layer/repositories/teacher/repo-request/teacher-get.repo-request';
 import {TeacherSelectFieldsEnum} from '../../../data-layer/repositories/teacher/enums/teacher-select-fields.enum';
+import {AttestationGetLastDateRequest} from '../types/request/attestation-get-last-date.request';
+import {AttestationSelectFieldsEnum} from '../../../data-layer/repositories/attestation/enums/attestation-select-fields.enum';
+import {AttestationOrderFieldsEnum} from '../../../data-layer/repositories/attestation/enums/attestation-order-fields.enum';
 
 @Injectable()
 export class AttestationMapper {
@@ -140,6 +143,18 @@ export class AttestationMapper {
     const destination = new AttestationDeleteRepoRequest();
 
     destination.id = id;
+
+    return destination;
+  }
+
+  getLastAttestationDateToRepoRequest(source: AttestationGetLastDateRequest): AttestationGetRepoRequest {
+    const destination = new AttestationGetRepoRequest();
+
+    destination.select = [AttestationSelectFieldsEnum.DATE];
+    destination.teacherId = source.teacherId;
+    destination.orderField = AttestationOrderFieldsEnum.DATE;
+    destination.isDesc = true;
+    destination.size = 1;
 
     return destination;
   }

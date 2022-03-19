@@ -17,7 +17,7 @@ export class InternshipGetByIdRequest {
   @IsBoolean()
   showDeleted?: boolean;
 
-  @Field({nullable: true})
+  @Field(type => InternshipCascadeDeletedByEnum, {nullable: true})
   @IsOptional()
   @IsEnum(InternshipCascadeDeletedByEnum)
   showCascadeDeletedBy?: string;

@@ -1,4 +1,4 @@
-import {Field, InputType} from '@nestjs/graphql';
+import {Field, InputType, Int} from '@nestjs/graphql';
 import {NotificationTypesEnum} from '../common/notification-types.enum';
 import {IsArray, IsBoolean, IsNumber, IsOptional, IsString, Min} from 'class-validator';
 
@@ -23,7 +23,7 @@ export class NotificationUpdateRequest {
   @IsOptional()
   notifyType: NotificationTypesEnum;
 
-  @Field({nullable: true})
+  @Field(type => Int, {nullable: true})
   @IsOptional()
   @IsNumber()
   @Min(0)
@@ -34,19 +34,19 @@ export class NotificationUpdateRequest {
   @IsString()
   notifyTime: string;
 
-  @Field({nullable: true})
+  @Field(type => Int, {nullable: true})
   @IsOptional()
   @IsNumber()
   @Min(0)
   notifyBeforeDays: number;
 
-  @Field({nullable: true})
+  @Field(type => Int, {nullable: true})
   @IsOptional()
   @IsNumber()
   @Min(0)
   attestationYearsPeriod: number;
 
-  @Field({nullable: true})
+  @Field(type => Int, {nullable: true})
   @IsOptional()
   @IsNumber()
   @Min(0)

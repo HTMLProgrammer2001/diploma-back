@@ -1,10 +1,7 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {SchedulerRegistry} from '@nestjs/schedule';
 import {ConfigService} from '@nestjs/config';
-import {writeFile} from 'fs/promises';
 import {CronJob} from 'cron';
-import {join} from 'path';
-import {NotificationConfig} from '../types/common/notification.config';
 import {parseCronTimeFromNotificationConfig} from '../../../global/utils/functions';
 import {NotificationConfigResponse} from '../types/response/notification-config.response';
 import {NotificationMapper} from '../mapper/notification.mapper';
@@ -19,32 +16,32 @@ import {IAccessTokenInfoInterface} from '../../../global/types/interface/IAccess
 import {AccessTokenTypeEnum} from '../../../global/constants/access-token-type.enum';
 import {RolesEnum} from '../../../global/constants/roles.enum';
 import {JwtService} from '@nestjs/jwt';
+import {NotificationRepository} from '../../../data-layer/repositories/notification/notification.repository';
 
 @Injectable()
 export class NotificationService {
   private logger: Logger;
-  private notificationConfig: NotificationConfig;
 
   constructor(
     private configService: ConfigService,
     private schedulerRegistry: SchedulerRegistry,
     private notificationMapper: NotificationMapper,
+    private notificationRepository: NotificationRepository,
     private teacherRepository: TeacherRepository,
     private mailService: MailServiceInterface,
     private jwtService: JwtService,
   ) {
     this.logger = new Logger(NotificationService.name);
-    this.notificationConfig = this.configService.get<NotificationConfig>('NOTIFICATION');
     this.restartJob();
   }
 
-  restartJob() {
+  async restartJob() {
     try {
       if (this.schedulerRegistry.getCronJobs().get('notification')) {
         this.logger.debug(`Delete notification job`);
         this.schedulerRegistry.deleteCronJob('notification');
       }
-      const schedule = parseCronTimeFromNotificationConfig(this.notificationConfig);
+      const schedule = parseCronTimeFromNotificationConfig(await this.notificationRepository.getNotificationConfig());
       this.logger.debug(`Notification cron started with schedule: ${schedule}`);
       const job = new CronJob(schedule, this.notify);
       this.schedulerRegistry.addCronJob('notification', job);
@@ -61,17 +58,16 @@ export class NotificationService {
 
   notify = async (): Promise<ResultResponse> => {
     try {
+      const notificationConfig = await this.notificationRepository.getNotificationConfig();
       const teacherToNotify = await this.getTeachersToNotify();
 
       if (teacherToNotify.length) {
-        if(this.notificationConfig.IS_NOTIFY_TEACHERS) {
+        if(notificationConfig.IS_NOTIFY_TEACHERS) {
           await Promise.allSettled(teacherToNotify.map(el => {
             const accessTokenPayload: IAccessTokenInfoInterface = {
               type: AccessTokenTypeEnum.TEACHER,
               userId: el.teacher.id,
               email: el.teacher.email,
-              fullName: el.teacher.name,
-              avatarUrl: el.teacher.avatarUrl,
               role: RolesEnum.VIEWER
             };
 
@@ -84,8 +80,8 @@ export class NotificationService {
           }));
         }
 
-        if(this.notificationConfig.IS_NOTIFY_ADMINS) {
-          await Promise.allSettled(this.notificationConfig.ADMIN_EMAILS.map(adminEmail => {
+        if(notificationConfig.IS_NOTIFY_ADMINS) {
+          await Promise.allSettled(notificationConfig.ADMIN_EMAILS.map(adminEmail => {
             return this.mailService.sendAdminInternshipWarning(adminEmail, teacherToNotify);
           }));
         }
@@ -104,7 +100,8 @@ export class NotificationService {
 
   async getNotificationConfig(): Promise<NotificationConfigResponse> {
     try {
-      return this.notificationMapper.notificationConfigToResponse(this.notificationConfig);
+      const notificationConfig = await this.notificationRepository.getNotificationConfig();
+      return this.notificationMapper.notificationConfigToResponse(notificationConfig);
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);
@@ -117,7 +114,8 @@ export class NotificationService {
 
   async getTeachersToNotify(): Promise<Array<NotificationTeacherResponse>> {
     try {
-      const teacherToNotifyRepoRequest = this.notificationMapper.initializeTeacherToNotifyRepoRequest(this.notificationConfig);
+      const notificationConfig = await this.notificationRepository.getNotificationConfig();
+      const teacherToNotifyRepoRequest = this.notificationMapper.initializeTeacherToNotifyRepoRequest(notificationConfig);
       const teachersToNotifyList = await this.teacherRepository.getTeachersToNotify(teacherToNotifyRepoRequest);
       return teachersToNotifyList.map(el => this.notificationMapper.teacherToNotifyRepoResponseToResponse(el));
     } catch (e) {
@@ -132,11 +130,10 @@ export class NotificationService {
 
   async updateNotificationConfig(request: NotificationUpdateRequest): Promise<NotificationConfigResponse> {
     try {
-      const currentNotificationConfigJson = this.configService.get('NOTIFICATION');
+      const currentNotificationConfigJson = await this.notificationRepository.getNotificationConfig();
       const updateNotificationConfigJson = this.notificationMapper.updateNotificationConfigToJson(request, currentNotificationConfigJson);
       this.logger.debug('Update notification config: ', JSON.stringify(updateNotificationConfigJson));
-      await writeFile(join(__dirname, '..', 'notification.config.json'), JSON.stringify(updateNotificationConfigJson));
-      this.notificationConfig = updateNotificationConfigJson;
+      await this.notificationRepository.updateNotificationConfig(updateNotificationConfigJson);
       this.restartJob();
       return this.getNotificationConfig();
     } catch (e) {

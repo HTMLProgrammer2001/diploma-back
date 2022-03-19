@@ -8,7 +8,7 @@ import {NotificationTypesEnum} from './types/common/notification-types.enum';
 
 @Module({
   imports: [ConfigModule],
-  providers: [NotificationMapper, NotificationResolver, NotificationService]
+  providers: [NotificationMapper, NotificationResolver, NotificationService],
 })
 export class NotificationModule {
   constructor() {

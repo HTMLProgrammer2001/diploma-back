@@ -1,8 +1,7 @@
 export class TeacherToNotifyRepoResponse {
   teacherId: number;
-  teacherName: string;
   teacherEmail: string;
-  teacherAvatarUrl: string;
+  teacherName: string;
   internshipHours: number;
   lastAttestationDate: Date;
   nextAttestationDate: Date;

@@ -1,4 +1,4 @@
-import {Args, Info, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
+import {Args, ID, Info, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {DepartmentService} from '../service/department.service';
 import {DepartmentGetListRequest} from '../types/request/department-get-list.request';
 import {DepartmentResponse} from '../types/response/department.response';
@@ -54,7 +54,7 @@ export class DepartmentResolver {
   @Mutation(returns => IdResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async deleteDepartment(
-    @Args('id', {type: () => Int}) id: number,
+    @Args('id', {type: () => ID}) id: number,
     @Args('guid', {type: () => String}) guid: string,
   ): Promise<IdResponse> {
     return this.departmentService.deleteDepartment(id, guid);

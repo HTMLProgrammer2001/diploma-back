@@ -43,7 +43,7 @@ export class PublicationGetListRequest extends BasePaginatorRequest {
   @IsBoolean()
   showDeleted: boolean;
 
-  @Field({nullable: true, defaultValue: PublicationOrderFieldsEnum.ID})
+  @Field(type => PublicationOrderFieldsEnum, {nullable: true, defaultValue: PublicationOrderFieldsEnum.ID})
   @IsOptional()
   @IsEnum(PublicationOrderFieldsEnum)
   orderField: string;

@@ -17,7 +17,7 @@ export class RebukeGetByIdRequest {
   @IsBoolean()
   showDeleted?: boolean;
 
-  @Field({nullable: true})
+  @Field(type => RebukeCascadeDeletedByEnum, {nullable: true})
   @IsOptional()
   @IsEnum(RebukeCascadeDeletedByEnum)
   showCascadeDeletedBy?: string;

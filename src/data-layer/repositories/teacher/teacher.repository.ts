@@ -268,6 +268,21 @@ export class TeacherRepository {
             includes.commission = includes.commission ?? {model: DepartmentDbModel, attributes: []};
             order.push([{model: DepartmentDbModel, as: 'department'}, 'name', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
+
+          case TeacherOrderFieldsEnum.TEACHING_RANK:
+            includes.teachingRank = includes.teachingRank ?? {model: TeachingRankDbModel, attributes: []};
+            order.push([{model: TeachingRankDbModel, as: 'teachingRank'}, 'name', repoRequest.isDesc ? 'DESC' : 'ASC']);
+            break;
+
+          case TeacherOrderFieldsEnum.ACADEMIC_DEGREE:
+            includes.academicDegree = includes.academicDegree ?? {model: AcademicDegreeDbModel, attributes: []};
+            order.push([{model: AcademicDegreeDbModel, as: 'academicDegree'}, 'name', repoRequest.isDesc ? 'DESC' : 'ASC']);
+            break;
+
+          case TeacherOrderFieldsEnum.ACADEMIC_TITLE:
+            includes.academicTitle = includes.academicTitle ?? {model: AcademicTitleDbModel, attributes: []};
+            order.push([{model: AcademicTitleDbModel, as: 'academicTitle'}, 'name', repoRequest.isDesc ? 'DESC' : 'ASC']);
+            break;
         }
       } else {
         order.push(['id', 'ASC']);
@@ -454,8 +469,7 @@ export class TeacherRepository {
 
   async getTeachersToNotify(repoRequest: TeacherToNotifyRepoRequest): Promise<Array<TeacherToNotifyRepoResponse>> {
     const [rows] = await this.sequelize.query('' +
-      'SELECT `Teacher`.`id` as `teacherId`, `Teacher`.`fullName` as `teacherName`, ' +
-      '`Teacher`.`email` as `teacherEmail`, `Teacher`.`avatarUrl` as `teacherAvatarUrl`' +
+      'SELECT `Teacher`.`id` as `teacherId`, `Teacher`.`email` as `teacherEmail`, `Teacher`.`fullName` as `teacherName`,' +
       'IFNULL(SUM(`Internship`.`hours`), 0) as `internshipHours`, ' +
       'IFNULL(MAX(`Attestation`.`date`), NOW()) as `lastAttestationDate`, ' +
       'DATE_ADD(IFNULL(MAX(`Attestation`.`date`), NOW()), INTERVAL :attestationYearsPeriod YEAR) as `nextAttestationDate` ' +

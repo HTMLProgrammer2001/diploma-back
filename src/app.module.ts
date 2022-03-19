@@ -47,14 +47,11 @@ import {NotificationModule} from './features/notification/notification.module';
 import {ImportModule} from './features/import/import.module';
 import {ImportTypeModule} from './features/import-type/import-type.module';
 
-const notificationLoader: ConfigFactory = () => ({NOTIFICATION: require('../notification.config.json')});
-
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: process.env.NODE_ENV === 'development' ? '.env.development' : '.env.production',
-      load: [notificationLoader]
     }),
     SequelizeModule.forRoot({
       dialect: 'mysql',

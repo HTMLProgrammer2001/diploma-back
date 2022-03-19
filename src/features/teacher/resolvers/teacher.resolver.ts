@@ -1,4 +1,4 @@
-import {Args, Info, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
+import {Args, ID, Info, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {TeacherService} from '../service/teacher.service';
 import {TeacherGetListRequest} from '../types/request/teacher-get-list.request';
 import {TeacherResponse} from '../types/response/teacher.response';
@@ -56,7 +56,7 @@ export class TeacherResolver {
   @Mutation(returns => IdResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async deleteTeacher(
-    @Args('id', {type: () => Int}) id: number,
+    @Args('id', {type: () => ID}) id: number,
     @Args('guid', {type: () => String}) guid: string,
   ): Promise<IdResponse> {
     return this.teacherService.deleteTeacher(id, guid);

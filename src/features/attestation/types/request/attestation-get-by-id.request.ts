@@ -17,7 +17,7 @@ export class AttestationGetByIdRequest {
   @IsBoolean()
   showDeleted?: boolean;
 
-  @Field({nullable: true})
+  @Field(type => AttestationCascadeDeleteByEnum, {nullable: true})
   @IsOptional()
   @IsEnum(AttestationCascadeDeleteByEnum)
   showCascadeDeletedBy: string;

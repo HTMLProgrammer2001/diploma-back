@@ -23,8 +23,6 @@ export class AuthMapper {
       UserSelectFieldsEnum.PASSWORD_HASH,
       UserSelectFieldsEnum.ROLE_ID,
       UserSelectFieldsEnum.EMAIL,
-      UserSelectFieldsEnum.FULL_NAME,
-      UserSelectFieldsEnum.AVATAR_URL,
     ];
     destination.showDeleted = false;
 
@@ -67,8 +65,6 @@ export class AuthMapper {
       UserSelectFieldsEnum.IS_DELETED,
       UserSelectFieldsEnum.ROLE_ID,
       UserSelectFieldsEnum.EMAIL,
-      UserSelectFieldsEnum.FULL_NAME,
-      UserSelectFieldsEnum.AVATAR_URL,
     ];
 
     return destination;

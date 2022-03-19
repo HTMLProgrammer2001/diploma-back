@@ -1,4 +1,4 @@
-import {Args, Info, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
+import {Args, ID, Info, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {TeachingRankService} from '../service/teaching-rank.service';
 import {TeachingRankGetListRequest} from '../types/request/teaching-rank-get-list.request';
 import {TeachingRankResponse} from '../types/response/teaching-rank.response';
@@ -54,7 +54,7 @@ export class TeachingRankResolver {
   @Mutation(returns => IdResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async deleteTeachingRank(
-    @Args('id', {type: () => Int}) id: number,
+    @Args('id', {type: () => ID}) id: number,
     @Args('guid', {type: () => String}) guid: string,
   ): Promise<IdResponse> {
     return this.teachingRankService.deleteTeachingRank(id, guid);

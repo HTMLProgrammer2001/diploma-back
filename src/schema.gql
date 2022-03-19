@@ -14,7 +14,7 @@ input AcademicDegreeGetByIdRequest {
 input AcademicDegreeGetListRequest {
   isDesc: Boolean
   name: String
-  orderField: String = "id"
+  orderField: AcademicDegreeOrderFieldsEnum = ID
   page: Int = 1
   showDeleted: Boolean
   size: Int = 5
@@ -27,6 +27,11 @@ type AcademicDegreeListResponse implements PaginatedData {
   skip: Int!
   totalElements: Int!
   totalPages: Int!
+}
+
+enum AcademicDegreeOrderFieldsEnum {
+  ID
+  NAME
 }
 
 type AcademicDegreeResponse {
@@ -54,7 +59,7 @@ input AcademicTitleGetByIdRequest {
 input AcademicTitleGetListRequest {
   isDesc: Boolean
   name: String
-  orderField: String = "id"
+  orderField: AcademicTitleOrderFieldsEnum = ID
   page: Int = 1
   showDeleted: Boolean
   size: Int = 5
@@ -67,6 +72,11 @@ type AcademicTitleListResponse implements PaginatedData {
   skip: Int!
   totalElements: Int!
   totalPages: Int!
+}
+
+enum AcademicTitleOrderFieldsEnum {
+  ID
+  NAME
 }
 
 type AcademicTitleResponse {
@@ -82,6 +92,11 @@ input AcademicTitleUpdateRequest {
   name: String
 }
 
+enum AttestationCascadeDeleteByEnum {
+  CATEGORY
+  TEACHER
+}
+
 input AttestationCreateRequest {
   categoryId: ID!
   date: String!
@@ -91,8 +106,17 @@ input AttestationCreateRequest {
 
 input AttestationGetByIdRequest {
   id: ID!
-  showCascadeDeletedBy: String
+  showCascadeDeletedBy: AttestationCascadeDeleteByEnum
   showDeleted: Boolean
+}
+
+input AttestationGetLastDateRequest {
+  teacherId: ID!
+}
+
+type AttestationGetLastDateResponse {
+  lastAttestationDate: String!
+  nextAttestationDate: String!
 }
 
 input AttestationGetListRequest {
@@ -100,9 +124,9 @@ input AttestationGetListRequest {
   dateLess: String
   dateMore: String
   isDesc: Boolean
-  orderField: String = "id"
+  orderField: AttestationOrderFieldsEnum = ID
   page: Int = 1
-  showCascadeDeletedBy: String
+  showCascadeDeletedBy: AttestationCascadeDeleteByEnum
   showDeleted: Boolean
   size: Int = 5
   teacherId: ID
@@ -115,6 +139,13 @@ type AttestationListResponse implements PaginatedData {
   skip: Int!
   totalElements: Int!
   totalPages: Int!
+}
+
+enum AttestationOrderFieldsEnum {
+  CATEGORY
+  DATE
+  ID
+  TEACHER
 }
 
 type AttestationResponse {
@@ -148,7 +179,7 @@ input CategoryGetByIdRequest {
 input CategoryGetListRequest {
   isDesc: Boolean
   name: String
-  orderField: String = "id"
+  orderField: CategoryOrderFieldsEnum = ID
   page: Int = 1
   showDeleted: Boolean
   size: Int = 5
@@ -161,6 +192,11 @@ type CategoryListResponse implements PaginatedData {
   skip: Int!
   totalElements: Int!
   totalPages: Int!
+}
+
+enum CategoryOrderFieldsEnum {
+  ID
+  NAME
 }
 
 type CategoryResponse {
@@ -188,7 +224,7 @@ input CommissionGetByIdRequest {
 input CommissionGetListRequest {
   isDesc: Boolean
   name: String
-  orderField: String = "id"
+  orderField: CommissionOrderFieldsEnum = ID
   page: Int = 1
   showDeleted: Boolean
   size: Int = 5
@@ -201,6 +237,11 @@ type CommissionListResponse implements PaginatedData {
   skip: Int!
   totalElements: Int!
   totalPages: Int!
+}
+
+enum CommissionOrderFieldsEnum {
+  ID
+  NAME
 }
 
 type CommissionResponse {
@@ -233,7 +274,7 @@ input DepartmentGetByIdRequest {
 input DepartmentGetListRequest {
   isDesc: Boolean
   name: String
-  orderField: String = "id"
+  orderField: DepartmentOrderFieldsEnum = ID
   page: Int = 1
   showDeleted: Boolean
   size: Int = 5
@@ -246,6 +287,11 @@ type DepartmentListResponse implements PaginatedData {
   skip: Int!
   totalElements: Int!
   totalPages: Int!
+}
+
+enum DepartmentOrderFieldsEnum {
+  ID
+  NAME
 }
 
 type DepartmentResponse {
@@ -270,6 +316,11 @@ input EditProfileRequest {
   phone: String
 }
 
+enum EducationCascadeDeletedByEnum {
+  EDUCATION_QUALIFICATION
+  TEACHER
+}
+
 input EducationCreateRequest {
   description: String
   educationQualificationId: ID!
@@ -281,7 +332,7 @@ input EducationCreateRequest {
 
 input EducationGetByIdRequest {
   id: ID!
-  showCascadeDeletedBy: String
+  showCascadeDeletedBy: EducationCascadeDeletedByEnum
   showDeleted: Boolean
 }
 
@@ -289,9 +340,9 @@ input EducationGetListRequest {
   educationQualificationId: ID
   institution: String
   isDesc: Boolean
-  orderField: String = "id"
+  orderField: EducationOrderFieldsEnum = ID
   page: Int = 1
-  showCascadeDeletedBy: String
+  showCascadeDeletedBy: EducationCascadeDeletedByEnum
   showDeleted: Boolean
   size: Int = 5
   specialty: String
@@ -309,6 +360,14 @@ type EducationListResponse implements PaginatedData {
   totalPages: Int!
 }
 
+enum EducationOrderFieldsEnum {
+  EDUCATION_QUALIFICATION
+  ID
+  INSTITUTION
+  TEACHER
+  YEAR_OF_ISSUE
+}
+
 input EducationQualificationCreateRequest {
   name: String
 }
@@ -321,7 +380,7 @@ input EducationQualificationGetByIdRequest {
 input EducationQualificationGetListRequest {
   isDesc: Boolean
   name: String
-  orderField: String = "id"
+  orderField: EducationQualificationOrderFieldsEnum = ID
   page: Int = 1
   showDeleted: Boolean
   size: Int = 5
@@ -334,6 +393,11 @@ type EducationQualificationListResponse implements PaginatedData {
   skip: Int!
   totalElements: Int!
   totalPages: Int!
+}
+
+enum EducationQualificationOrderFieldsEnum {
+  ID
+  NAME
 }
 
 type EducationQualificationResponse {
@@ -403,6 +467,10 @@ type GenerateImportTemplateResponse {
   url: String!
 }
 
+enum HonorCascadeDeletedByEnum {
+  TEACHER
+}
+
 input HonorCreateRequest {
   date: String
   description: String
@@ -414,7 +482,7 @@ input HonorCreateRequest {
 
 input HonorGetByIdRequest {
   id: ID!
-  showCascadeDeletedBy: String
+  showCascadeDeletedBy: HonorCascadeDeletedByEnum
   showDeleted: Boolean
 }
 
@@ -422,10 +490,10 @@ input HonorGetListRequest {
   dateLess: String
   dateMore: String
   isDesc: Boolean
-  orderField: String = "id"
+  orderField: HonorOrderFieldsEnum = ID
   orderNumber: String
   page: Int = 1
-  showCascadeDeletedBy: String
+  showCascadeDeletedBy: HonorCascadeDeletedByEnum
   showDeleted: Boolean
   showInActive: Boolean
   size: Int = 5
@@ -440,6 +508,13 @@ type HonorListResponse implements PaginatedData {
   skip: Int!
   totalElements: Int!
   totalPages: Int!
+}
+
+enum HonorOrderFieldsEnum {
+  DATE
+  ID
+  TEACHER
+  TITLE
 }
 
 type HonorResponse {
@@ -537,6 +612,10 @@ input ImportTypeUpdateRequest {
   name: String
 }
 
+enum InternshipCascadeDeletedByEnum {
+  TEACHER
+}
+
 input InternshipCreateRequest {
   code: String!
   credits: Float
@@ -551,7 +630,7 @@ input InternshipCreateRequest {
 
 input InternshipGetByIdRequest {
   id: ID!
-  showCascadeDeletedBy: String
+  showCascadeDeletedBy: InternshipCascadeDeletedByEnum
   showDeleted: Boolean
 }
 
@@ -568,10 +647,10 @@ input InternshipGetListRequest {
   dateFromMore: String
   dateToLess: String
   isDesc: Boolean
-  orderField: String = "id"
+  orderField: InternshipOrderFieldsEnum = ID
   page: Int = 1
   place: String
-  showCascadeDeletedBy: String
+  showCascadeDeletedBy: InternshipCascadeDeletedByEnum
   showDeleted: Boolean
   size: Int = 5
   teacherId: ID
@@ -585,6 +664,14 @@ type InternshipListResponse implements PaginatedData {
   skip: Int!
   totalElements: Int!
   totalPages: Int!
+}
+
+enum InternshipOrderFieldsEnum {
+  DATE_FROM
+  DATE_TO
+  ID
+  TEACHER
+  TITLE
 }
 
 type InternshipResponse {
@@ -646,12 +733,12 @@ type Mutation {
   createTeacher(body: TeacherCreateRequest!): TeacherResponse!
   createTeachingRank(body: TeachingRankCreateRequest!): TeachingRankResponse!
   createUser(body: UserCreateRequest!): UserResponse!
-  deleteAcademicDegree(guid: String!, id: Int!): IdResponse!
-  deleteAcademicTitle(guid: String!, id: Int!): IdResponse!
+  deleteAcademicDegree(guid: String!, id: ID!): IdResponse!
+  deleteAcademicTitle(guid: String!, id: ID!): IdResponse!
   deleteAttestation(guid: String!, id: Int!): IdResponse!
   deleteCategory(guid: String!, id: Int!): IdResponse!
   deleteCommission(guid: String!, id: ID!): IdResponse!
-  deleteDepartment(guid: String!, id: Int!): IdResponse!
+  deleteDepartment(guid: String!, id: ID!): IdResponse!
   deleteEducation(guid: String!, id: Int!): IdResponse!
   deleteEducationQualification(guid: String!, id: Int!): IdResponse!
   deleteHonor(guid: String!, id: Int!): IdResponse!
@@ -659,8 +746,8 @@ type Mutation {
   deleteProfile(guid: String!): IdResponse!
   deletePublication(guid: String!, id: Int!): IdResponse!
   deleteRebuke(guid: String!, id: Int!): IdResponse!
-  deleteTeacher(guid: String!, id: Int!): IdResponse!
-  deleteTeachingRank(guid: String!, id: Int!): IdResponse!
+  deleteTeacher(guid: String!, id: ID!): IdResponse!
+  deleteTeachingRank(guid: String!, id: ID!): IdResponse!
   deleteUser(guid: String!, id: Int!): IdResponse!
   editProfile(body: EditProfileRequest!): ProfileResponse!
   generateImportTemplate(body: GenerateImportTemplateRequest!): GenerateImportTemplateResponse!
@@ -705,7 +792,6 @@ type NotificationConfigResponse {
 }
 
 type NotificationTeacherModelResponse {
-  avatarUrl: String!
   email: String!
   id: ID!
   name: String!
@@ -726,14 +812,14 @@ enum NotificationTypes {
 
 input NotificationUpdateRequest {
   adminEmails: [String!]
-  attestationYearsPeriod: Float
+  attestationYearsPeriod: Int
   isNotifyAdmins: Boolean
   isNotifyTeachers: Boolean
-  notifyBeforeDays: Float
-  notifyDay: Float
+  notifyBeforeDays: Int
+  notifyDay: Int
   notifyTime: String
   notifyType: NotificationTypes
-  requiredInternshipHours: Float
+  requiredInternshipHours: Int
 }
 
 interface PaginatedData {
@@ -774,7 +860,7 @@ input PublicationGetListRequest {
   dateLess: String
   dateMore: String
   isDesc: Boolean
-  orderField: String = "id"
+  orderField: PublicationOrderFieldsEnum = ID
   page: Int = 1
   publisher: String
   showDeleted: Boolean
@@ -790,6 +876,12 @@ type PublicationListResponse implements PaginatedData {
   skip: Int!
   totalElements: Int!
   totalPages: Int!
+}
+
+enum PublicationOrderFieldsEnum {
+  DATE
+  ID
+  TITLE
 }
 
 type PublicationResponse {
@@ -841,6 +933,7 @@ type Query {
   getInternshipById(query: InternshipGetByIdRequest!): InternshipResponse!
   getInternshipHoursFromLastAttestation(query: InternshipGetHoursFromLastAttestationRequest!): InternshipGetHoursFromLastAttestationResponse!
   getInternshipList(query: InternshipGetListRequest!): InternshipListResponse!
+  getLastAttestationDate(query: AttestationGetLastDateRequest!): AttestationGetLastDateResponse!
   getNotificationConfig: NotificationConfigResponse!
   getProfile: ProfileResponse!
   getPublicationById(query: PublicationGetByIdRequest!): PublicationResponse!
@@ -858,6 +951,10 @@ type Query {
   getUserList(query: UserGetListRequest!): UserListResponse!
 }
 
+enum RebukeCascadeDeletedByEnum {
+  TEACHER
+}
+
 input RebukeCreateRequest {
   date: String
   description: String
@@ -869,7 +966,7 @@ input RebukeCreateRequest {
 
 input RebukeGetByIdRequest {
   id: ID!
-  showCascadeDeletedBy: String
+  showCascadeDeletedBy: RebukeCascadeDeletedByEnum
   showDeleted: Boolean
 }
 
@@ -877,10 +974,10 @@ input RebukeGetListRequest {
   dateLess: String
   dateMore: String
   isDesc: Boolean
-  orderField: String = "id"
+  orderField: RebukeOrderFieldsEnum = ID
   orderNumber: String
   page: Int = 1
-  showCascadeDeletedBy: String
+  showCascadeDeletedBy: RebukeCascadeDeletedByEnum
   showDeleted: Boolean
   showInActive: Boolean
   size: Int = 5
@@ -895,6 +992,13 @@ type RebukeListResponse implements PaginatedData {
   skip: Int!
   totalElements: Int!
   totalPages: Int!
+}
+
+enum RebukeOrderFieldsEnum {
+  DATE
+  ID
+  TEACHER
+  TITLE
 }
 
 type RebukeResponse {
@@ -936,7 +1040,7 @@ input RoleGetByIdRequest {
 input RoleGetListRequest {
   isDesc: Boolean
   name: String
-  orderField: String = "id"
+  orderField: RoleOrderFieldsEnum = ID
   page: Int = 1
   size: Int = 5
 }
@@ -950,6 +1054,11 @@ type RoleListResponse implements PaginatedData {
   totalPages: Int!
 }
 
+enum RoleOrderFieldsEnum {
+  ID
+  NAME
+}
+
 type RoleResponse {
   guid: String!
   id: ID!
@@ -960,6 +1069,14 @@ input RoleUpdateRequest {
   guid: String!
   id: ID!
   name: String
+}
+
+enum TeacherCascadeDeletedByEnum {
+  ACADEMIC_DEGREE
+  ACADEMIC_TITLE
+  COMMISSION
+  DEPARTMENT
+  TEACHING_RANK
 }
 
 input TeacherCreateRequest {
@@ -979,7 +1096,7 @@ input TeacherCreateRequest {
 
 input TeacherGetByIdRequest {
   id: ID!
-  showCascadeDeletedBy: String
+  showCascadeDeletedBy: TeacherCascadeDeletedByEnum
   showDeleted: Boolean
 }
 
@@ -991,9 +1108,9 @@ input TeacherGetListRequest {
   email: String
   fullName: String
   isDesc: Boolean
-  orderField: String = "id"
+  orderField: TeacherOrderFieldsEnum = ID
   page: Int = 1
-  showCascadeDeletedBy: String
+  showCascadeDeletedBy: TeacherCascadeDeletedByEnum
   showDeleted: Boolean
   size: Int = 5
   teachingRankId: ID
@@ -1006,6 +1123,16 @@ type TeacherListResponse implements PaginatedData {
   skip: Int!
   totalElements: Int!
   totalPages: Int!
+}
+
+enum TeacherOrderFieldsEnum {
+  ACADEMIC_DEGREE
+  ACADEMIC_TITLE
+  COMMISSION_NAME
+  DEPARTMENT_NAME
+  FULL_NAME
+  ID
+  TEACHING_RANK
 }
 
 type TeacherResponse {
@@ -1055,7 +1182,7 @@ input TeachingRankGetByIdRequest {
 input TeachingRankGetListRequest {
   isDesc: Boolean
   name: String
-  orderField: String = "id"
+  orderField: TeachingRankOrderFieldsEnum = ID
   page: Int = 1
   showDeleted: Boolean
   size: Int = 5
@@ -1068,6 +1195,11 @@ type TeachingRankListResponse implements PaginatedData {
   skip: Int!
   totalElements: Int!
   totalPages: Int!
+}
+
+enum TeachingRankOrderFieldsEnum {
+  ID
+  NAME
 }
 
 type TeachingRankResponse {
@@ -1104,7 +1236,7 @@ input UserGetListRequest {
   email: String
   fullName: String
   isDesc: Boolean
-  orderField: String = "id"
+  orderField: UserOrderFieldsEnum = ID
   page: Int = 1
   roleId: ID
   showDeleted: Boolean
@@ -1118,6 +1250,12 @@ type UserListResponse implements PaginatedData {
   skip: Int!
   totalElements: Int!
   totalPages: Int!
+}
+
+enum UserOrderFieldsEnum {
+  FULL_NAME
+  ID
+  ROLE_NAME
 }
 
 type UserResponse {

@@ -1,4 +1,4 @@
-import {Args, Info, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
+import {Args, ID, Info, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {AcademicDegreeService} from '../service/academic-degree.service';
 import {AcademicDegreeGetListRequest} from '../types/request/academic-degree-get-list.request';
 import {AcademicDegreeResponse} from '../types/response/academic-degree.response';
@@ -55,7 +55,7 @@ export class AcademicDegreeResolver {
   @Mutation(returns => IdResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async deleteAcademicDegree(
-    @Args('id', {type: () => Int}) id: number,
+    @Args('id', {type: () => ID}) id: number,
     @Args('guid', {type: () => String}) guid: string,
   ): Promise<IdResponse> {
     return this.academicDegreeService.deleteAcademicDegree(id, guid);

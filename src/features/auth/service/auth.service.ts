@@ -79,8 +79,6 @@ export class AuthService {
         userId: userModel.id,
         role: userModel.role?.id,
         email: userModel.email,
-        fullName: userModel.fullName,
-        avatarUrl: userModel.avatarUrl,
       };
 
       const accessToken = this.jwtService.sign(accessTokenPayload, {
@@ -196,8 +194,6 @@ export class AuthService {
         userId: userModel.id,
         role: userModel.role?.id,
         email: userModel.email,
-        fullName: userModel.fullName,
-        avatarUrl: userModel.avatarUrl,
       };
 
       const newAccessToken = this.jwtService.sign(newAccessTokenPayload, {
@@ -239,8 +235,6 @@ export class AuthService {
         role: RolesEnum.VIEWER,
         userId: teacher.id,
         email: teacher.email,
-        fullName: teacher.fullName,
-        avatarUrl: teacher.avatarUrl
       };
 
       const accessToken = this.jwtService.sign(accessTokenPayload, {

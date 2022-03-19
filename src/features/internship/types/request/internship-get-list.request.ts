@@ -5,6 +5,7 @@ import {ParseNumber} from '../../../../global/pipes/parse-number';
 import {ValidateDate} from '../../../../global/pipes/validate-date';
 import {RebukeOrderFieldsEnum} from '../../../../data-layer/repositories/rebuke/enums/rebuke-order-fields.enum';
 import {InternshipCascadeDeletedByEnum} from '../../../../data-layer/db-models/internship.db-model';
+import {InternshipOrderFieldsEnum} from '../../../../data-layer/repositories/internship/enums/internship-order-fields.enum';
 
 @InputType()
 export class InternshipGetListRequest extends BasePaginatorRequest {
@@ -46,14 +47,14 @@ export class InternshipGetListRequest extends BasePaginatorRequest {
   @IsBoolean()
   showDeleted: boolean;
 
-  @Field({nullable: true})
+  @Field(type => InternshipCascadeDeletedByEnum, {nullable: true})
   @IsOptional()
   @IsEnum(InternshipCascadeDeletedByEnum)
   showCascadeDeletedBy?: string;
 
-  @Field({nullable: true, defaultValue: RebukeOrderFieldsEnum.ID})
+  @Field(type => InternshipOrderFieldsEnum, {nullable: true, defaultValue: InternshipOrderFieldsEnum.ID})
   @IsOptional()
-  @IsEnum(RebukeOrderFieldsEnum)
+  @IsEnum(InternshipOrderFieldsEnum)
   orderField: string;
 
   @Field({nullable: true})

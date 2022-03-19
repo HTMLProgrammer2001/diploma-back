@@ -17,7 +17,7 @@ export class CommissionGetListRequest extends BasePaginatorRequest {
   @IsBoolean()
   showDeleted: boolean;
 
-  @Field({nullable: true, defaultValue: CommissionOrderFieldsEnum.ID})
+  @Field(type => CommissionOrderFieldsEnum, {nullable: true, defaultValue: CommissionOrderFieldsEnum.ID})
   @IsOptional()
   @IsEnum(CommissionOrderFieldsEnum)
   orderField: string;

@@ -13,6 +13,8 @@ import {AttestationGetByIdRequest} from '../types/request/attestation-get-by-id.
 import {AttestationCreateRequest} from '../types/request/attestation-create.request';
 import {AttestationUpdateRequest} from '../types/request/attestation-update.request';
 import {AttestationService} from '../service/attestation.service';
+import {AttestationGetLastDateRequest} from '../types/request/attestation-get-last-date.request';
+import {AttestationGetLastDateResponse} from '../types/response/attestation-get-last-date.response';
 
 @Resolver(of => AttestationResponse)
 export class AttestationResolver {
@@ -60,5 +62,11 @@ export class AttestationResolver {
     @Args('guid', {type: () => String}) guid: string,
   ): Promise<IdResponse> {
     return this.attestationService.deleteAttestation(id, guid);
+  }
+
+  @Query(returns => AttestationGetLastDateResponse)
+  @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
+  async getLastAttestationDate(@Args('query') body: AttestationGetLastDateRequest): Promise<AttestationGetLastDateResponse> {
+    return this.attestationService.getLastDate(body);
   }
 }

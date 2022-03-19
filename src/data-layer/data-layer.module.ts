@@ -36,6 +36,7 @@ import {AttestationDbModel} from './db-models/attestation.db-model';
 import {AttestationRepository} from './repositories/attestation/attestation.repository';
 import {ImportTypeDbModel} from './db-models/import-type.db-model';
 import {ImportTypeRepository} from './repositories/import-type/import-type.repository';
+import {NotificationRepository} from './repositories/notification/notification.repository';
 
 const getAppModels = () => SequelizeModule.forFeature([
   CommissionDbModel,
@@ -77,6 +78,7 @@ const getAppRepositories = () => [
   CategoryRepository,
   AttestationRepository,
   ImportTypeRepository,
+  NotificationRepository,
 ]
 
 @Global()

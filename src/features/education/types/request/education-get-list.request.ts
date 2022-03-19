@@ -46,12 +46,12 @@ export class EducationGetListRequest extends BasePaginatorRequest {
   @IsBoolean()
   showDeleted: boolean;
 
-  @Field({nullable: true})
+  @Field(type => EducationCascadeDeletedByEnum, {nullable: true})
   @IsOptional()
   @IsEnum(EducationCascadeDeletedByEnum)
   showCascadeDeletedBy?: string;
 
-  @Field({nullable: true, defaultValue: EducationOrderFieldsEnum.ID})
+  @Field(type => EducationOrderFieldsEnum, {nullable: true, defaultValue: EducationOrderFieldsEnum.ID})
   @IsOptional()
   @IsEnum(EducationOrderFieldsEnum)
   orderField: string;

@@ -17,7 +17,7 @@ export class EducationGetByIdRequest {
   @IsBoolean()
   showDeleted?: boolean;
 
-  @Field({nullable: true})
+  @Field(type => EducationCascadeDeletedByEnum, {nullable: true})
   @IsOptional()
   @IsEnum(EducationCascadeDeletedByEnum)
   showCascadeDeletedBy?: string;

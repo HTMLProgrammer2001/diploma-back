@@ -17,7 +17,7 @@ export class HonorGetByIdRequest {
   @IsBoolean()
   showDeleted?: boolean;
 
-  @Field({nullable: true})
+  @Field(type => HonorCascadeDeletedByEnum, {nullable: true})
   @IsOptional()
   @IsEnum(HonorCascadeDeletedByEnum)
   showCascadeDeletedBy?: string;

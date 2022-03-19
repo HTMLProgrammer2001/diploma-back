@@ -12,7 +12,7 @@ export class RoleGetListRequest extends BasePaginatorRequest {
   @IsString()
   name: string;
 
-  @Field({nullable: true, defaultValue: RoleOrderFieldsEnum.ID})
+  @Field(type => RoleOrderFieldsEnum, {nullable: true, defaultValue: RoleOrderFieldsEnum.ID})
   @IsOptional()
   @IsEnum(RoleOrderFieldsEnum)
   orderField: string;

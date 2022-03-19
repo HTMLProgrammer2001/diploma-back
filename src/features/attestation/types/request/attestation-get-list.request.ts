@@ -37,12 +37,12 @@ export class AttestationGetListRequest extends BasePaginatorRequest {
   @IsBoolean()
   showDeleted: boolean;
 
-  @Field({nullable: true})
+  @Field(type => AttestationCascadeDeleteByEnum, {nullable: true})
   @IsOptional()
   @IsEnum(AttestationCascadeDeleteByEnum)
   showCascadeDeletedBy: string;
 
-  @Field({nullable: true, defaultValue: AttestationOrderFieldsEnum.ID})
+  @Field(type => AttestationOrderFieldsEnum, {nullable: true, defaultValue: AttestationOrderFieldsEnum.ID})
   @IsOptional()
   @IsEnum(AttestationOrderFieldsEnum)
   orderField: string;

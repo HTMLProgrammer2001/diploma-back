@@ -46,12 +46,12 @@ export class HonorGetListRequest extends BasePaginatorRequest {
   @IsBoolean()
   showDeleted: boolean;
 
-  @Field({nullable: true})
+  @Field(type => HonorCascadeDeletedByEnum, {nullable: true})
   @IsOptional()
   @IsEnum(HonorCascadeDeletedByEnum)
   showCascadeDeletedBy?: string;
 
-  @Field({nullable: true, defaultValue: HonorOrderFieldsEnum.ID})
+  @Field(type => HonorOrderFieldsEnum, {nullable: true, defaultValue: HonorOrderFieldsEnum.ID})
   @IsOptional()
   @IsEnum(HonorOrderFieldsEnum)
   orderField: string;
