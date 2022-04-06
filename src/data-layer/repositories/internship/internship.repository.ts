@@ -184,12 +184,24 @@ export class InternshipRepository {
             order.push(['title', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
+          case InternshipOrderFieldsEnum.CODE:
+            order.push(['code', repoRequest.isDesc ? 'DESC' : 'ASC']);
+            break;
+
           case InternshipOrderFieldsEnum.DATE_FROM:
             order.push(['from', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
           case InternshipOrderFieldsEnum.DATE_TO:
             order.push(['from', repoRequest.isDesc ? 'DESC' : 'ASC']);
+            break;
+
+          case InternshipOrderFieldsEnum.HOURS:
+            order.push(['hours', repoRequest.isDesc ? 'DESC' : 'ASC']);
+            break;
+
+          case InternshipOrderFieldsEnum.PLACE:
+            order.push(['place', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
           case InternshipOrderFieldsEnum.TEACHER:
@@ -366,3 +378,4 @@ export class InternshipRepository {
     }
   }
 }
+

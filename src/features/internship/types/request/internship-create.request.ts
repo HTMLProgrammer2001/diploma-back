@@ -28,6 +28,7 @@ export class InternshipCreateRequest {
 
   @Field({nullable: true})
   @IsOptional()
+  @MaxLength(255)
   @IsString()
   place: string;
 

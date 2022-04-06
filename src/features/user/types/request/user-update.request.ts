@@ -60,6 +60,7 @@ export class UserUpdateRequest {
 
   @Field(type => ID, {nullable: true})
   @IsOptional()
+  @ParseNumber()
   @IsNumber()
   roleId: number;
 }

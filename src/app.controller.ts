@@ -3,9 +3,14 @@ import {Response} from 'express';
 import {join} from 'path';
 import {MetaDataFieldEnum} from './global/constants/meta-data-fields.enum';
 import {readRoles} from './global/utils/roles';
+import * as bcrypt from 'bcrypt';
+import {ConfigService} from '@nestjs/config';
 
 @Controller()
 export class AppController {
+  constructor(private configService: ConfigService) {
+  }
+
   @Get()
   getAlive(): string {
     return 'It works';

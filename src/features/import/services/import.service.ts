@@ -28,12 +28,10 @@ import {PublicationImportColumnsEnum} from '../types/common/columns/publication-
 import {PublicationRepository} from '../../../data-layer/repositories/publication/publication.repository';
 import {HonorImportData} from '../types/common/import-data/honor-import-data';
 import {HonorImportColumnsEnum} from '../types/common/columns/honor-import-columns.enum';
-import {HonorDbModel} from '../../../data-layer/db-models/honor.db-model';
 import {HonorRepository} from '../../../data-layer/repositories/honor/honor.repository';
 import {RebukeRepository} from '../../../data-layer/repositories/rebuke/rebuke.repository';
 import {RebukeImportData} from '../types/common/import-data/rebuke-import-data';
 import {RebukeImportColumnsEnum} from '../types/common/columns/rebuke-import-columns.enum';
-import {RebukeDbModel} from '../../../data-layer/db-models/rebuke.db-model';
 import {EducationImportData} from '../types/common/import-data/education-import-data';
 import {EducationImportColumnsEnum} from '../types/common/columns/education-import-columns.enum';
 import {EducationQualificationDbModel} from '../../../data-layer/db-models/education-qualification.db-model';
@@ -606,18 +604,9 @@ export class ImportService {
       }
 
       //logic validation
-      const uniqueOrderNumbers: Array<string> = [];
       const existTeachers: Array<number> = [];
 
       honorImportDataArray = honorImportDataArray.filter((honorImportData, index) => {
-        if(uniqueOrderNumbers.includes(honorImportData.orderNumber)) {
-          importErrors.push({row: startRow + index, property: 'orderNumber', message: 'Order number not unique in file'});
-          return false;
-        }
-        else {
-          uniqueOrderNumbers.push(honorImportData.orderNumber);
-        }
-
         existTeachers.push(honorImportData.teacherId);
         return true;
       });
@@ -628,7 +617,6 @@ export class ImportService {
       }
 
       //get data to validate unique
-      let honorsWithOrderNumbers: Array<HonorDbModel> = [];
       let teachers: Array<TeacherDbModel> = [];
 
       if(existTeachers.length) {
@@ -637,23 +625,7 @@ export class ImportService {
         teachers = teacherResponse.data.responseList;
       }
 
-      if(uniqueOrderNumbers.length) {
-        const getHonorsByOrderNumbersRequest = this.importMapper.initializeGetHonorsByOrderNumbers(uniqueOrderNumbers);
-        const honorsWithOrderNumbersResponse = await this.honorRepository.getHonors(getHonorsByOrderNumbersRequest);
-        honorsWithOrderNumbers = honorsWithOrderNumbersResponse.data.responseList;
-      }
-
       honorImportDataArray = honorImportDataArray.filter((honorImportData, index) => {
-        if(honorsWithOrderNumbers.find(internship => internship.orderNumber === honorImportData.orderNumber)) {
-          importErrors.push({
-            row: startRow + index,
-            property: 'orderNumber',
-            message: `Honor with order number ${honorImportData.orderNumber} already exist`
-          });
-
-          return false;
-        }
-
         if(!teachers.find(teacher => teacher.id === honorImportData.teacherId)) {
           importErrors.push({
             row: startRow + index,
@@ -739,18 +711,9 @@ export class ImportService {
       }
 
       //logic validation
-      const uniqueOrderNumbers: Array<string> = [];
       const existTeachers: Array<number> = [];
 
       rebukeImportDataArray = rebukeImportDataArray.filter((rebukeImportData, index) => {
-        if(uniqueOrderNumbers.includes(rebukeImportData.orderNumber)) {
-          importErrors.push({row: startRow + index, property: 'orderNumber', message: 'Order number not unique in file'});
-          return false;
-        }
-        else {
-          uniqueOrderNumbers.push(rebukeImportData.orderNumber);
-        }
-
         existTeachers.push(rebukeImportData.teacherId);
         return true;
       });
@@ -761,7 +724,6 @@ export class ImportService {
       }
 
       //get data to validate unique
-      let rebukesWithOrderNumbers: Array<RebukeDbModel> = [];
       let teachers: Array<TeacherDbModel> = [];
 
       if(existTeachers.length) {
@@ -770,23 +732,7 @@ export class ImportService {
         teachers = teacherResponse.data.responseList;
       }
 
-      if(uniqueOrderNumbers.length) {
-        const getRebukesByOrderNumbersRequest = this.importMapper.initializeGetRebukesByOrderNumbers(uniqueOrderNumbers);
-        const rebukesWithOrderNumbersResponse = await this.rebukeRepository.getRebukes(getRebukesByOrderNumbersRequest);
-        rebukesWithOrderNumbers = rebukesWithOrderNumbersResponse.data.responseList;
-      }
-
       rebukeImportDataArray = rebukeImportDataArray.filter((honorImportData, index) => {
-        if(rebukesWithOrderNumbers.find(internship => internship.orderNumber === honorImportData.orderNumber)) {
-          importErrors.push({
-            row: startRow + index,
-            property: 'orderNumber',
-            message: `Rebuke with order number ${honorImportData.orderNumber} already exist`
-          });
-
-          return false;
-        }
-
         if(!teachers.find(teacher => teacher.id === honorImportData.teacherId)) {
           importErrors.push({
             row: startRow + index,

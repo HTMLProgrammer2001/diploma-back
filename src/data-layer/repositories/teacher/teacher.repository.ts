@@ -184,11 +184,11 @@ export class TeacherRepository {
       const filters: WhereOptions<TeacherInterface> = {};
 
       if (!isNil(repoRequest.fullName)) {
-        filters.fullName = {[Op.like]: `%${repoRequest.fullName || ''}%`};
+        filters.fullName = {[Op.like]: `%${repoRequest.fullName}%`};
       }
 
       if (!isNil(repoRequest.email)) {
-        filters.fullName = {[Op.like]: `%${repoRequest.email || ''}%`};
+        filters.email = {[Op.like]: `%${repoRequest.email || ''}%`};
       }
 
       if (!isNil(repoRequest.departmentId)) {
@@ -271,7 +271,7 @@ export class TeacherRepository {
 
           case TeacherOrderFieldsEnum.TEACHING_RANK:
             includes.teachingRank = includes.teachingRank ?? {model: TeachingRankDbModel, attributes: []};
-            order.push([{model: TeachingRankDbModel, as: 'teachingRank'}, 'name', repoRequest.isDesc ? 'DESC' : 'ASC']);
+            order.push([{model: TeachingRankDbModel, as: 'teacherRank'}, 'name', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
           case TeacherOrderFieldsEnum.ACADEMIC_DEGREE:

@@ -21,6 +21,7 @@ import {TeacherSelectFieldsEnum} from '../../../data-layer/repositories/teacher/
 import {TeacherDeleteRepoRequest} from '../../../data-layer/repositories/teacher/repo-request/teacher-delete.repo-request';
 import {TeacherUpdateRequest} from '../types/request/teacher-update.request';
 import {TeacherUpdateRepoRequest} from '../../../data-layer/repositories/teacher/repo-request/teacher-update.repo-request';
+import {TeacherGetByIdsRequest} from '../types/request/teacher-get-by-ids.request';
 
 @Injectable()
 export class TeacherMapper {
@@ -113,6 +114,17 @@ export class TeacherMapper {
     destination.showCascadeDeletedBy = source.showCascadeDeletedBy;
     destination.page = 1;
     destination.size = 1;
+
+    return destination;
+  }
+
+  getTeacherByIdsRequestToRepoRequest(source: TeacherGetByIdsRequest): TeacherGetRepoRequest {
+    const destination = new TeacherGetRepoRequest();
+
+    destination.ids = source.ids;
+    destination.select = source.select;
+    destination.page = 1;
+    destination.size = source.ids.length;
 
     return destination;
   }

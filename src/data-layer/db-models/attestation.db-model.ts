@@ -50,7 +50,7 @@ export class AttestationDbModel extends Model<AttestationInterface, CreateDbMode
   isDeleted?: boolean;
 
   @Column({allowNull: true, type: DataType.STRING})
-  cascadeDeleteBy?: string;
+  cascadeDeletedBy?: string;
 
   @Column({defaultValue: sequelize.literal('(UUID())'), unique: true})
   guid?: string;

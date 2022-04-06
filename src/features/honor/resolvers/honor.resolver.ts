@@ -1,4 +1,4 @@
-import {Args, Info, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
+import {Args, ID, Info, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {HonorService} from '../service/honor.service';
 import {HonorGetListRequest} from '../types/request/honor-get-list.request';
 import {HonorResponse} from '../types/response/honor.response';
@@ -56,7 +56,7 @@ export class HonorResolver {
   @Mutation(returns => IdResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async deleteHonor(
-    @Args('id', {type: () => Int}) id: number,
+    @Args('id', {type: () => ID}) id: number,
     @Args('guid', {type: () => String}) guid: string,
   ): Promise<IdResponse> {
     return this.honorService.deleteHonor(id, guid);

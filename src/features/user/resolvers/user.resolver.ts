@@ -1,4 +1,4 @@
-import {Args, Info, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
+import {Args, ID, Info, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {UserService} from '../service/user.service';
 import {UserGetListRequest} from '../types/request/user-get-list.request';
 import {UserResponse} from '../types/response/user.response';
@@ -54,7 +54,7 @@ export class UserResolver {
   @Mutation(returns => IdResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, userEditRoles)
   async deleteUser(
-    @Args('id', {type: () => Int}) id: number,
+    @Args('id', {type: () => ID}) id: number,
     @Args('guid', {type: () => String}) guid: string,
   ): Promise<IdResponse> {
     return this.userService.deleteUser(id, guid);

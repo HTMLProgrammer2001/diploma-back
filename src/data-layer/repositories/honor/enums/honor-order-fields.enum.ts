@@ -3,4 +3,5 @@ export class HonorOrderFieldsEnum {
   static TITLE = 'title';
   static DATE = 'date';
   static TEACHER = 'teacher';
+  static ORDER_NUMBER = 'orderNumber';
 }

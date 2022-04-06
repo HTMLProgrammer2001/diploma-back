@@ -141,7 +141,7 @@ export class RebukeRepository {
 
       if (!repoRequest.showDeleted) {
         if (repoRequest.showCascadeDeletedBy) {
-          filters[Op.or] = {isDeleted: false, isCascadeDelete: true};
+          filters[Op.or] = {isDeleted: false, cascadeDeletedBy: repoRequest.showCascadeDeletedBy};
         } else {
           filters.isDeleted = false;
         }
@@ -173,6 +173,10 @@ export class RebukeRepository {
 
           case RebukeOrderFieldsEnum.DATE:
             order.push(['date', repoRequest.isDesc ? 'DESC' : 'ASC']);
+            break;
+
+          case RebukeOrderFieldsEnum.ORDER_NUMBER:
+            order.push(['orderNumber', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
           case RebukeOrderFieldsEnum.TEACHER:

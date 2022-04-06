@@ -1,4 +1,4 @@
-import {Args, Info, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
+import {Args, ID, Info, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {IPaginator} from '../../../global/types/interface/IPaginator.interface';
 import {GraphQLResolveInfo} from 'graphql';
 import {fieldsProjection} from 'graphql-fields-list';
@@ -68,7 +68,7 @@ export class InternshipResolver {
   @Mutation(returns => IdResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async deleteInternship(
-    @Args('id', {type: () => Int}) id: number,
+    @Args('id', {type: () => ID}) id: number,
     @Args('guid', {type: () => String}) guid: string,
   ): Promise<IdResponse> {
     return this.internshipService.deleteInternship(id, guid);

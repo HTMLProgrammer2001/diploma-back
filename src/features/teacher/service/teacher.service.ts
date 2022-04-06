@@ -18,6 +18,7 @@ import {FileServiceInterface} from '../../../global/services/file-service/file-s
 import {TeacherSelectFieldsEnum} from '../../../data-layer/repositories/teacher/enums/teacher-select-fields.enum';
 import {IdResponse} from '../../../global/types/response/id.response';
 import {TeacherUpdateRequest} from '../types/request/teacher-update.request';
+import {TeacherGetByIdsRequest} from '../types/request/teacher-get-by-ids.request';
 
 @Injectable()
 export class TeacherService {
@@ -63,6 +64,21 @@ export class TeacherService {
         this.logger.error(error);
         throw error;
       }
+    } catch (e) {
+      if (!(e instanceof CustomError)) {
+        this.logger.error(e);
+        throw new CustomError({code: ErrorCodesEnum.GENERAL, message: e.message});
+      }
+
+      throw e;
+    }
+  }
+
+  async getTeachersByIds(request: TeacherGetByIdsRequest): Promise<Array<TeacherResponse>> {
+    try {
+      const repoRequest = this.teacherMapper.getTeacherByIdsRequestToRepoRequest(request);
+      const {data} = await this.teacherRepository.getTeachers(repoRequest);
+      return data.responseList.map(el => this.teacherMapper.teacherDbModelToResponse(el));
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

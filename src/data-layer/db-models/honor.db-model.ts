@@ -45,7 +45,7 @@ export class HonorDbModel extends Model<HonorInterface, CreateDbModelType<HonorI
   @BelongsTo(() => TeacherDbModel)
   teacher: TeacherDbModel;
 
-  @Column({defaultValue: false, type: DataType.BOOLEAN})
+  @Column({defaultValue: true, type: DataType.BOOLEAN})
   isActive?: boolean;
 
   @Column({defaultValue: false, type: DataType.BOOLEAN})

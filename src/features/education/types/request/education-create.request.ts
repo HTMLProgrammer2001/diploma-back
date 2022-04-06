@@ -20,7 +20,7 @@ export class EducationCreateRequest {
 
   @Field({nullable: true})
   @IsOptional()
-  @MaxLength(255)
+  @MaxLength(65335)
   @IsString()
   description: string;
 

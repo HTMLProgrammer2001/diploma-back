@@ -1,14 +1,5 @@
 import {Field, ID, InputType} from '@nestjs/graphql';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsPhoneNumber,
-  IsString,
-  MaxLength,
-  ValidateIf,
-} from 'class-validator';
+import {IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPhoneNumber, IsString, MaxLength,} from 'class-validator';
 import {FileUpload, GraphQLUpload} from 'graphql-upload';
 import {ParseNumber} from '../../../../global/pipes/parse-number';
 import {ValidateDateRange} from '../../../../global/pipes/validate-date-range';
@@ -42,6 +33,7 @@ export class TeacherCreateRequest {
   phone: string;
 
   @Field({nullable: true})
+  @MaxLength(255)
   @IsOptional()
   @IsString()
   address: string;

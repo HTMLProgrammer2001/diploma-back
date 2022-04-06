@@ -177,7 +177,7 @@ export class AttestationService {
     const {data} = await this.attestationRepository.getAttestations(getLastAttestationDateForTeacherRepoRequest);
 
     const notificationConfig = await this.notificationRepository.getNotificationConfig();
-    const lastAttestationDate = data.responseList?.[0].date;
+    const lastAttestationDate = data.responseList[0]?.date;
     const lastAttestationDateString = lastAttestationDate?.toISOString().split('T')[0];
     let nextAttestationDate: Date = null;
 

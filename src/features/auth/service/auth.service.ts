@@ -46,7 +46,7 @@ export class AuthService {
       if (!userModel) {
         const error = new CustomError({
           code: ErrorCodesEnum.NOT_FOUND,
-          message: `User with email ${request.email} not exist`
+          message: 'Invalid email or password'
         });
 
         this.logger.error(error);
@@ -56,7 +56,7 @@ export class AuthService {
       if (!bcrypt.compareSync(request.password, userModel.passwordHash)) {
         const error = new CustomError({
           code: ErrorCodesEnum.VALIDATION,
-          message: 'Incorrect password'
+          message: 'Invalid email or password'
         });
 
         this.logger.error(error);

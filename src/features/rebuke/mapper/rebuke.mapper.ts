@@ -72,6 +72,7 @@ export class RebukeMapper {
     destination.select = source.select;
     destination.showDeleted = source.showDeleted;
     destination.showCascadeDeletedBy = source.showCascadeDeletedBy;
+    destination.showInActive = true;
     destination.page = 1;
     destination.size = 1;
 
@@ -84,18 +85,7 @@ export class RebukeMapper {
     destination.id = id;
     destination.select = select;
     destination.showDeleted = true;
-    destination.page = 1;
-    destination.size = 1;
-
-    return destination;
-  }
-
-  initializeGetRebukeByOrderNumberRepoRequest(orderNumber: string): RebukeGetRepoRequest {
-    const destination = new RebukeGetRepoRequest();
-
-    destination.select = [RebukeSelectFieldsEnum.ID];
-    destination.orderNumberEqual = orderNumber;
-    destination.showDeleted = true;
+    destination.showInActive = true;
     destination.page = 1;
     destination.size = 1;
 

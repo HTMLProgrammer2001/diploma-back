@@ -72,6 +72,7 @@ export class HonorMapper {
     destination.select = source.select;
     destination.showDeleted = source.showDeleted;
     destination.showCascadeDeletedBy = source.showCascadeDeletedBy;
+    destination.showInActive = true;
     destination.page = 1;
     destination.size = 1;
 
@@ -84,18 +85,7 @@ export class HonorMapper {
     destination.id = id;
     destination.select = select;
     destination.showDeleted = true;
-    destination.page = 1;
-    destination.size = 1;
-
-    return destination;
-  }
-
-  initializeGetHonorByOrderNumberRepoRequest(orderNumber): HonorGetRepoRequest {
-    const destination = new HonorGetRepoRequest();
-
-    destination.select = [HonorSelectFieldsEnum.ID];
-    destination.orderNumberEqual = orderNumber;
-    destination.showDeleted = true;
+    destination.showInActive = true;
     destination.page = 1;
     destination.size = 1;
 

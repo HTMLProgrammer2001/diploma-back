@@ -141,7 +141,7 @@ export class HonorRepository {
 
       if (!repoRequest.showDeleted) {
         if (repoRequest.showCascadeDeletedBy) {
-          filters[Op.or] = {isDeleted: false, isCascadeDelete: true};
+          filters[Op.or] = {isDeleted: false, cascadeDeletedBy: repoRequest.showCascadeDeletedBy};
         } else {
           filters.isDeleted = false;
         }
@@ -173,6 +173,10 @@ export class HonorRepository {
 
           case HonorOrderFieldsEnum.DATE:
             order.push(['date', repoRequest.isDesc ? 'DESC' : 'ASC']);
+            break;
+
+          case HonorOrderFieldsEnum.ORDER_NUMBER:
+            order.push(['orderNumber', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
           case HonorOrderFieldsEnum.TEACHER:

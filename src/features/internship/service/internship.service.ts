@@ -73,17 +73,13 @@ export class InternshipService {
       const attestationRepoRequest = this.internshipMapper.initializeGetLastAttestationRepoRequest(request.teacherId);
       const {data: lastAttestation} = await this.attestationRepository.getAttestations(attestationRepoRequest);
 
-      if (!lastAttestation.responseList.length) {
-        return {hours: 0};
-      } else {
-        const getInternshipHoursRepoRequest = this.internshipMapper.initializeGetInternshipHoursRepoRequest(
-          request.teacherId,
-          lastAttestation.responseList[0].date
-        );
+      const getInternshipHoursRepoRequest = this.internshipMapper.initializeGetInternshipHoursRepoRequest(
+        request.teacherId,
+        lastAttestation.responseList[0]?.date || new Date(0)
+      );
 
-        const {data} = await this.internshipRepository.getInternshipHours(getInternshipHoursRepoRequest);
-        return {hours: data[0]?.hours || 0};
-      }
+      const {data} = await this.internshipRepository.getInternshipHours(getInternshipHoursRepoRequest);
+      return {hours: data[0]?.hours || 0};
     } catch (e) {
       if (!(e instanceof CustomError)) {
         this.logger.error(e);

@@ -115,8 +115,8 @@ input AttestationGetLastDateRequest {
 }
 
 type AttestationGetLastDateResponse {
-  lastAttestationDate: String!
-  nextAttestationDate: String!
+  lastAttestationDate: String
+  nextAttestationDate: String
 }
 
 input AttestationGetListRequest {
@@ -513,6 +513,7 @@ type HonorListResponse implements PaginatedData {
 enum HonorOrderFieldsEnum {
   DATE
   ID
+  ORDER_NUMBER
   TEACHER
   TITLE
 }
@@ -667,9 +668,12 @@ type InternshipListResponse implements PaginatedData {
 }
 
 enum InternshipOrderFieldsEnum {
+  CODE
   DATE_FROM
   DATE_TO
+  HOURS
   ID
+  PLACE
   TEACHER
   TITLE
 }
@@ -735,20 +739,20 @@ type Mutation {
   createUser(body: UserCreateRequest!): UserResponse!
   deleteAcademicDegree(guid: String!, id: ID!): IdResponse!
   deleteAcademicTitle(guid: String!, id: ID!): IdResponse!
-  deleteAttestation(guid: String!, id: Int!): IdResponse!
-  deleteCategory(guid: String!, id: Int!): IdResponse!
+  deleteAttestation(guid: String!, id: ID!): IdResponse!
+  deleteCategory(guid: String!, id: ID!): IdResponse!
   deleteCommission(guid: String!, id: ID!): IdResponse!
   deleteDepartment(guid: String!, id: ID!): IdResponse!
-  deleteEducation(guid: String!, id: Int!): IdResponse!
-  deleteEducationQualification(guid: String!, id: Int!): IdResponse!
-  deleteHonor(guid: String!, id: Int!): IdResponse!
-  deleteInternship(guid: String!, id: Int!): IdResponse!
+  deleteEducation(guid: String!, id: ID!): IdResponse!
+  deleteEducationQualification(guid: String!, id: ID!): IdResponse!
+  deleteHonor(guid: String!, id: ID!): IdResponse!
+  deleteInternship(guid: String!, id: ID!): IdResponse!
   deleteProfile(guid: String!): IdResponse!
-  deletePublication(guid: String!, id: Int!): IdResponse!
-  deleteRebuke(guid: String!, id: Int!): IdResponse!
+  deletePublication(guid: String!, id: ID!): IdResponse!
+  deleteRebuke(guid: String!, id: ID!): IdResponse!
   deleteTeacher(guid: String!, id: ID!): IdResponse!
   deleteTeachingRank(guid: String!, id: ID!): IdResponse!
-  deleteUser(guid: String!, id: Int!): IdResponse!
+  deleteUser(guid: String!, id: ID!): IdResponse!
   editProfile(body: EditProfileRequest!): ProfileResponse!
   generateImportTemplate(body: GenerateImportTemplateRequest!): GenerateImportTemplateResponse!
   generateReport(body: ExportRequest!): ExportResponse!
@@ -944,6 +948,7 @@ type Query {
   getRoleList(query: RoleGetListRequest!): RoleListResponse!
   getTeacherById(query: TeacherGetByIdRequest!): TeacherResponse!
   getTeacherList(query: TeacherGetListRequest!): TeacherListResponse!
+  getTeachersByIds(query: TeacherGetByIdsRequest!): [TeacherResponse!]!
   getTeachersToNotify: [NotificationTeacherResponse!]!
   getTeachingRankById(query: TeachingRankGetByIdRequest!): TeachingRankResponse!
   getTeachingRankList(query: TeachingRankGetListRequest!): TeachingRankListResponse!
@@ -997,6 +1002,7 @@ type RebukeListResponse implements PaginatedData {
 enum RebukeOrderFieldsEnum {
   DATE
   ID
+  ORDER_NUMBER
   TEACHER
   TITLE
 }
@@ -1098,6 +1104,10 @@ input TeacherGetByIdRequest {
   id: ID!
   showCascadeDeletedBy: TeacherCascadeDeletedByEnum
   showDeleted: Boolean
+}
+
+input TeacherGetByIdsRequest {
+  ids: [ID!]
 }
 
 input TeacherGetListRequest {
@@ -1253,6 +1263,7 @@ type UserListResponse implements PaginatedData {
 }
 
 enum UserOrderFieldsEnum {
+  EMAIL
   FULL_NAME
   ID
   ROLE_NAME

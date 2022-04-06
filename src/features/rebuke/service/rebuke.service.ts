@@ -192,21 +192,5 @@ export class RebukeService {
         throw error;
       }
     }
-
-    //validate unique orderNumber
-    if (!isNil(request.orderNumber)) {
-      const getRebukeByOrderNumberRepoRequest = this.rebukeMapper.initializeGetRebukeByOrderNumberRepoRequest(request.orderNumber);
-      const {data: rebukeByOrderNumberData} = await this.rebukeRepository.getRebukes(getRebukeByOrderNumberRepoRequest);
-
-      if (rebukeByOrderNumberData.responseList.length && rebukeByOrderNumberData.responseList[0].id !== (request as any).id) {
-        const error = new CustomError({
-          code: ErrorCodesEnum.VALIDATION,
-          message: `Rebuke with order number ${request.orderNumber} already exist`
-        });
-
-        this.logger.error(error);
-        throw error;
-      }
-    }
   }
 }

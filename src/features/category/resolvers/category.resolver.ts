@@ -1,4 +1,4 @@
-import {Args, Info, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
+import {Args, ID, Info, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {CategoryService} from '../service/category.service';
 import {CategoryGetListRequest} from '../types/request/category-get-list.request';
 import {CategoryResponse} from '../types/response/category.response';
@@ -55,7 +55,7 @@ export class CategoryResolver {
   @Mutation(returns => IdResponse)
   @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
   async deleteCategory(
-    @Args('id', {type: () => Int}) id: number,
+    @Args('id', {type: () => ID}) id: number,
     @Args('guid', {type: () => String}) guid: string,
   ): Promise<IdResponse> {
     return this.categoryService.deleteCategory(id, guid);

@@ -182,28 +182,6 @@ export class ImportMapper {
     return destination;
   }
 
-  initializeGetHonorsByOrderNumbers(orderNumbers: Array<string>): HonorGetRepoRequest {
-    const destination = new HonorGetRepoRequest();
-
-    destination.select = [HonorSelectFieldsEnum.ORDER_NUMBER];
-    destination.orderNumberIn = orderNumbers;
-    destination.size = orderNumbers.length;
-    destination.showDeleted = false;
-
-    return destination;
-  }
-
-  initializeGetRebukesByOrderNumbers(orderNumbers: Array<string>): RebukeGetRepoRequest {
-    const destination = new RebukeGetRepoRequest();
-
-    destination.select = [RebukeSelectFieldsEnum.ORDER_NUMBER];
-    destination.orderNumberIn = orderNumbers;
-    destination.size = orderNumbers.length;
-    destination.showDeleted = false;
-
-    return destination;
-  }
-
   initializeGetEducationQualificationsByIds(educationQualificationIds: Array<number>): EducationQualificationGetRepoRequest {
     const destination = new EducationQualificationGetRepoRequest();
 

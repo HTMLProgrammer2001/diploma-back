@@ -155,6 +155,10 @@ export class UserRepository {
             order.push(['fullName', repoRequest.isDesc ? 'DESC' : 'ASC']);
             break;
 
+          case UserOrderFieldsEnum.EMAIL:
+            order.push(['email', repoRequest.isDesc ? 'DESC' : 'ASC']);
+            break;
+
           case UserOrderFieldsEnum.ROLE_NAME:
             includes.role = includes.role ?? {model: RoleDbModel, attributes: []};
             order.push([{model: RoleDbModel, as: 'role'}, 'name', repoRequest.isDesc ? 'DESC' : 'ASC']);

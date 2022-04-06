@@ -13,6 +13,7 @@ import {TeacherUpdateRequest} from '../types/request/teacher-update.request';
 import {SetMetadata} from '@nestjs/common';
 import {MetaDataFieldEnum} from '../../../global/constants/meta-data-fields.enum';
 import {readRoles, writeRoles} from '../../../global/utils/roles';
+import {TeacherGetByIdsRequest} from '../types/request/teacher-get-by-ids.request';
 
 @Resolver(of => TeacherResponse)
 export class TeacherResolver {
@@ -35,6 +36,15 @@ export class TeacherResolver {
     Promise<TeacherResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.teacherService.getTeacherById(request);
+  }
+
+  @Query(returns => [TeacherResponse])
+  @SetMetadata(MetaDataFieldEnum.ROLES, readRoles)
+  @SetMetadata(MetaDataFieldEnum.IS_TEACHER_HAS_ACCESS, true)
+  async getTeachersByIds(@Args('query') request: TeacherGetByIdsRequest, @Info() info: GraphQLResolveInfo):
+    Promise<Array<TeacherResponse>> {
+    request.select = Object.keys(fieldsProjection(info));
+    return this.teacherService.getTeachersByIds(request);
   }
 
   @Mutation(returns => TeacherResponse)

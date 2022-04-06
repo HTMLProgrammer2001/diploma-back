@@ -32,6 +32,7 @@ export class UserCreateRequest {
 
   @Field({nullable: false})
   @MinLength(8)
+  @MaxLength(255)
   @IsAlphanumeric()
   @IsString()
   password: string;

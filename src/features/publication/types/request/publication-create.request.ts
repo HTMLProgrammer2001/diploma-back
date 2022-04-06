@@ -29,17 +29,20 @@ export class PublicationCreateRequest {
 
   @Field({nullable: true})
   @IsOptional()
+  @MaxLength(255)
   @IsString()
   publisher?: string;
 
   @Field({nullable: true})
   @IsOptional()
   @IsString()
+  @MaxLength(2000)
   @IsUrl()
   url?: string;
 
   @Field({nullable: true})
   @IsOptional()
+  @MaxLength(255)
   @IsString()
   anotherAuthors?: string;
 
