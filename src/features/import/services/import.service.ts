@@ -140,11 +140,24 @@ export class ImportService {
 
         //read data from row
         const userImportData = new UserImportData();
-        userImportData.fullName = String(row.getCell(UserImportColumnsEnum.FULL_NAME).text ?? '');
-        userImportData.email = String(row.getCell(UserImportColumnsEnum.EMAIL).text ?? '');
-        userImportData.phone = String(row.getCell(UserImportColumnsEnum.PHONE).text ?? '');
-        userImportData.password = String(row.getCell(UserImportColumnsEnum.PASSWORD).text ?? '');
-        userImportData.passwordHash = bcrypt.hashSync(userImportData.password, Number(this.configService.get('SALT')));
+
+        if(row.getCell(UserImportColumnsEnum.FULL_NAME).text) {
+          userImportData.fullName = String(row.getCell(UserImportColumnsEnum.FULL_NAME).text ?? null);
+        }
+
+        if(row.getCell(UserImportColumnsEnum.EMAIL).text) {
+          userImportData.email = String(row.getCell(UserImportColumnsEnum.EMAIL).text ?? null);
+        }
+
+        if(row.getCell(UserImportColumnsEnum.PHONE).text) {
+          userImportData.phone = String(row.getCell(UserImportColumnsEnum.PHONE).text ?? null);
+        }
+
+        if(row.getCell(UserImportColumnsEnum.PASSWORD).text) {
+          userImportData.password = String(row.getCell(UserImportColumnsEnum.PASSWORD).text ?? '');
+          userImportData.passwordHash = bcrypt.hashSync(userImportData.password, Number(this.configService.get('SALT')));
+        }
+
         if(row.getCell(UserImportColumnsEnum.ROLE).text) {
           userImportData.roleId = Number(row.getCell(UserImportColumnsEnum.ROLE).text.toString().split(' - ')[0]);
         }
@@ -262,7 +275,10 @@ export class ImportService {
         return true;
       });
 
-      await this.userRepository.import(userImportDataArray, request.ignoreErrors);
+      if(!importErrors.length || request.ignoreErrors) {
+        await this.userRepository.import(userImportDataArray, request.ignoreErrors);
+      }
+
       return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -296,8 +312,13 @@ export class ImportService {
           internshipImportData.teacherId = Number(row.getCell(InternshipImportColumnsEnum.TEACHER).text.toString().split(' - ')[0]);
         }
 
-        internshipImportData.title = String(row.getCell(InternshipImportColumnsEnum.TITLE).text ?? '');
-        internshipImportData.code = String(row.getCell(InternshipImportColumnsEnum.CODE).text ?? '');
+        if(row.getCell(InternshipImportColumnsEnum.TITLE).text) {
+          internshipImportData.title = String(row.getCell(InternshipImportColumnsEnum.TITLE).text ?? '');
+        }
+
+        if(row.getCell(InternshipImportColumnsEnum.CODE).text) {
+          internshipImportData.code = String(row.getCell(InternshipImportColumnsEnum.CODE).text ?? '');
+        }
 
         if(row.getCell(InternshipImportColumnsEnum.DESCRIPTION).text) {
           internshipImportData.description = String(row.getCell(InternshipImportColumnsEnum.DESCRIPTION).text ?? '');
@@ -417,7 +438,10 @@ export class ImportService {
         return true;
       });
 
-      await this.internshipRepository.import(internshipImportDataArray, request.ignoreErrors);
+      if(!importErrors.length || request.ignoreErrors) {
+        await this.internshipRepository.import(internshipImportDataArray, request.ignoreErrors);
+      }
+
       return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -446,8 +470,14 @@ export class ImportService {
 
         //read data from row
         const publicationImportData = new PublicationImportData();
-        publicationImportData.title = String(row.getCell(PublicationImportColumnsEnum.TITLE).text ?? '');
-        publicationImportData.date = new Date(String(row.getCell(PublicationImportColumnsEnum.DATE).text ?? ''));
+
+        if(row.getCell(PublicationImportColumnsEnum.TITLE).text) {
+          publicationImportData.title = String(row.getCell(PublicationImportColumnsEnum.TITLE).text ?? '');
+        }
+
+        if(row.getCell(PublicationImportColumnsEnum.DATE).text) {
+          publicationImportData.date = new Date(row.getCell(PublicationImportColumnsEnum.DATE).text ?? '');
+        }
 
         if(row.getCell(PublicationImportColumnsEnum.PUBLISHER).text) {
           publicationImportData.publisher = String(row.getCell(PublicationImportColumnsEnum.PUBLISHER).text ?? '');
@@ -535,7 +565,10 @@ export class ImportService {
         return true;
       });
 
-      await this.publicationRepository.import(publicationImportDataArray, request.ignoreErrors);
+      if(!importErrors.length || request.ignoreErrors) {
+        await this.publicationRepository.import(publicationImportDataArray, request.ignoreErrors);
+      }
+
       return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -569,8 +602,14 @@ export class ImportService {
           honorImportData.teacherId = Number(row.getCell(HonorImportColumnsEnum.TEACHER).text.toString().split(' - ')[0]);
         }
 
-        honorImportData.title = String(row.getCell(HonorImportColumnsEnum.TITLE).text ?? '');
-        honorImportData.orderNumber = String(row.getCell(HonorImportColumnsEnum.ORDER_NUMBER).text ?? '');
+        if(row.getCell(HonorImportColumnsEnum.TITLE).text) {
+          honorImportData.title = String(row.getCell(HonorImportColumnsEnum.TITLE).text ?? '');
+        }
+
+        if(row.getCell(HonorImportColumnsEnum.ORDER_NUMBER).text) {
+          honorImportData.orderNumber = String(row.getCell(HonorImportColumnsEnum.ORDER_NUMBER).text ?? '');
+        }
+
         honorImportData.isActive = row.getCell(HonorImportColumnsEnum.IS_NOT_ACTIVE).text === 'no';
 
         if(row.getCell(HonorImportColumnsEnum.DATE).text){
@@ -642,7 +681,10 @@ export class ImportService {
         return true;
       });
 
-      await this.honorRepository.import(honorImportDataArray, request.ignoreErrors);
+      if(!importErrors.length || request.ignoreErrors) {
+        await this.honorRepository.import(honorImportDataArray, request.ignoreErrors);
+      }
+
       return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -676,8 +718,14 @@ export class ImportService {
           rebukeImportData.teacherId = Number(row.getCell(RebukeImportColumnsEnum.TEACHER).text.toString().split(' - ')[0]);
         }
 
-        rebukeImportData.title = String(row.getCell(RebukeImportColumnsEnum.TITLE).text ?? '');
-        rebukeImportData.orderNumber = String(row.getCell(RebukeImportColumnsEnum.ORDER_NUMBER).text ?? '');
+        if(row.getCell(RebukeImportColumnsEnum.TITLE).text) {
+          rebukeImportData.title = String(row.getCell(RebukeImportColumnsEnum.TITLE).text ?? '');
+        }
+
+        if(row.getCell(RebukeImportColumnsEnum.ORDER_NUMBER).text) {
+          rebukeImportData.orderNumber = String(row.getCell(RebukeImportColumnsEnum.ORDER_NUMBER).text ?? '');
+        }
+
         rebukeImportData.isActive = row.getCell(RebukeImportColumnsEnum.IS_NOT_ACTIVE).text === 'no';
 
         if(row.getCell(RebukeImportColumnsEnum.DATE).text){
@@ -749,7 +797,10 @@ export class ImportService {
         return true;
       });
 
-      await this.rebukeRepository.import(rebukeImportDataArray, request.ignoreErrors);
+      if(!importErrors.length || request.ignoreErrors) {
+        await this.rebukeRepository.import(rebukeImportDataArray, request.ignoreErrors);
+      }
+
       return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -788,8 +839,13 @@ export class ImportService {
             .text.toString().split(' - ')[0]);
         }
 
-        educationImportData.institution = String(row.getCell(EducationImportColumnsEnum.INSTITUTION).text ?? '');
-        educationImportData.specialty = String(row.getCell(EducationImportColumnsEnum.SPECIALTY).text ?? '');
+        if(row.getCell(EducationImportColumnsEnum.INSTITUTION).text) {
+          educationImportData.institution = String(row.getCell(EducationImportColumnsEnum.INSTITUTION).text ?? '');
+        }
+
+        if(row.getCell(EducationImportColumnsEnum.SPECIALTY).text) {
+          educationImportData.specialty = String(row.getCell(EducationImportColumnsEnum.SPECIALTY).text ?? '');
+        }
 
         if(row.getCell(EducationImportColumnsEnum.YEAR_OF_ISSUE).text){
           educationImportData.yearOfIssue = Number(String(row.getCell(EducationImportColumnsEnum.YEAR_OF_ISSUE).text ?? 0));
@@ -879,7 +935,10 @@ export class ImportService {
         return true;
       });
 
-      await this.educationRepository.import(educationImportDataArray, request.ignoreErrors);
+      if(!importErrors.length || request.ignoreErrors) {
+        await this.educationRepository.import(educationImportDataArray, request.ignoreErrors);
+      }
+
       return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -1005,7 +1064,10 @@ export class ImportService {
         return true;
       });
 
-      await this.attestationRepository.import(attestationImportDataArray, request.ignoreErrors);
+      if(!importErrors.length || request.ignoreErrors) {
+        await this.attestationRepository.import(attestationImportDataArray, request.ignoreErrors);
+      }
+
       return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
     } catch (e) {
       if (!(e instanceof CustomError)) {
@@ -1035,8 +1097,13 @@ export class ImportService {
         //read data from row
         const teacherImportData = new TeacherImportData();
 
-        teacherImportData.fullName = String(row.getCell(TeacherImportColumnsEnum.FULL_NAME).text);
-        teacherImportData.email = String(row.getCell(TeacherImportColumnsEnum.EMAIL).text);
+        if(row.getCell(TeacherImportColumnsEnum.FULL_NAME).text) {
+          teacherImportData.fullName = String(row.getCell(TeacherImportColumnsEnum.FULL_NAME).text);
+        }
+
+        if(row.getCell(TeacherImportColumnsEnum.EMAIL).text) {
+          teacherImportData.email = String(row.getCell(TeacherImportColumnsEnum.EMAIL).text);
+        }
 
         if(row.getCell(TeacherImportColumnsEnum.BIRTHDAY).text){
           teacherImportData.birthday = new Date(String(row.getCell(TeacherImportColumnsEnum.BIRTHDAY).text ?? ''));
@@ -1274,7 +1341,10 @@ export class ImportService {
         return true;
       });
 
-      await this.teacherRepository.import(teacherImportDataArray, request.ignoreErrors);
+      if(!importErrors.length || request.ignoreErrors) {
+        await this.teacherRepository.import(teacherImportDataArray, request.ignoreErrors);
+      }
+
       return {result: request.ignoreErrors ? true : !importErrors.length, errors: importErrors};
     } catch (e) {
       if (!(e instanceof CustomError)) {
