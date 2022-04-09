@@ -104,11 +104,11 @@ export class PublicationRepository {
 
       const filters: WhereOptions<PublicationInterface> = {};
 
-      if (!isNil(repoRequest.title)) {
+      if (repoRequest.title) {
         filters.title = {[Op.like]: `%${repoRequest.title || ''}%`};
       }
 
-      if (!isNil(repoRequest.publisher)) {
+      if (repoRequest.publisher) {
         filters.publisher = {[Op.like]: `%${repoRequest.publisher || ''}%`};
       }
 

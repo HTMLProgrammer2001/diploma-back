@@ -71,7 +71,7 @@ export class DepartmentRepository {
 
       const filters: WhereOptions<DepartmentInterface> = {};
 
-      if (!isNil(repoRequest.name)) {
+      if (repoRequest.name) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
       }
 

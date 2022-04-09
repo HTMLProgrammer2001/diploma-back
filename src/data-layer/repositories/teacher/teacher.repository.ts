@@ -183,11 +183,11 @@ export class TeacherRepository {
 
       const filters: WhereOptions<TeacherInterface> = {};
 
-      if (!isNil(repoRequest.fullName)) {
+      if (repoRequest.fullName) {
         filters.fullName = {[Op.like]: `%${repoRequest.fullName}%`};
       }
 
-      if (!isNil(repoRequest.email)) {
+      if (repoRequest.email) {
         filters.email = {[Op.like]: `%${repoRequest.email || ''}%`};
       }
 

@@ -71,7 +71,7 @@ export class AcademicDegreeRepository {
 
       const filters: WhereOptions<AcademicDegreeInterface> = {};
 
-      if (!isNil(repoRequest.name)) {
+      if (repoRequest.name) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
       }
 

@@ -71,7 +71,7 @@ export class TeachingRankRepository {
 
       const filters: WhereOptions<TeachingRankInterface> = {};
 
-      if (!isNil(repoRequest.name)) {
+      if (repoRequest.name) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
       }
 

@@ -85,7 +85,7 @@ export class CategoryRepository {
 
       const filters: WhereOptions<CategoryInterface> = {};
 
-      if (!isNil(repoRequest.name)) {
+      if (repoRequest.name) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
       }
 

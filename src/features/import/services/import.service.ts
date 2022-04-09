@@ -140,13 +140,13 @@ export class ImportService {
 
         //read data from row
         const userImportData = new UserImportData();
-        userImportData.fullName = String(row.getCell(UserImportColumnsEnum.FULL_NAME).value ?? '');
-        userImportData.email = String(row.getCell(UserImportColumnsEnum.EMAIL).value ?? '');
-        userImportData.phone = String(row.getCell(UserImportColumnsEnum.PHONE).value ?? '');
-        userImportData.password = String(row.getCell(UserImportColumnsEnum.PASSWORD).value ?? '');
+        userImportData.fullName = String(row.getCell(UserImportColumnsEnum.FULL_NAME).text ?? '');
+        userImportData.email = String(row.getCell(UserImportColumnsEnum.EMAIL).text ?? '');
+        userImportData.phone = String(row.getCell(UserImportColumnsEnum.PHONE).text ?? '');
+        userImportData.password = String(row.getCell(UserImportColumnsEnum.PASSWORD).text ?? '');
         userImportData.passwordHash = bcrypt.hashSync(userImportData.password, Number(this.configService.get('SALT')));
-        if(row.getCell(UserImportColumnsEnum.ROLE).value) {
-          userImportData.roleId = Number(row.getCell(UserImportColumnsEnum.ROLE).value.toString().split(' - ')[0]);
+        if(row.getCell(UserImportColumnsEnum.ROLE).text) {
+          userImportData.roleId = Number(row.getCell(UserImportColumnsEnum.ROLE).text.toString().split(' - ')[0]);
         }
 
         if((isNil(request.to) && !isFilledWithData(row)) || (!isNil(request.to) && currentRow <= request.to)) {
@@ -292,39 +292,42 @@ export class ImportService {
         //read data from row
         const internshipImportData = new InternshipImportData();
 
-        if(row.getCell(InternshipImportColumnsEnum.TEACHER).value) {
-          internshipImportData.teacherId = Number(row.getCell(InternshipImportColumnsEnum.TEACHER).value.toString().split(' - ')[0]);
+        if(row.getCell(InternshipImportColumnsEnum.TEACHER).text) {
+          internshipImportData.teacherId = Number(row.getCell(InternshipImportColumnsEnum.TEACHER).text.toString().split(' - ')[0]);
         }
 
-        internshipImportData.title = String(row.getCell(InternshipImportColumnsEnum.TITLE).value ?? '');
-        internshipImportData.code = String(row.getCell(InternshipImportColumnsEnum.CODE).value ?? '');
+        internshipImportData.title = String(row.getCell(InternshipImportColumnsEnum.TITLE).text ?? '');
+        internshipImportData.code = String(row.getCell(InternshipImportColumnsEnum.CODE).text ?? '');
 
-        if(row.getCell(InternshipImportColumnsEnum.DESCRIPTION).value) {
-          internshipImportData.description = String(row.getCell(InternshipImportColumnsEnum.DESCRIPTION).value ?? '');
+        if(row.getCell(InternshipImportColumnsEnum.DESCRIPTION).text) {
+          internshipImportData.description = String(row.getCell(InternshipImportColumnsEnum.DESCRIPTION).text ?? '');
         }
 
-        if(row.getCell(InternshipImportColumnsEnum.PLACE).value) {
-          internshipImportData.place = String(row.getCell(InternshipImportColumnsEnum.PLACE).value ?? '');
+        if(row.getCell(InternshipImportColumnsEnum.PLACE).text) {
+          internshipImportData.place = String(row.getCell(InternshipImportColumnsEnum.PLACE).text ?? '');
         }
 
-        if(row.getCell(InternshipImportColumnsEnum.FROM).value){
-          internshipImportData.from = new Date(String(row.getCell(InternshipImportColumnsEnum.FROM).value ?? ''));
+        if(row.getCell(InternshipImportColumnsEnum.FROM).text){
+          internshipImportData.from = new Date(String(row.getCell(InternshipImportColumnsEnum.FROM).text ?? ''));
         }
 
-        if(row.getCell(InternshipImportColumnsEnum.TO).value){
-          internshipImportData.to = new Date(String(row.getCell(InternshipImportColumnsEnum.TO).value ?? ''));
+        if(row.getCell(InternshipImportColumnsEnum.TO).text){
+          internshipImportData.to = new Date(String(row.getCell(InternshipImportColumnsEnum.TO).text ?? ''));
         }
 
         internshipImportData.isToMoreThanFrom = internshipImportData.from && internshipImportData.to
           && internshipImportData.to >= internshipImportData.from;
 
 
-        if(row.getCell(InternshipImportColumnsEnum.HOURS).value) {
-          internshipImportData.hours = Number(row.getCell(InternshipImportColumnsEnum.HOURS).value ?? 0);
+        if(row.getCell(InternshipImportColumnsEnum.HOURS).text) {
+          internshipImportData.hours = Number(row.getCell(InternshipImportColumnsEnum.HOURS).text ?? 0);
         }
 
-        if(row.getCell(InternshipImportColumnsEnum.CREDITS).value) {
-          internshipImportData.credits = Number(row.getCell(InternshipImportColumnsEnum.CREDITS).value ?? 0);
+        if(row.getCell(InternshipImportColumnsEnum.CREDITS).text) {
+          internshipImportData.credits = Number(row.getCell(InternshipImportColumnsEnum.CREDITS).text ?? 0);
+        }
+        else {
+          internshipImportData.credits = 0;
         }
 
         if((isNil(request.to) && !isFilledWithData(row)) || (!isNil(request.to) && currentRow <= request.to)) {
@@ -443,27 +446,27 @@ export class ImportService {
 
         //read data from row
         const publicationImportData = new PublicationImportData();
-        publicationImportData.title = String(row.getCell(PublicationImportColumnsEnum.TITLE).value ?? '');
-        publicationImportData.date = new Date(String(row.getCell(PublicationImportColumnsEnum.DATE).value ?? ''));
+        publicationImportData.title = String(row.getCell(PublicationImportColumnsEnum.TITLE).text ?? '');
+        publicationImportData.date = new Date(String(row.getCell(PublicationImportColumnsEnum.DATE).text ?? ''));
 
-        if(row.getCell(PublicationImportColumnsEnum.PUBLISHER).value) {
-          publicationImportData.publisher = String(row.getCell(PublicationImportColumnsEnum.PUBLISHER).value ?? '');
+        if(row.getCell(PublicationImportColumnsEnum.PUBLISHER).text) {
+          publicationImportData.publisher = String(row.getCell(PublicationImportColumnsEnum.PUBLISHER).text ?? '');
         }
 
-        if(row.getCell(PublicationImportColumnsEnum.URL).value) {
-          publicationImportData.url = String(row.getCell(PublicationImportColumnsEnum.URL).value ?? '');
+        if(row.getCell(PublicationImportColumnsEnum.URL).text) {
+          publicationImportData.url = String(row.getCell(PublicationImportColumnsEnum.URL).text ?? '');
         }
 
-        if(row.getCell(PublicationImportColumnsEnum.ANOTHER_AUTHORS).value) {
-          publicationImportData.anotherAuthors = String(row.getCell(PublicationImportColumnsEnum.ANOTHER_AUTHORS).value ?? '');
+        if(row.getCell(PublicationImportColumnsEnum.ANOTHER_AUTHORS).text) {
+          publicationImportData.anotherAuthors = String(row.getCell(PublicationImportColumnsEnum.ANOTHER_AUTHORS).text ?? '');
         }
 
-        if(row.getCell(PublicationImportColumnsEnum.DESCRIPTION).value) {
-          publicationImportData.description = String(row.getCell(PublicationImportColumnsEnum.DESCRIPTION).value ?? '');
+        if(row.getCell(PublicationImportColumnsEnum.DESCRIPTION).text) {
+          publicationImportData.description = String(row.getCell(PublicationImportColumnsEnum.DESCRIPTION).text ?? '');
         }
 
-        if(row.getCell(PublicationImportColumnsEnum.TEACHERS).value) {
-           publicationImportData.teacherIds = row.getCell(PublicationImportColumnsEnum.TEACHERS).value
+        if(row.getCell(PublicationImportColumnsEnum.TEACHERS).text) {
+           publicationImportData.teacherIds = row.getCell(PublicationImportColumnsEnum.TEACHERS).text
              .toString().split('\n').map(el => Number(el.split(' - ')[0]));
         }
 
@@ -562,20 +565,20 @@ export class ImportService {
         //read data from row
         const honorImportData = new HonorImportData();
 
-        if(row.getCell(HonorImportColumnsEnum.TEACHER).value) {
-          honorImportData.teacherId = Number(row.getCell(HonorImportColumnsEnum.TEACHER).value.toString().split(' - ')[0]);
+        if(row.getCell(HonorImportColumnsEnum.TEACHER).text) {
+          honorImportData.teacherId = Number(row.getCell(HonorImportColumnsEnum.TEACHER).text.toString().split(' - ')[0]);
         }
 
-        honorImportData.title = String(row.getCell(HonorImportColumnsEnum.TITLE).value ?? '');
-        honorImportData.orderNumber = String(row.getCell(HonorImportColumnsEnum.ORDER_NUMBER).value ?? '');
-        honorImportData.isActive = row.getCell(HonorImportColumnsEnum.IS_NOT_ACTIVE).value === 'no';
+        honorImportData.title = String(row.getCell(HonorImportColumnsEnum.TITLE).text ?? '');
+        honorImportData.orderNumber = String(row.getCell(HonorImportColumnsEnum.ORDER_NUMBER).text ?? '');
+        honorImportData.isActive = row.getCell(HonorImportColumnsEnum.IS_NOT_ACTIVE).text === 'no';
 
-        if(row.getCell(HonorImportColumnsEnum.DATE).value){
-          honorImportData.date = new Date(String(row.getCell(HonorImportColumnsEnum.DATE).value ?? ''));
+        if(row.getCell(HonorImportColumnsEnum.DATE).text){
+          honorImportData.date = new Date(String(row.getCell(HonorImportColumnsEnum.DATE).text ?? ''));
         }
 
-        if(row.getCell(InternshipImportColumnsEnum.DESCRIPTION).value) {
-          honorImportData.description = String(row.getCell(InternshipImportColumnsEnum.DESCRIPTION).value ?? '');
+        if(row.getCell(InternshipImportColumnsEnum.DESCRIPTION).text) {
+          honorImportData.description = String(row.getCell(InternshipImportColumnsEnum.DESCRIPTION).text ?? '');
         }
 
         if((isNil(request.to) && !isFilledWithData(row)) || (!isNil(request.to) && currentRow <= request.to)) {
@@ -669,20 +672,20 @@ export class ImportService {
         //read data from row
         const rebukeImportData = new RebukeImportData();
 
-        if(row.getCell(RebukeImportColumnsEnum.TEACHER).value) {
-          rebukeImportData.teacherId = Number(row.getCell(RebukeImportColumnsEnum.TEACHER).value.toString().split(' - ')[0]);
+        if(row.getCell(RebukeImportColumnsEnum.TEACHER).text) {
+          rebukeImportData.teacherId = Number(row.getCell(RebukeImportColumnsEnum.TEACHER).text.toString().split(' - ')[0]);
         }
 
-        rebukeImportData.title = String(row.getCell(RebukeImportColumnsEnum.TITLE).value ?? '');
-        rebukeImportData.orderNumber = String(row.getCell(RebukeImportColumnsEnum.ORDER_NUMBER).value ?? '');
-        rebukeImportData.isActive = row.getCell(RebukeImportColumnsEnum.IS_NOT_ACTIVE).value === 'no';
+        rebukeImportData.title = String(row.getCell(RebukeImportColumnsEnum.TITLE).text ?? '');
+        rebukeImportData.orderNumber = String(row.getCell(RebukeImportColumnsEnum.ORDER_NUMBER).text ?? '');
+        rebukeImportData.isActive = row.getCell(RebukeImportColumnsEnum.IS_NOT_ACTIVE).text === 'no';
 
-        if(row.getCell(RebukeImportColumnsEnum.DATE).value){
-          rebukeImportData.date = new Date(String(row.getCell(RebukeImportColumnsEnum.DATE).value ?? ''));
+        if(row.getCell(RebukeImportColumnsEnum.DATE).text){
+          rebukeImportData.date = new Date(String(row.getCell(RebukeImportColumnsEnum.DATE).text ?? ''));
         }
 
-        if(row.getCell(RebukeImportColumnsEnum.DESCRIPTION).value) {
-          rebukeImportData.description = String(row.getCell(RebukeImportColumnsEnum.DESCRIPTION).value ?? '');
+        if(row.getCell(RebukeImportColumnsEnum.DESCRIPTION).text) {
+          rebukeImportData.description = String(row.getCell(RebukeImportColumnsEnum.DESCRIPTION).text ?? '');
         }
 
         if((isNil(request.to) && !isFilledWithData(row)) || (!isNil(request.to) && currentRow <= request.to)) {
@@ -776,24 +779,24 @@ export class ImportService {
         //read data from row
         const educationImportData = new EducationImportData();
 
-        if(row.getCell(EducationImportColumnsEnum.TEACHER).value) {
-          educationImportData.teacherId = Number(row.getCell(EducationImportColumnsEnum.TEACHER).value.toString().split(' - ')[0]);
+        if(row.getCell(EducationImportColumnsEnum.TEACHER).text) {
+          educationImportData.teacherId = Number(row.getCell(EducationImportColumnsEnum.TEACHER).text.toString().split(' - ')[0]);
         }
 
-        if(row.getCell(EducationImportColumnsEnum.EDUCATION_QUALIFICATION).value) {
+        if(row.getCell(EducationImportColumnsEnum.EDUCATION_QUALIFICATION).text) {
           educationImportData.educationQualificationId = Number(row.getCell(EducationImportColumnsEnum.EDUCATION_QUALIFICATION)
-            .value.toString().split(' - ')[0]);
+            .text.toString().split(' - ')[0]);
         }
 
-        educationImportData.institution = String(row.getCell(EducationImportColumnsEnum.INSTITUTION).value ?? '');
-        educationImportData.specialty = String(row.getCell(EducationImportColumnsEnum.SPECIALTY).value ?? '');
+        educationImportData.institution = String(row.getCell(EducationImportColumnsEnum.INSTITUTION).text ?? '');
+        educationImportData.specialty = String(row.getCell(EducationImportColumnsEnum.SPECIALTY).text ?? '');
 
-        if(row.getCell(EducationImportColumnsEnum.YEAR_OF_ISSUE).value){
-          educationImportData.yearOfIssue = Number(String(row.getCell(EducationImportColumnsEnum.YEAR_OF_ISSUE).value ?? 0));
+        if(row.getCell(EducationImportColumnsEnum.YEAR_OF_ISSUE).text){
+          educationImportData.yearOfIssue = Number(String(row.getCell(EducationImportColumnsEnum.YEAR_OF_ISSUE).text ?? 0));
         }
 
-        if(row.getCell(EducationImportColumnsEnum.DESCRIPTION).value) {
-          educationImportData.description = String(row.getCell(EducationImportColumnsEnum.DESCRIPTION).value ?? '');
+        if(row.getCell(EducationImportColumnsEnum.DESCRIPTION).text) {
+          educationImportData.description = String(row.getCell(EducationImportColumnsEnum.DESCRIPTION).text ?? '');
         }
 
         if((isNil(request.to) && !isFilledWithData(row)) || (!isNil(request.to) && currentRow <= request.to)) {
@@ -906,20 +909,20 @@ export class ImportService {
         //read data from row
         const attestationImportData = new AttestationImportData();
 
-        if(row.getCell(AttestationImportColumnsEnum.TEACHER).value) {
-          attestationImportData.teacherId = Number(row.getCell(AttestationImportColumnsEnum.TEACHER).value.toString().split(' - ')[0]);
+        if(row.getCell(AttestationImportColumnsEnum.TEACHER).text) {
+          attestationImportData.teacherId = Number(row.getCell(AttestationImportColumnsEnum.TEACHER).text.toString().split(' - ')[0]);
         }
 
-        if(row.getCell(AttestationImportColumnsEnum.CATEGORY).value) {
-          attestationImportData.categoryId = Number(row.getCell(AttestationImportColumnsEnum.CATEGORY).value.toString().split(' - ')[0]);
+        if(row.getCell(AttestationImportColumnsEnum.CATEGORY).text) {
+          attestationImportData.categoryId = Number(row.getCell(AttestationImportColumnsEnum.CATEGORY).text.toString().split(' - ')[0]);
         }
 
-        if(row.getCell(AttestationImportColumnsEnum.DATE).value){
-          attestationImportData.date = new Date(String(row.getCell(AttestationImportColumnsEnum.DATE).value ?? ''));
+        if(row.getCell(AttestationImportColumnsEnum.DATE).text){
+          attestationImportData.date = new Date(String(row.getCell(AttestationImportColumnsEnum.DATE).text ?? ''));
         }
 
-        if(row.getCell(EducationImportColumnsEnum.DESCRIPTION).value) {
-          attestationImportData.description = String(row.getCell(EducationImportColumnsEnum.DESCRIPTION).value ?? '');
+        if(row.getCell(EducationImportColumnsEnum.DESCRIPTION).text) {
+          attestationImportData.description = String(row.getCell(EducationImportColumnsEnum.DESCRIPTION).text ?? '');
         }
 
         if((isNil(request.to) && !isFilledWithData(row)) || (!isNil(request.to) && currentRow <= request.to)) {
@@ -1032,43 +1035,43 @@ export class ImportService {
         //read data from row
         const teacherImportData = new TeacherImportData();
 
-        teacherImportData.fullName = String(row.getCell(TeacherImportColumnsEnum.FULL_NAME).value);
-        teacherImportData.email = String(row.getCell(TeacherImportColumnsEnum.EMAIL).value);
+        teacherImportData.fullName = String(row.getCell(TeacherImportColumnsEnum.FULL_NAME).text);
+        teacherImportData.email = String(row.getCell(TeacherImportColumnsEnum.EMAIL).text);
 
-        if(row.getCell(TeacherImportColumnsEnum.BIRTHDAY).value){
-          teacherImportData.birthday = new Date(String(row.getCell(TeacherImportColumnsEnum.BIRTHDAY).value ?? ''));
+        if(row.getCell(TeacherImportColumnsEnum.BIRTHDAY).text){
+          teacherImportData.birthday = new Date(String(row.getCell(TeacherImportColumnsEnum.BIRTHDAY).text ?? ''));
         }
 
-        if(row.getCell(TeacherImportColumnsEnum.WORK_START_DATE).value){
-          teacherImportData.workStartDate = new Date(String(row.getCell(TeacherImportColumnsEnum.WORK_START_DATE).value ?? ''));
+        if(row.getCell(TeacherImportColumnsEnum.WORK_START_DATE).text){
+          teacherImportData.workStartDate = new Date(String(row.getCell(TeacherImportColumnsEnum.WORK_START_DATE).text ?? ''));
         }
 
-        if(row.getCell(TeacherImportColumnsEnum.PHONE).value) {
-          teacherImportData.phone = String(row.getCell(TeacherImportColumnsEnum.PHONE).value);
+        if(row.getCell(TeacherImportColumnsEnum.PHONE).text) {
+          teacherImportData.phone = String(row.getCell(TeacherImportColumnsEnum.PHONE).text);
         }
 
-        if(row.getCell(TeacherImportColumnsEnum.ADDRESS).value) {
-          teacherImportData.address = String(row.getCell(TeacherImportColumnsEnum.ADDRESS).value);
+        if(row.getCell(TeacherImportColumnsEnum.ADDRESS).text) {
+          teacherImportData.address = String(row.getCell(TeacherImportColumnsEnum.ADDRESS).text);
         }
 
-        if(row.getCell(TeacherImportColumnsEnum.DEPARTMENT).value) {
-          teacherImportData.departmentId = Number(row.getCell(TeacherImportColumnsEnum.DEPARTMENT).value.toString().split(' - ')[0]);
+        if(row.getCell(TeacherImportColumnsEnum.DEPARTMENT).text) {
+          teacherImportData.departmentId = Number(row.getCell(TeacherImportColumnsEnum.DEPARTMENT).text.toString().split(' - ')[0]);
         }
 
-        if(row.getCell(TeacherImportColumnsEnum.COMMISSION).value) {
-          teacherImportData.commissionId = Number(row.getCell(TeacherImportColumnsEnum.COMMISSION).value.toString().split(' - ')[0]);
+        if(row.getCell(TeacherImportColumnsEnum.COMMISSION).text) {
+          teacherImportData.commissionId = Number(row.getCell(TeacherImportColumnsEnum.COMMISSION).text.toString().split(' - ')[0]);
         }
 
-        if(row.getCell(TeacherImportColumnsEnum.TEACHING_RANK).value) {
-          teacherImportData.teacherRankId = Number(row.getCell(TeacherImportColumnsEnum.TEACHING_RANK).value.toString().split(' - ')[0]);
+        if(row.getCell(TeacherImportColumnsEnum.TEACHING_RANK).text) {
+          teacherImportData.teacherRankId = Number(row.getCell(TeacherImportColumnsEnum.TEACHING_RANK).text.toString().split(' - ')[0]);
         }
 
-        if(row.getCell(TeacherImportColumnsEnum.ACADEMIC_DEGREE).value) {
-          teacherImportData.academicDegreeId = Number(row.getCell(TeacherImportColumnsEnum.ACADEMIC_DEGREE).value.toString().split(' - ')[0]);
+        if(row.getCell(TeacherImportColumnsEnum.ACADEMIC_DEGREE).text) {
+          teacherImportData.academicDegreeId = Number(row.getCell(TeacherImportColumnsEnum.ACADEMIC_DEGREE).text.toString().split(' - ')[0]);
         }
 
-        if(row.getCell(TeacherImportColumnsEnum.ACADEMIC_TITLE).value) {
-          teacherImportData.academicTitleId = Number(row.getCell(TeacherImportColumnsEnum.ACADEMIC_TITLE).value.toString().split(' - ')[0]);
+        if(row.getCell(TeacherImportColumnsEnum.ACADEMIC_TITLE).text) {
+          teacherImportData.academicTitleId = Number(row.getCell(TeacherImportColumnsEnum.ACADEMIC_TITLE).text.toString().split(' - ')[0]);
         }
 
         if((isNil(request.to) && !isFilledWithData(row)) || (!isNil(request.to) && currentRow <= request.to)) {

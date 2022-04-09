@@ -476,7 +476,7 @@ type ExportTypeResponse {
 }
 
 input GenerateImportTemplateRequest {
-  type: ImportTypeEnum!
+  type: Int!
 }
 
 type GenerateImportTemplateResponse {
@@ -577,23 +577,12 @@ input ImportRequest {
   from: Int
   ignoreErrors: Boolean = false
   to: Int
-  type: ImportTypeEnum!
+  type: Int!
 }
 
 type ImportResponse {
   errors: [ImportErrorResponse!]!
   result: Boolean!
-}
-
-enum ImportTypeEnum {
-  ATTESTATION
-  EDUCATION
-  HONOR
-  INTERNSHIP
-  PUBLICATION
-  REBUKE
-  TEACHER
-  USER
 }
 
 input ImportTypeGetByIdRequest {

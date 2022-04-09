@@ -7,7 +7,6 @@ import {GenerateImportTemplateService} from '../services/generate-import-templat
 import {MetaDataFieldEnum} from '../../../global/constants/meta-data-fields.enum';
 import {writeRoles} from '../../../global/utils/roles';
 import {ImportRequest} from '../types/request/import.request';
-import {ResultResponse} from '../../../global/types/response/result.response';
 import {ImportResponse} from '../types/response/import.response';
 
 @Resolver()

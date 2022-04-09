@@ -110,11 +110,11 @@ export class EducationRepository {
 
       const filters: WhereOptions<EducationInterface> = {};
 
-      if (!isNil(repoRequest.institution)) {
+      if (repoRequest.institution) {
         filters.institution = {[Op.like]: `%${repoRequest.institution || ''}%`};
       }
 
-      if (!isNil(repoRequest.specialty)) {
+      if (repoRequest.specialty) {
         filters.specialty = {[Op.like]: `%${repoRequest.specialty || ''}%`};
       }
 

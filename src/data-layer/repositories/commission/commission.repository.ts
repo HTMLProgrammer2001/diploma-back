@@ -71,7 +71,7 @@ export class CommissionRepository {
 
       const filters: WhereOptions<CommissionInterface> = {};
 
-      if (!isNil(repoRequest.name)) {
+      if (repoRequest.name) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
       }
 

@@ -50,7 +50,7 @@ export class RoleRepository {
 
       const filters: WhereOptions<RoleInterface> = {};
 
-      if (!isNil(repoRequest.name)) {
+      if (repoRequest.name) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
       }
 

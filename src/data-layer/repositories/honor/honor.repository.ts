@@ -99,11 +99,11 @@ export class HonorRepository {
 
       const filters: WhereOptions<HonorInterface> = {};
 
-      if (!isNil(repoRequest.title)) {
+      if (repoRequest.title) {
         filters.title = {[Op.like]: `%${repoRequest.title || ''}%`};
       }
 
-      if (!isNil(repoRequest.orderNumber)) {
+      if (repoRequest.orderNumber) {
         filters.orderNumber = {[Op.like]: `%${repoRequest.orderNumber || ''}%`};
       }
 

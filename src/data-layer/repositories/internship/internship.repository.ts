@@ -116,23 +116,23 @@ export class InternshipRepository {
 
       const filters: WhereOptions<InternshipInterface> = {};
 
-      if (!isNil(repoRequest.title)) {
+      if (repoRequest.title) {
         filters.title = {[Op.like]: `%${repoRequest.title || ''}%`};
       }
 
-      if (!isNil(repoRequest.code)) {
+      if (repoRequest.code) {
         filters.code = {[Op.like]: `%${repoRequest.code || ''}%`};
       }
 
-      if (!isNil(repoRequest.codeEqual)) {
+      if (repoRequest.codeEqual) {
         filters.code = repoRequest.codeEqual;
       }
 
-      if (!isNil(repoRequest.codeIn)) {
+      if (repoRequest.codeIn) {
         filters.code = {[Op.in]: repoRequest.codeIn};
       }
 
-      if (!isNil(repoRequest.place)) {
+      if (repoRequest.place) {
         filters.place = {[Op.like]: `%${repoRequest.place || ''}%`};
       }
 

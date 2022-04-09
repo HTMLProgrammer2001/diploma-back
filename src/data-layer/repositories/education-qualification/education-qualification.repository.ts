@@ -74,7 +74,7 @@ export class EducationQualificationRepository {
 
       const filters: WhereOptions<EducationQualificationInterface> = {};
 
-      if (!isNil(repoRequest.name)) {
+      if (repoRequest.name) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
       }
 

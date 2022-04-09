@@ -8,7 +8,7 @@ export class ImportRequest {
   @Field(type => GraphQLUpload)
   file: Promise<FileUpload>;
 
-  @Field(type => ImportDataTypeEnum)
+  @Field(type => Int)
   @IsEnum(ImportDataTypeEnum)
   type: ImportDataTypeEnum;
 

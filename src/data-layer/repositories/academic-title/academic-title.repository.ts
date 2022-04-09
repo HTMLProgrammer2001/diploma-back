@@ -71,7 +71,7 @@ export class AcademicTitleRepository {
 
       const filters: WhereOptions<AcademicTitleInterface> = {};
 
-      if (!isNil(repoRequest.name)) {
+      if (repoRequest.name) {
         filters.name = {[Op.like]: `%${repoRequest.name || ''}%`};
       }
 
