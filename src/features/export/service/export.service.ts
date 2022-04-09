@@ -213,6 +213,11 @@ export class ExportService {
       const {data: teacherByIdsData} = await this.teacherRepository.getTeachers(teacherByIdsListRepoRequest);
       teacherList = teacherByIdsData.responseList;
     }
+    else {
+      const allTeachersRepoRequest = this.exportMapper.initializeGetAllTeacherIds();
+      const {data: teacherIds} = await this.teacherRepository.getTeachers(allTeachersRepoRequest);
+      teacherList = teacherIds.responseList;
+    }
 
     return teacherList;
   }
@@ -228,8 +233,11 @@ export class ExportService {
     else if(request.commissionId) {
       headerText += `from commission ${data.commissionData.name}`;
     }
-    else {
+    else if(request.teacherIds) {
       headerText += 'from teacher list';
+    }
+    else {
+      headerText = 'Report for all teachers';
     }
 
     if(request.from || request.to){

@@ -1,7 +1,7 @@
 import {Field, ID, ObjectType} from '@nestjs/graphql';
 
 @ObjectType()
-export class RoleResponse {
+export class ExportTypeResponse {
   @Field(type => ID)
   id: number;
 

@@ -22,7 +22,6 @@ export class ProfileMapper {
     destination.email = source.email;
     destination.phone = source.phone;
     destination.guid = source.guid;
-    destination.isDeleted = source.isDeleted;
 
     if (!isNil(source.role)) {
       destination.role = {
@@ -65,8 +64,14 @@ export class ProfileMapper {
     destination.fullName = source.fullName;
     destination.email = source.email;
     destination.phone = source.phone;
-    destination.avatarUrl = avatarUrl;
-    destination.passwordHash = bcrypt.hashSync(source.password, Number(this.configService.get('SALT')));
+
+    if(!isNil(avatarUrl)) {
+      destination.avatarUrl = avatarUrl;
+    }
+
+    if(source.password) {
+      destination.passwordHash = bcrypt.hashSync(source.password, Number(this.configService.get('SALT')));
+    }
 
     return destination;
   }

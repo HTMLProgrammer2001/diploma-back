@@ -22,8 +22,5 @@ export class ProfileResponse {
   role: IdNameResponse;
 
   @Field({nullable: true})
-  isDeleted: boolean;
-
-  @Field({nullable: true})
   guid: string;
 }

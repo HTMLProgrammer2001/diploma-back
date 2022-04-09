@@ -1,4 +1,4 @@
-import {Args, Info, Mutation, Query, Resolver} from '@nestjs/graphql';
+import {Args, Info, Query, Resolver} from '@nestjs/graphql';
 import {RoleService} from '../service/role.service';
 import {RoleGetListRequest} from '../types/request/role-get-list.request';
 import {RoleResponse} from '../types/response/role.response';
@@ -7,10 +7,9 @@ import {RoleListResponse} from '../types/response/role-list.response';
 import {GraphQLResolveInfo} from 'graphql';
 import {fieldsProjection} from 'graphql-fields-list';
 import {RoleGetByIdRequest} from '../types/request/role-get-by-id.request';
-import {RoleUpdateRequest} from '../types/request/role-update.request';
 import {SetMetadata} from '@nestjs/common';
 import {MetaDataFieldEnum} from '../../../global/constants/meta-data-fields.enum';
-import {readRoles, writeRoles} from '../../../global/utils/roles';
+import {readRoles} from '../../../global/utils/roles';
 
 @Resolver(of => RoleResponse)
 export class RoleResolver {
@@ -31,13 +30,5 @@ export class RoleResolver {
     Promise<RoleResponse> {
     request.select = Object.keys(fieldsProjection(info));
     return this.roleService.getRoleById(request);
-  }
-
-  @Mutation(returns => RoleResponse)
-  @SetMetadata(MetaDataFieldEnum.ROLES, writeRoles)
-  async updateRole(@Args('body') request: RoleUpdateRequest, @Info() info: GraphQLResolveInfo):
-    Promise<RoleResponse> {
-    request.select = Object.keys(fieldsProjection(info));
-    return this.roleService.updateRole(request);
   }
 }

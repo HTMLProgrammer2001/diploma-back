@@ -190,6 +190,17 @@ export class ExportMapper {
     return destination;
   }
 
+  initializeGetAllTeacherIds(): TeacherGetRepoRequest {
+    const destination = new TeacherGetRepoRequest();
+
+    destination.select = [TeacherSelectFieldsEnum.ID];
+    destination.showDeleted = false;
+    destination.page = 1;
+    destination.size = 5000;
+
+    return destination;
+  }
+
   initializeGetDepartment(departmentId: number): DepartmentGetRepoRequest {
     const destination = new DepartmentGetRepoRequest();
 

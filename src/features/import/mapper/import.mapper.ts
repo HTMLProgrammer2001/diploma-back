@@ -32,7 +32,6 @@ export class ImportMapper {
     const destination = new RoleGetRepoRequest();
 
     destination.select = [RoleSelectFieldsEnum.ID, RoleSelectFieldsEnum.NAME];
-    destination.showDeleted = false;
     destination.page = 1;
     destination.size = 5000;
 
@@ -133,7 +132,6 @@ export class ImportMapper {
     destination.select = [RoleSelectFieldsEnum.ID];
     destination.ids = roleIds;
     destination.size = roleIds.length;
-    destination.showDeleted = false;
 
     return destination;
   }

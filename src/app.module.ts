@@ -46,6 +46,8 @@ import {ScheduleModule} from '@nestjs/schedule';
 import {NotificationModule} from './features/notification/notification.module';
 import {ImportModule} from './features/import/import.module';
 import {ImportTypeModule} from './features/import-type/import-type.module';
+import {ExportTypeModule} from './features/export-type/export-type.module';
+import {StaticAuthorizationHeaderMiddleware} from './global/middlewares/static-authorization-header.middleware';
 
 @Module({
   imports: [
@@ -170,6 +172,7 @@ import {ImportTypeModule} from './features/import-type/import-type.module';
     NotificationModule,
     ImportModule,
     ImportTypeModule,
+    ExportTypeModule,
   ],
   controllers: [AppController],
   providers: [
@@ -209,6 +212,7 @@ export class AppModule implements OnApplicationBootstrap {
   }
 
   configure(consumer: MiddlewareConsumer) {
+    consumer.apply(StaticAuthorizationHeaderMiddleware).forRoutes('static');
     consumer.apply(SetupRequestStorageMiddleware, AuthorizationHeaderMiddleware).forRoutes('');
   }
 }

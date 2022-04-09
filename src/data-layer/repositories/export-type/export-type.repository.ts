@@ -1,26 +1,26 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {InjectModel} from '@nestjs/sequelize';
 import {isNil} from 'lodash';
-import {ImportTypeGetRepoRequest} from './repo-request/import-type-get.repo-request';
+import {ExportTypeGetRepoRequest} from './repo-request/export-type-get.repo-request';
 import {Op} from 'sequelize';
 import {FindAttributeOptions, WhereOptions} from 'sequelize/dist/lib/model';
-import {ImportTypeSelectFieldsEnum} from './enums/import-type-select-fields.enum';
+import {ExportTypeSelectFieldsEnum} from './enums/export-type-select-fields.enum';
 import {ImportTypeGetRepoResponse} from './repo-response/import-type-get.repo-response';
 import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
 import {RoleInterface} from '../../db-models/role.db-model';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
-import {ImportTypeDbModel} from '../../db-models/import-type.db-model';
+import {ExportTypeDbModel} from '../../db-models/export-type.db-model';
 
 @Injectable()
-export class ImportTypeRepository {
+export class ExportTypeRepository {
   private logger: Logger;
 
-  constructor(@InjectModel(ImportTypeDbModel) private importTypeDbModel: typeof ImportTypeDbModel) {
-    this.logger = new Logger(ImportTypeRepository.name);
+  constructor(@InjectModel(ExportTypeDbModel) private exportTypeDbModel: typeof ExportTypeDbModel) {
+    this.logger = new Logger(ExportTypeRepository.name);
   }
 
-  async getImportTypes(repoRequest: ImportTypeGetRepoRequest): Promise<ImportTypeGetRepoResponse> {
+  async getExportTypes(repoRequest: ExportTypeGetRepoRequest): Promise<ImportTypeGetRepoResponse> {
     try {
       repoRequest.page = repoRequest.page ?? 1;
       repoRequest.size = repoRequest.size ?? 5;
@@ -30,16 +30,16 @@ export class ImportTypeRepository {
       const attributes: FindAttributeOptions = [];
 
       if (!repoRequest) {
-        repoRequest.select = [ImportTypeSelectFieldsEnum.ID, ImportTypeSelectFieldsEnum.NAME];
+        repoRequest.select = [ExportTypeSelectFieldsEnum.ID, ExportTypeSelectFieldsEnum.NAME];
       }
 
       repoRequest.select.forEach(field => {
         switch (field) {
-          case ImportTypeSelectFieldsEnum.ID:
+          case ExportTypeSelectFieldsEnum.ID:
             attributes.push('id');
             break;
 
-          case ImportTypeSelectFieldsEnum.NAME:
+          case ExportTypeSelectFieldsEnum.NAME:
             attributes.push('name');
             break;
         }
@@ -75,7 +75,7 @@ export class ImportTypeRepository {
 
       //endregion
 
-      const data = await this.importTypeDbModel.findAndCountAll({
+      const data = await this.exportTypeDbModel.findAndCountAll({
         where: filters,
         order,
         attributes,

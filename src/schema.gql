@@ -440,7 +440,7 @@ input ExportRequest {
   commissionId: ID
   departmentId: ID
   from: DateTime
-  select: [ExportSelectEnum!]!
+  select: [Int!]!
   teacherIds: [ID!]
   to: DateTime
 }
@@ -449,14 +449,30 @@ type ExportResponse {
   url: String!
 }
 
-enum ExportSelectEnum {
-  ATTESTATIONS
-  HONORS
-  INTERNSHIPS
-  PUBLICATIONS
-  REBUKES
-  TEACHER_PERSONAL_INFO
-  TEACHER_PROFESSIONAL_INFO
+input ExportTypeGetByIdRequest {
+  id: ID!
+}
+
+input ExportTypeGetListRequest {
+  isDesc: Boolean
+  name: String
+  orderField: String = "id"
+  page: Int = 1
+  size: Int = 5
+}
+
+type ExportTypeListResponse implements PaginatedData {
+  page: Int!
+  responseList: [ExportTypeResponse!]!
+  size: Int!
+  skip: Int!
+  totalElements: Int!
+  totalPages: Int!
+}
+
+type ExportTypeResponse {
+  id: ID!
+  name: String!
 }
 
 input GenerateImportTemplateRequest {
@@ -602,15 +618,8 @@ type ImportTypeListResponse implements PaginatedData {
 }
 
 type ImportTypeResponse {
-  guid: String!
   id: ID!
   name: String!
-}
-
-input ImportTypeUpdateRequest {
-  guid: String!
-  id: ID!
-  name: String
 }
 
 enum InternshipCascadeDeletedByEnum {
@@ -771,12 +780,10 @@ type Mutation {
   updateEducation(body: EducationUpdateRequest!): EducationResponse!
   updateEducationQualification(body: EducationQualificationUpdateRequest!): EducationQualificationResponse!
   updateHonor(body: HonorUpdateRequest!): HonorResponse!
-  updateImportType(body: ImportTypeUpdateRequest!): ImportTypeResponse!
   updateInternship(body: InternshipUpdateRequest!): InternshipResponse!
   updateNotificationConfig(body: NotificationUpdateRequest!): NotificationConfigResponse!
   updatePublication(body: PublicationUpdateRequest!): PublicationResponse!
   updateRebuke(body: RebukeUpdateRequest!): RebukeResponse!
-  updateRole(body: RoleUpdateRequest!): RoleResponse!
   updateTeacher(body: TeacherUpdateRequest!): TeacherResponse!
   updateTeachingRank(body: TeachingRankUpdateRequest!): TeachingRankResponse!
   updateUser(body: UserUpdateRequest!): UserResponse!
@@ -840,7 +847,6 @@ type ProfileResponse {
   fullName: String
   guid: String
   id: ID
-  isDeleted: Boolean
   phone: String
   role: IdNameResponse
 }
@@ -930,6 +936,8 @@ type Query {
   getEducationList(query: EducationGetListRequest!): EducationListResponse!
   getEducationQualificationById(query: EducationQualificationGetByIdRequest!): EducationQualificationResponse!
   getEducationQualificationList(query: EducationQualificationGetListRequest!): EducationQualificationListResponse!
+  getExportTypeById(query: ExportTypeGetByIdRequest!): ExportTypeResponse!
+  getExportTypeList(query: ExportTypeGetListRequest!): ExportTypeListResponse!
   getHonorById(query: HonorGetByIdRequest!): HonorResponse!
   getHonorList(query: HonorGetListRequest!): HonorListResponse!
   getImportTypeById(query: ImportTypeGetByIdRequest!): ImportTypeResponse!
@@ -1066,15 +1074,8 @@ enum RoleOrderFieldsEnum {
 }
 
 type RoleResponse {
-  guid: String!
   id: ID!
   name: String!
-}
-
-input RoleUpdateRequest {
-  guid: String!
-  id: ID!
-  name: String
 }
 
 enum TeacherCascadeDeletedByEnum {

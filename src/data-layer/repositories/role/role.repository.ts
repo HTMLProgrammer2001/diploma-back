@@ -1,15 +1,13 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {InjectModel} from '@nestjs/sequelize';
-import {isEmpty, isNil, isUndefined} from 'lodash';
+import {isNil} from 'lodash';
 import {RoleGetRepoRequest} from './repo-request/role-get.repo-request';
-import sequelize, {Op} from 'sequelize';
+import {Op} from 'sequelize';
 import {FindAttributeOptions, WhereOptions} from 'sequelize/dist/lib/model';
 import {RoleSelectFieldsEnum} from './enums/role-select-fields.enum';
 import {RoleGetRepoResponse} from './repo-response/role-get.repo-response';
 import {convertFindAndCountToPaginator} from '../../../global/utils/functions';
 import {RoleDbModel, RoleInterface} from '../../db-models/role.db-model';
-import {RoleUpdateRepoRequest} from './repo-request/role-update.repo-request';
-import {CommonUpdateRepoResponse} from '../common/common-update.repo-response';
 import {CustomError} from '../../../global/class/custom-error';
 import {ErrorCodesEnum} from '../../../global/constants/error-codes.enum';
 
@@ -19,30 +17,6 @@ export class RoleRepository {
 
   constructor(@InjectModel(RoleDbModel) private roleDbModel: typeof RoleDbModel) {
     this.logger = new Logger(RoleRepository.name);
-  }
-
-  async updateRole(repoRequest: RoleUpdateRepoRequest): Promise<CommonUpdateRepoResponse> {
-    try {
-      const updateData = {} as RoleInterface;
-
-      if (!isUndefined(repoRequest.name)) {
-        updateData.name = repoRequest.name;
-      }
-
-      if (!isEmpty(updateData)) {
-        updateData.guid = sequelize.literal('UUID()') as any;
-        await this.roleDbModel.update(updateData, {where: {id: repoRequest.id}});
-      }
-
-      return {updatedID: repoRequest.id};
-    } catch (e) {
-      if (!(e instanceof CustomError)) {
-        this.logger.error(e);
-        throw new CustomError({code: ErrorCodesEnum.DATABASE, message: e.message});
-      }
-
-      throw e;
-    }
   }
 
   async getRoles(repoRequest: RoleGetRepoRequest): Promise<RoleGetRepoResponse> {
@@ -66,10 +40,6 @@ export class RoleRepository {
 
           case RoleSelectFieldsEnum.NAME:
             attributes.push('name');
-            break;
-
-          case RoleSelectFieldsEnum.GUID:
-            attributes.push('guid');
             break;
         }
       });

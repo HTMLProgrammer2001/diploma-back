@@ -1,6 +1,6 @@
 import {BaseRepoRequest} from '../../common/base-repo-request';
 
-export class ImportTypeGetRepoRequest extends BaseRepoRequest {
+export class ExportTypeGetRepoRequest extends BaseRepoRequest {
   page: number;
   size: number;
   id: number;

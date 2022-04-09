@@ -126,7 +126,6 @@ export class UserMapper {
 
     destination.id = roleId;
     destination.select = [RoleSelectFieldsEnum.ID];
-    destination.showDeleted = true;
 
     return destination;
   }

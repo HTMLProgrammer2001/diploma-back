@@ -1,4 +1,4 @@
-import {Field, ID, InputType} from '@nestjs/graphql';
+import {Field, ID, InputType, Int} from '@nestjs/graphql';
 import {ArrayMinSize, ArrayUnique, IsArray, IsEnum, IsNumber, IsOptional, Min} from 'class-validator';
 import {Transform} from 'class-transformer';
 import {ValidateDateRange} from '../../../../global/pipes/validate-date-range';
@@ -40,7 +40,7 @@ export class ExportRequest {
   @ValidateDateRange()
   to?: Date;
 
-  @Field(type => [ExportSelectEnum], {nullable: false})
+  @Field(type => [Int], {nullable: false})
   @IsArray()
   @ArrayUnique()
   @IsEnum(ExportSelectEnum, {each: true})

@@ -7,7 +7,4 @@ export class ImportTypeResponse {
 
   @Field({nullable: false})
   name: string;
-
-  @Field({nullable: false})
-  guid: string;
 }
