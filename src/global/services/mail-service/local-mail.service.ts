@@ -15,8 +15,8 @@ export class LocalMailService extends MailServiceInterface {
     this.logger.log(`Login teacher: ${email} -- ${token}`);
   }
 
-  async sendTeacherInternshipWarning(notificationTeacher: NotificationTeacherResponse, token: string): Promise<void> {
-    this.logger.log(`Teacher internship warning: ${token} -- ${JSON.stringify(notificationTeacher)}`);
+  async sendTeacherInternshipWarning(notificationTeacher: NotificationTeacherResponse): Promise<void> {
+    this.logger.log(`Teacher internship warning: ${JSON.stringify(notificationTeacher)}`);
   }
 
   async sendAdminInternshipWarning(email: string, notificationTeachers: Array<NotificationTeacherResponse>): Promise<void> {

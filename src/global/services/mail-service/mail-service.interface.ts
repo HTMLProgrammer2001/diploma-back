@@ -11,9 +11,8 @@ export abstract class MailServiceInterface {
   /**
    * Send mail about not enough internship hours to teacher
    * @param notificationTeacher - info to send
-   * @param token - teacher access token
    */
-  abstract sendTeacherInternshipWarning(notificationTeacher: NotificationTeacherResponse, token: string): Promise<void>;
+  abstract sendTeacherInternshipWarning(notificationTeacher: NotificationTeacherResponse): Promise<void>;
 
   /**
    * Send mail about not enough internship hours to admin

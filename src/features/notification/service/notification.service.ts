@@ -63,21 +63,7 @@ export class NotificationService {
 
       if (teacherToNotify.length) {
         if(notificationConfig.IS_NOTIFY_TEACHERS) {
-          await Promise.allSettled(teacherToNotify.map(el => {
-            const accessTokenPayload: IAccessTokenInfoInterface = {
-              type: AccessTokenTypeEnum.TEACHER,
-              userId: el.teacher.id,
-              email: el.teacher.email,
-              role: RolesEnum.VIEWER
-            };
-
-            const accessToken = this.jwtService.sign(accessTokenPayload, {
-              secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
-              expiresIn: Number(this.configService.get('JWT_TEACHER_ACCESS_TOKEN_TTL_SECONDS'))
-            });
-
-            return this.mailService.sendTeacherInternshipWarning(el, accessToken);
-          }));
+          await Promise.allSettled(teacherToNotify.map(el => this.mailService.sendTeacherInternshipWarning(el)));
         }
 
         if(notificationConfig.IS_NOTIFY_ADMINS) {

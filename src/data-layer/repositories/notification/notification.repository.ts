@@ -9,7 +9,7 @@ export class NotificationRepository {
   }
 
   async updateNotificationConfig(body: NotificationConfig): Promise<NotificationConfig> {
-    await writeFile('./notification.config.json', JSON.stringify(body));
+    await writeFile('./notification.config.json', JSON.stringify(body, null, 4));
     return body;
   }
 }
